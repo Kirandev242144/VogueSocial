@@ -416,3 +416,211 @@
 .retryBtn:hover {
     background: #f8fafc;
 }
+
+/* RESULT STATE TWO-COLUMN LAYOUT AND ACCESSORIES SYSTEM */
+.resultModalWide {
+    max-width: 1050px;
+    width: 95%;
+}
+
+.resultLayout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 768px) {
+    .resultLayout {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+.previewColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.placedAccessory {
+    position: absolute;
+    cursor: move;
+    user-select: none;
+    touch-action: none;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.selectedAccessory {
+    border: 1.5px dashed #0070f3;
+    border-radius: 4px;
+}
+
+.deleteHandle {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff4d4f;
+    color: white;
+    border: none;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease;
+    z-index: 10;
+}
+
+.deleteHandle:hover {
+    transform: scale(1.15);
+}
+
+.transformHandle {
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #0070f3;
+    border: 2px solid white;
+    cursor: se-resize;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease;
+    z-index: 10;
+}
+
+.transformHandle:hover {
+    transform: scale(1.15);
+}
+
+.accessoriesColumn {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    width: 100%;
+}
+
+.columnTitle {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 0.25rem;
+}
+
+.columnSubtitle {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.accessoryTabs {
+    display: flex;
+    border-bottom: 2px solid #eaeaea;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.accessoryTab {
+    background: none;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #666;
+    padding: 0.5rem 0.25rem;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.accessoryTab:hover {
+    color: #000;
+}
+
+.accessoryTab.activeTab {
+    color: #000;
+}
+
+.accessoryTab.activeTab::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #000;
+}
+
+.accessoryGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.accessoryCard {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+.accessoryCard:hover {
+    border-color: #000;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+.cardVisual {
+    width: 80px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.cardVisual svg {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.cardName {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.clearAllBtn {
+    background: none;
+    border: 1px solid #ff4d4f;
+    color: #ff4d4f;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-self: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.clearAllBtn:hover {
+    background: #fff1f0;
+}
