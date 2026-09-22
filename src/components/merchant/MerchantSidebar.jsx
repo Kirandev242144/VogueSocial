@@ -58,15 +58,6 @@ export default function MerchantSidebar() {
             <Sliders size={16} />
           </button>
         </div>
-
-        {/* Workspace Switcher */}
-        <div className={styles.workspaceSelect}>
-          <div className={styles.wsInner}>
-            <div className={styles.wsIcon}>V</div>
-            <span className={styles.wsTitle}>Vogue Merchant</span>
-          </div>
-          <ChevronDown size={14} color="var(--d-t4)" />
-        </div>
       </div>
 
       {/* Navigation Links */}
