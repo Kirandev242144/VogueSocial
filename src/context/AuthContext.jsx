@@ -29,7 +29,7 @@ export const SYSTEM_ACCOUNTS = [
     ]
   },
   {
-    id: 'mch_tom_01',
+    id: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c',
     name: 'Tom Jenkins',
     email: 'tom@gmail.com',
     password: 'password123',
@@ -81,6 +81,10 @@ export function AuthProvider({ children }) {
     if (savedUser) {
       try {
         const parsed = JSON.parse(savedUser);
+        if (parsed?.id === 'mch_tom_01') {
+          parsed.id = 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c';
+          localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(parsed));
+        }
         setUser(parsed);
         setStatus('authenticated');
       } catch (e) {

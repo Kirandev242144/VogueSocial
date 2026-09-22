@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from '../merchant.module.css';
 import { Package, Plus, Edit2, Trash2, Search, ImagePlus, RefreshCw, Facebook, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react';
-import { FacebookShopSync, TOP_GARMENTS } from '@/components/merchant';
+import { FacebookShopSync } from '@/components/merchant';
 import { useAuth } from '@/context/AuthContext';
 
 const CATEGORIES = ['Tops', 'Bottoms', 'Dresses & Jumpsuits', 'Casual', 'Formal', 'Ethnic', 'Streetwear', 'Luxury', 'Athleisure'];
@@ -88,47 +88,52 @@ export default function ProductsPage() {
         clothing_only: true,
         logs: []
     });
-    const [syncLoading, setSyncLoading] = useState(false);
+    const [toast, setToast] = useState(null);
+
+    const showToast = (message, type = 'success') => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 4000);
+    };
+
     useEffect(() => {
         loadProducts();
         loadFbSettings();
-    }, []);
+    }, [user?.id]);
+
+    const getEffectiveVendorId = () => {
+        if (user?.id && user.id !== 'mch_tom_01') {
+            return user.id;
+        }
+        return 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c';
+    };
+
     const loadProducts = async () => {
         setLoading(true);
         try {
-            const vendorParam = user?.id ? `?vendorId=${encodeURIComponent(user.id)}` : '';
-            const res = await fetch(`/api/merchant/products${vendorParam}`);
+            const vendorId = getEffectiveVendorId();
+            const res = await fetch(`/api/merchant/products?vendorId=${encodeURIComponent(vendorId)}`);
             if (res.ok) {
                 const data = await res.json();
-                if (data.success && data.products && data.products.length > 0) {
-                    setProducts(data.products);
+                if (data.success && Array.isArray(data.products)) {
+                    const normalized = data.products.map(p => ({
+                        ...p,
+                        image_url: p.imageUrl || p.image_url || '',
+                        back_image_url: p.backImageUrl || p.back_image_url || '',
+                        sale_price: p.salePrice || p.sale_price || null,
+                        target_audience: p.targetAudience || p.target_audience || 'Women',
+                        desc: p.description || p.desc || '',
+                        stock: p.stock !== undefined ? p.stock : 25,
+                        status: p.status || 'live'
+                    }));
+                    setProducts(normalized);
                     return;
                 }
             }
-            // Use default fashion products if backend table is empty or offline
-            setProducts(TOP_GARMENTS.map(g => ({
-                id: g.id,
-                name: g.name,
-                category: g.category,
-                sku: `VS-${g.name.substring(0, 4).toUpperCase()}`,
-                price: g.price.replace('$', ''),
-                image_url: g.image,
-                stock: 25,
-                status: 'live'
-            })));
+            setProducts([]);
         }
         catch (err) {
-            console.warn("Backend API offline, loading default fashion products:", err);
-            setProducts(TOP_GARMENTS.map(g => ({
-                id: g.id,
-                name: g.name,
-                category: g.category,
-                sku: `VS-${g.name.substring(0, 4).toUpperCase()}`,
-                price: g.price.replace('$', ''),
-                image_url: g.image,
-                stock: 25,
-                status: 'live'
-            })));
+            console.error("Error loading merchant products from backend:", err);
+            setProducts([]);
         }
         finally {
             setLoading(false);
@@ -171,8 +176,20 @@ export default function ProductsPage() {
     };
     const openEditWizard = (p) => {
         setEditingId(p.id);
+        let extra = {};
+        try {
+            if (p.adminNotes || p.admin_notes) {
+                extra = JSON.parse(p.adminNotes || p.admin_notes);
+            }
+        } catch (e) {}
+
+        const colors = extra.colors || (p.colors && p.colors.length ? p.colors : ['Black', 'White']);
+        const sizes = extra.sizes || (p.sizes && p.sizes.length ? p.sizes : ['S', 'M', 'L']);
+        const variants = extra.variants || (p.variants && p.variants.length ? p.variants : generateVariants(colors, sizes, Number(p.price) || 0, p.sku || 'SKU'));
+        const additionalImages = extra.additional_images || (extra.images ? extra.images.filter(img => img !== (p.imageUrl || p.image_url)) : (p.additional_images || []));
+
         setForm({
-            name: p.name,
+            name: p.name || '',
             category: p.category || 'Tops',
             subcategory: p.subcategory || '',
             target_audience: p.target_audience || p.targetAudience || 'Women',
@@ -180,16 +197,16 @@ export default function ProductsPage() {
             desc: p.desc || p.description || '',
             image_url: p.image_url || p.imageUrl || '',
             back_image_url: p.back_image_url || p.backImageUrl || '',
-            additional_images: p.additional_images || [],
+            additional_images: additionalImages,
             price: String(p.price || ''),
             sale_price: p.sale_price || p.salePrice ? String(p.sale_price || p.salePrice) : '',
             currency: p.currency || 'USD',
-            colors: p.colors && p.colors.length ? p.colors : ['Black', 'White'],
-            sizes: p.sizes && p.sizes.length ? p.sizes : ['S', 'M', 'L'],
-            variants: p.variants && p.variants.length ? p.variants : generateVariants(p.colors || ['Black'], p.sizes || ['M'], Number(p.price) || 0, p.sku || 'SKU'),
-            stock: p.stock || 25,
-            shipping_info: p.shipping_info || BLANK_PRODUCT.shipping_info,
-            return_policy: p.return_policy || BLANK_PRODUCT.return_policy
+            colors: colors,
+            sizes: sizes,
+            variants: variants,
+            stock: p.stock !== undefined ? p.stock : 25,
+            shipping_info: extra.shipping_info || p.shipping_info || BLANK_PRODUCT.shipping_info,
+            return_policy: extra.return_policy || p.return_policy || BLANK_PRODUCT.return_policy
         });
         setStep(1);
         setShowWizard(true);
@@ -235,26 +252,31 @@ export default function ProductsPage() {
     };
     // Submit product (Draft vs Live Publish)
     const submitProduct = async (targetStatus) => {
-        if (!form.name || !form.price)
-            return alert('Product Name and Price are required.');
-        if (!form.image_url)
-            return alert('Main Product Image is required.');
-        const totalStock = form.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0) || 25;
+        if (!form.name || !form.name.trim() || !form.price) {
+            showToast('Product Name and Price are required.', 'error');
+            return;
+        }
+        if (!form.image_url) {
+            showToast('Main Product Image is required.', 'error');
+            return;
+        }
+        const totalStock = form.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0) || Number(form.stock) || 25;
+        const vendorId = getEffectiveVendorId();
         const payload = {
             id: editingId || undefined,
-            name: form.name,
+            name: form.name.trim(),
             category: form.category,
-            subcategory: form.subcategory,
+            subcategory: form.subcategory || '',
             target_audience: form.target_audience,
             targetAudience: form.target_audience,
             sku: form.sku || `VS-${form.name.substring(0, 3).toUpperCase()}-${Date.now().toString().slice(-4)}`,
-            desc: form.desc,
-            description: form.desc,
+            desc: form.desc || '',
+            description: form.desc || '',
             image_url: form.image_url,
             imageUrl: form.image_url,
-            back_image_url: form.back_image_url,
-            backImageUrl: form.back_image_url,
-            additional_images: form.additional_images,
+            back_image_url: form.back_image_url || '',
+            backImageUrl: form.back_image_url || '',
+            additional_images: form.additional_images || [],
             price: Number(form.price),
             sale_price: form.sale_price ? Number(form.sale_price) : null,
             salePrice: form.sale_price ? Number(form.sale_price) : null,
@@ -266,7 +288,15 @@ export default function ProductsPage() {
             shipping_info: form.shipping_info,
             return_policy: form.return_policy,
             status: targetStatus === 'draft' ? 'draft' : 'live',
-            vendorId: user?.id || 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c'
+            vendorId: vendorId,
+            adminNotes: JSON.stringify({
+                colors: form.colors,
+                sizes: form.sizes,
+                variants: form.variants,
+                additional_images: form.additional_images,
+                shipping_info: form.shipping_info,
+                return_policy: form.return_policy
+            })
         };
         try {
             const res = await fetch('/api/merchant/products', {
@@ -278,25 +308,35 @@ export default function ProductsPage() {
             if (data.success) {
                 await loadProducts();
                 setShowWizard(false);
-                alert(targetStatus === 'draft' ? '✓ Saved as Draft' : '🚀 Product published live! It now appears on the Home Feed and Shop catalog.');
-            }
-            else {
-                alert(`Failed to save: ${data.error || 'Server error'}`);
+                setEditingId(null);
+                setForm(BLANK_PRODUCT);
+                setStep(1);
+                showToast(targetStatus === 'draft' ? '✓ Saved as Draft' : '🚀 Product published live! Catalog updated.', 'success');
+            } else {
+                showToast(`Failed to save: ${data.error || 'Server error'}`, 'error');
             }
         }
         catch (err) {
-            alert("Network error while saving product.");
+            console.error("Network error while saving product:", err);
+            showToast("Network error while saving product.", 'error');
         }
     };
     const deleteProduct = async (id) => {
-        if (confirm('Delete this product permanently?')) {
+        if (window.confirm('Delete this product permanently from database?')) {
             try {
-                const res = await fetch(`/api/merchant/products?id=${id}`, { method: 'DELETE' });
+                const res = await fetch(`/api/merchant/products?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
                 const data = await res.json();
-                if (data.success)
-                    loadProducts();
+                if (data.success) {
+                    await loadProducts();
+                    showToast('Product deleted successfully.', 'info');
+                } else {
+                    showToast(`Failed to delete: ${data.error || 'Server error'}`, 'error');
+                }
             }
-            catch (e) { }
+            catch (e) {
+                console.error("Delete failed:", e);
+                showToast('Failed to delete product.', 'error');
+            }
         }
     };
     const filteredProducts = products.filter(p => {
@@ -776,5 +816,29 @@ export default function ProductsPage() {
             </div>
           </div>
         </div>)}
+
+      {/* Toast Notification Alert */}
+      {toast && (
+        <div style={{
+          position: 'fixed',
+          bottom: 28,
+          right: 28,
+          zIndex: 99999,
+          background: toast.type === 'error' ? '#ef4444' : toast.type === 'info' ? '#3b82f6' : '#10b981',
+          color: '#ffffff',
+          padding: '12px 20px',
+          borderRadius: 10,
+          fontSize: '0.88rem',
+          fontWeight: 600,
+          boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          pointerEvents: 'none'
+        }}>
+          {toast.type === 'error' ? '⚠️' : toast.type === 'info' ? 'ℹ️' : '✓'}
+          <span>{toast.message}</span>
+        </div>
+      )}
     </div>);
 }
