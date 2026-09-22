@@ -1,39 +1,53 @@
 "use client";
 import React, { useEffect, useState, useMemo } from 'react';
 import {
-  Search, ShoppingBag, ArrowRight, Sparkles, Star, Check, X,
-  ShieldCheck, Truck, RotateCcw, Lock, ChevronDown, Filter,
-  Heart, SlidersHorizontal, Plus, Minus, Trash2, ExternalLink,
-  Globe
+  Search, ShoppingBag, ArrowRight, Sparkles, Check, X,
+  Lock, Plus, Minus, Trash2, SlidersHorizontal
 } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import styles from './store.module.css';
 import TryOnModal from '@/components/TryOnModal';
 import { getStoreByHandle, STORE_PRODUCTS } from '@/lib/storefrontData';
 
-const TEMPLATES = {
-  modern: `--bg: #F8FAFC; --bg2: #FFFFFF; --surface: #FFFFFF; --border: #E2E8F0; --text1: #0F172A; --text2: #334155; --text3: #64748B; --accent: #2563EB; --accent-text: #FFFFFF; --btn-radius: 10px; --card-radius: 14px; --font-heading: 'Plus Jakarta Sans', sans-serif; --font-body: 'Inter', sans-serif;`,
-  minimal: `--bg: #FFFFFF; --bg2: #F9F7F4; --surface: #FFFFFF; --border: #E8E4DE; --text1: #1A1A1A; --text2: #4A4A4A; --text3: #8A8A8A; --accent: #1A1A1A; --accent-text: #FFFFFF; --btn-radius: 0px; --card-radius: 0px; --font-heading: 'Cormorant Garamond', serif; --font-body: 'Jost', sans-serif;`,
-  luxury: `--bg: #1C1C1E; --bg2: #242426; --surface: #2A2A2C; --border: #3A3A3C; --text1: #C9A84C; --text2: #E8E8E8; --text3: #888888; --accent: #C9A84C; --accent-text: #1C1C1E; --btn-radius: 0px; --card-radius: 4px; --font-heading: 'Playfair Display', serif; --font-body: 'Montserrat', sans-serif;`,
-  streetwear: `--bg: #0A0A0A; --bg2: #111111; --surface: #1A1A1A; --border: #2A2A2A; --text1: #FFFFFF; --text2: #CCCCCC; --text3: #666666; --accent: #CCFF00; --accent-text: #0A0A0A; --btn-radius: 0px; --card-radius: 0px; --font-heading: 'Barlow Condensed', sans-serif; --font-body: 'Barlow', sans-serif;`,
-  boutique: `--bg: #FAF7F2; --bg2: #F5EFE8; --surface: #FFFFFF; --border: #EAE0D5; --text1: #2C1810; --text2: #5C3D2E; --text3: #9B7E6E; --accent: #C47E6B; --accent-text: #FFFFFF; --btn-radius: 24px; --card-radius: 12px; --font-heading: 'Libre Baskerville', serif; --font-body: 'Nunito', sans-serif;`,
+const COLOR_HEX_MAP = {
+  'obsidian black': '#111827',
+  'black': '#0a0a0a',
+  'jet black': '#0f172a',
+  'camel': '#c19a6b',
+  'stone grey': '#9ca3af',
+  'grey': '#9ca3af',
+  'heather grey': '#94a3b8',
+  'charcoal grey': '#374151',
+  'charcoal': '#374151',
+  'cream white': '#f5f5dc',
+  'cream': '#fdfbf7',
+  'white': '#ffffff',
+  'champagne': '#f7e7ce',
+  'midnight navy': '#0f172a',
+  'deep navy': '#1e293b',
+  'navy': '#1e3a8a',
+  'emerald': '#047857',
+  'green': '#15803d',
+  'oatmeal': '#e6d7b9',
+  'muted olive': '#556b2f',
+  'olive': '#65a30d',
+  'vintage cognac': '#9e4714',
+  'cognac': '#a16207',
+  'burgundy': '#800020',
+  'rose': '#fda4af',
+  'pink': '#f472b6',
+  'blue': '#2563eb',
+  'brown': '#78350f',
+  'beige': '#f5f5dc',
+  'tan': '#d2b48c',
+  'khaki': '#c3b091',
 };
 
-function getLuminance(r, g, b) {
-  const a = [r, g, b].map(function (v) {
-    v /= 255;
-    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-  });
-  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
-}
-
-function hexToRgb(hex) {
-  const cleanHex = hex.replace('#', '');
-  if (cleanHex.length !== 6) return null;
-  const r = parseInt(cleanHex.substring(0, 2), 16);
-  const g = parseInt(cleanHex.substring(2, 4), 16);
-  const b = parseInt(cleanHex.substring(4, 6), 16);
-  return { r, g, b };
+function getColorHex(colorName) {
+  if (!colorName) return '#334155';
+  if (colorName.startsWith('#')) return colorName;
+  const lower = colorName.toLowerCase().trim();
+  return COLOR_HEX_MAP[lower] || '#475569';
 }
 
 export default function StorefrontPage({ handle: propHandle } = {}) {
@@ -98,7 +112,7 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
       if (!loadedStore) {
         const local = getStoreByHandle(handle);
         loadedStore = local.store;
-        loadedProducts = local.products;
+        loadedProducts = local.products || STORE_PRODUCTS;
       }
 
       setStore(loadedStore);
@@ -141,12 +155,12 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
       );
 
       if (existingIdx > -1) {
-        items[existingIdx].quantity = (items[existingIdx].quantity || 1) + 1;
+        items[existingIdx].quantity += 1;
       } else {
         items.push({
           productId: product.id,
           name: product.name,
-          price: price,
+          price: Number(price),
           image: product.image_url || product.imageUrl,
           color: color,
           size: size,
@@ -222,1034 +236,765 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
       <div className={styles.loadingContainer}>
         <div className={styles.loadingBox}>
           <div className={styles.spinner} />
-          <p className={styles.loadingText}>Loading storefront...</p>
+          <p className={styles.loadingText}>Opening luxury storefront...</p>
         </div>
       </div>
     );
   }
 
-  const templateName = store.template || 'modern';
-  let cssVars = TEMPLATES[templateName] || TEMPLATES.modern;
-  if (store.accent_color) {
-    const rgb = hexToRgb(store.accent_color);
-    let accentText = '#FFFFFF';
-    if (rgb) {
-      const lum = getLuminance(rgb.r, rgb.g, rgb.b);
-      if (lum > 0.5) accentText = '#000000';
-    }
-    cssVars += ` --accent: ${store.accent_color}; --accent-text: ${accentText};`;
+  if (!store) {
+    return (
+      <div className={styles.notFoundContainer}>
+        <h1 className={styles.notFoundTitle}>Storefront Not Found</h1>
+        <p className={styles.notFoundText}>
+          The merchant atelier you are searching for is currently unlisted.
+        </p>
+        <Link to="/" className={styles.notFoundBtn}>
+          Return to VogueSocial
+        </Link>
+      </div>
+    );
   }
 
-  const effectiveSubdomain = `${handle}.voguesocial.com`;
-  const effectiveCustomDomain = store.custom_domain;
   const isEmbedded = typeof window !== 'undefined' && window.location.search.includes('embedded=true');
 
   return (
     <div
       style={{
-        backgroundColor: 'var(--bg)',
-        color: 'var(--text2)',
-        fontFamily: 'var(--font-body)',
+        backgroundColor: '#FAFAF9',
+        color: '#1C1917',
+        fontFamily: "'Inter', sans-serif",
         minHeight: '100vh',
-        transition: 'background-color 0.3s ease'
       }}
     >
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Jost:wght@400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;500;600&family=Nunito:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        
-        :root {
-          ${cssVars}
-        }
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 
-        /* ── Modern Top Announcement Bar ── */
-        .modern-announcement {
-          background: #0f172a;
-          color: #f8fafc;
-          font-size: 0.75rem;
+        /* ── Minimalist Magazine Top Announcement ── */
+        .mag-topbar {
+          background: #111827;
+          color: #F3F4F6;
+          font-size: 0.68rem;
           font-weight: 600;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
           text-align: center;
           padding: 0.5rem 1rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 1rem;
-          letter-spacing: 0.02em;
         }
 
-        /* ── Store Header (Glass / Sticky) ── */
-        .store-header {
-          background: rgba(255, 255, 255, 0.94);
-          backdrop-filter: blur(16px);
-          border-bottom: 1px solid var(--border);
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1rem 2.5rem;
+        /* ── Magazine Header ── */
+        .mag-header {
           position: sticky;
           top: 0;
           z-index: 50;
+          background: rgba(250, 250, 249, 0.96);
+          backdrop-filter: blur(16px);
+          border-bottom: 1px solid #E7E5E4;
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
+          align-items: center;
+          padding: 1.25rem 3rem;
+          transition: all 0.3s ease;
         }
 
-        .header-left {
+        @media (max-width: 768px) {
+          .mag-header {
+            padding: 1rem 1.5rem;
+            grid-template-columns: auto 1fr auto;
+          }
+        }
+
+        .mag-nav-left {
           display: flex;
           align-items: center;
+          gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+          .mag-nav-left { display: none; }
+        }
+
+        .mag-nav-link {
+          font-size: 0.8rem;
+          font-weight: 500;
+          color: #57534E;
+          text-decoration: none;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          transition: color 0.2s;
+        }
+
+        .mag-nav-link:hover {
+          color: #0A0A0A;
+        }
+
+        /* Center Brand Logo */
+        .mag-brand-title {
+          font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+          font-size: 1.75rem;
+          font-weight: 600;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #0A0A0A;
+          text-decoration: none;
+          text-align: center;
+          transition: opacity 0.2s;
+        }
+
+        .mag-brand-title:hover {
+          opacity: 0.85;
+        }
+
+        .mag-actions-right {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
           gap: 1.25rem;
         }
 
-        .header-logo-container {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          text-decoration: none;
-        }
-
-        .store-logo-fallback {
-          height: 38px;
-          width: 38px;
-          background: #0f172a;
-          color: #ffffff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 800;
-          font-size: 1.1rem;
-          border-radius: var(--btn-radius);
-        }
-
-        .store-domain-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          background: #f1f5f9;
-          border: 1px solid #e2e8f0;
-          padding: 3px 9px;
-          border-radius: 99px;
-          font-size: 0.7rem;
-          font-weight: 600;
-          color: #475569;
-          text-decoration: none;
-        }
-
-        .header-nav {
-          display: flex;
-          gap: 1.75rem;
-        }
-
-        @media (max-width: 900px) {
-          .header-nav { display: none; }
-          .store-domain-pill { display: none; }
-        }
-
-        .header-nav a {
-          text-decoration: none;
-          color: var(--text2);
-          font-weight: 600;
-          font-size: 0.88rem;
-          transition: color 0.15s;
-        }
-
-        .header-nav a:hover {
-          color: var(--text1);
-        }
-
-        .header-actions {
-          display: flex;
-          align-items: center;
-          gap: 0.85rem;
-        }
-
-        .action-icon-btn {
+        .mag-icon-btn {
           background: none;
-          border: 1px solid transparent;
+          border: none;
           cursor: pointer;
-          color: var(--text2);
-          padding: 0.45rem;
-          border-radius: 8px;
+          color: #292524;
+          padding: 0.4rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all 0.15s;
           position: relative;
+          transition: transform 0.15s, color 0.2s;
         }
 
-        .action-icon-btn:hover {
-          background: var(--bg);
-          color: var(--text1);
-          border-color: var(--border);
+        .mag-icon-btn:hover {
+          color: #0A0A0A;
+          transform: scale(1.06);
         }
 
-        .cart-badge {
+        .mag-cart-badge {
           position: absolute;
-          top: -3px;
-          right: -3px;
-          height: 18px;
-          width: 18px;
-          border-radius: 50%;
-          background: var(--accent);
-          color: var(--accent-text);
+          top: -2px;
+          right: -2px;
+          background: #0A0A0A;
+          color: #FFFFFF;
           font-size: 0.65rem;
-          font-weight: 800;
+          font-weight: 700;
+          width: 17px;
+          height: 17px;
+          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
+          line-height: 1;
         }
 
-        /* ── Search Drawer ── */
-        .search-drawer {
-          padding: 1rem 2.5rem;
-          border-bottom: 1px solid var(--border);
-          background: var(--surface);
-          animation: slideDown 0.2s ease-out;
+        /* ── Search Bar Drawer ── */
+        .mag-search-bar {
+          background: #FFFFFF;
+          border-bottom: 1px solid #E7E5E4;
+          padding: 1.25rem 3rem;
+          display: flex;
+          justify-content: center;
         }
 
-        @keyframes slideDown {
-          from { transform: translateY(-8px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-
-        .search-input-box {
-          max-width: 650px;
-          margin: 0 auto;
-          position: relative;
-        }
-
-        .search-input-box input {
+        .mag-search-input {
+          max-width: 600px;
           width: 100%;
-          background: var(--bg);
-          border: 1.5px solid var(--border);
-          border-radius: var(--btn-radius);
-          padding: 0.65rem 1rem 0.65rem 2.5rem;
-          color: var(--text1);
-          font-size: 0.9rem;
+          border: none;
+          border-bottom: 1.5px solid #0A0A0A;
+          padding: 0.65rem 0;
+          font-size: 1rem;
+          font-family: 'Playfair Display', serif;
+          letter-spacing: 0.04em;
           outline: none;
-          transition: border-color 0.2s;
+          background: transparent;
         }
 
-        .search-input-box input:focus {
-          border-color: var(--accent);
-        }
-
-        .search-icon-pos {
-          position: absolute;
-          left: 0.85rem;
-          top: 50%;
-          transform: translateY(-50%);
-          color: var(--text3);
-        }
-
-        /* ── Modern Hero Section ── */
-        .modern-hero {
+        /* ── Magazine Editorial Hero ── */
+        .mag-hero {
           position: relative;
-          min-height: 520px;
+          height: 80vh;
+          min-height: 540px;
+          max-height: 780px;
+          width: 100%;
+          overflow: hidden;
+          background: #1C1917;
           display: flex;
           align-items: center;
           justify-content: center;
-          overflow: hidden;
-          background: #0f172a;
-          color: #ffffff;
         }
 
-        .modern-hero-img {
+        .mag-hero-image {
           position: absolute;
           inset: 0;
           width: 100%;
           height: 100%;
           object-fit: cover;
-          opacity: 0.45;
-          filter: brightness(0.85);
+          opacity: 0.85;
+          filter: contrast(105%) brightness(95%);
+          transform: scale(1.02);
+          transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .modern-hero-content {
-          position: relative;
-          z-index: 10;
-          text-align: center;
-          max-width: 820px;
-          padding: 3rem 1.5rem;
-        }
-
-        .modern-hero-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: rgba(255, 255, 255, 0.15);
-          backdrop-filter: blur(8px);
-          border: 1px solid rgba(255, 255, 255, 0.25);
-          padding: 4px 12px;
-          border-radius: 99px;
-          font-size: 0.75rem;
-          font-weight: 700;
-          letter-spacing: 0.05em;
-          text-transform: uppercase;
-          margin-bottom: 1.25rem;
-        }
-
-        .modern-hero-title {
-          font-family: var(--font-heading);
-          font-size: 3.5rem;
-          font-weight: 800;
-          letter-spacing: -0.02em;
-          line-height: 1.1;
-          margin: 0 0 1rem 0;
-        }
-
-        @media (max-width: 768px) {
-          .modern-hero-title { font-size: 2.3rem; }
-        }
-
-        .modern-hero-desc {
-          font-size: 1.1rem;
-          color: rgba(255, 255, 255, 0.85);
-          line-height: 1.6;
-          margin: 0 auto 2rem auto;
-          max-width: 620px;
-        }
-
-        .modern-hero-actions {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.85rem;
-          flex-wrap: wrap;
-        }
-
-        .hero-btn-primary {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          background: #ffffff;
-          color: #0f172a;
-          padding: 0.85rem 1.75rem;
-          border-radius: var(--btn-radius);
-          font-weight: 700;
-          font-size: 0.95rem;
-          text-decoration: none;
-          transition: all 0.2s;
-          border: none;
-          cursor: pointer;
-        }
-
-        .hero-btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-        }
-
-        .hero-btn-secondary {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          background: rgba(255, 255, 255, 0.15);
-          backdrop-filter: blur(8px);
-          color: #ffffff;
-          padding: 0.85rem 1.75rem;
-          border-radius: var(--btn-radius);
-          font-weight: 700;
-          font-size: 0.95rem;
-          text-decoration: none;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .hero-btn-secondary:hover {
-          background: rgba(255, 255, 255, 0.25);
-          transform: translateY(-2px);
-        }
-
-        /* ── Modern USP Perks Bar ── */
-        .perks-bar {
-          background: var(--surface);
-          border-bottom: 1px solid var(--border);
-          padding: 1.5rem 2.5rem;
-        }
-
-        .perks-grid {
-          max-width: 1240px;
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 1.5rem;
-        }
-
-        @media (max-width: 900px) {
-          .perks-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        @media (max-width: 550px) {
-          .perks-grid { grid-template-columns: 1fr; }
-        }
-
-        .perk-card {
-          display: flex;
-          align-items: center;
-          gap: 0.85rem;
-        }
-
-        .perk-icon-wrap {
-          width: 36px;
-          height: 36px;
-          border-radius: 8px;
-          background: #f1f5f9;
-          color: #0f172a;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-
-        .perk-title {
-          font-size: 0.82rem;
-          font-weight: 700;
-          color: var(--text1);
-        }
-
-        .perk-sub {
-          font-size: 0.72rem;
-          color: var(--text3);
-          margin-top: 1px;
-        }
-
-        /* ── Main Catalog Section ── */
-        .catalog-container {
-          max-width: 1240px;
-          margin: 0 auto;
-          padding: 3rem 2rem 5rem;
-        }
-
-        .catalog-top-bar {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 2rem;
-          flex-wrap: wrap;
-          gap: 1rem;
-        }
-
-        .category-pill-group {
-          display: flex;
-          gap: 0.5rem;
-          overflow-x: auto;
-          padding-bottom: 4px;
-        }
-
-        .category-pill {
-          white-space: nowrap;
-          padding: 0.45rem 1.15rem;
-          border: 1px solid var(--border);
-          background: var(--surface);
-          color: var(--text2);
-          border-radius: 99px;
-          cursor: pointer;
-          font-size: 0.82rem;
-          font-weight: 600;
-          transition: all 0.15s;
-        }
-
-        .category-pill:hover {
-          border-color: var(--text1);
-          color: var(--text1);
-        }
-
-        .category-pill-active {
-          background: #0f172a;
-          color: #ffffff;
-          border-color: #0f172a;
-        }
-
-        .sort-select {
-          padding: 0.45rem 0.85rem;
-          border: 1px solid var(--border);
-          border-radius: var(--btn-radius);
-          background: var(--surface);
-          color: var(--text1);
-          font-size: 0.82rem;
-          font-weight: 600;
-          outline: none;
-          cursor: pointer;
-        }
-
-        /* ── Products Grid ── */
-        .products-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 2rem 1.5rem;
-        }
-
-        @media (max-width: 1100px) {
-          .products-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-
-        @media (max-width: 768px) {
-          .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem 0.85rem; }
-        }
-
-        .product-card {
-          display: flex;
-          flex-direction: column;
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: var(--card-radius);
-          overflow: hidden;
-          cursor: pointer;
-          position: relative;
-          transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .product-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-        }
-
-        .product-image-box {
-          position: relative;
-          aspect-ratio: 3/4;
-          overflow: hidden;
-          background: #f1f5f9;
-        }
-
-        .product-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .product-card:hover .product-img {
+        .mag-hero:hover .mag-hero-image {
           transform: scale(1.05);
         }
 
-        .badge-pill-top {
-          position: absolute;
-          top: 0.75rem;
-          left: 0.75rem;
-          background: rgba(15, 23, 42, 0.85);
-          backdrop-filter: blur(6px);
-          color: #ffffff;
-          font-size: 0.65rem;
-          font-weight: 700;
-          padding: 3px 8px;
-          border-radius: 99px;
-          letter-spacing: 0.04em;
-          z-index: 10;
-        }
-
-        .quick-actions-overlay {
+        .mag-hero-overlay {
           position: absolute;
           inset: 0;
-          background: rgba(15, 23, 42, 0.35);
-          backdrop-filter: blur(2px);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          opacity: 0;
-          transition: opacity 0.2s;
-          padding: 1rem;
+          background: linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.65) 100%);
+        }
+
+        .mag-hero-content {
+          position: relative;
           z-index: 10;
+          text-align: center;
+          color: #FFFFFF;
+          max-width: 840px;
+          padding: 2rem;
         }
 
-        .product-card:hover .quick-actions-overlay {
-          opacity: 1;
-        }
-
-        .btn-quick-tryon {
-          width: 100%;
-          padding: 0.6rem 1rem;
-          background: #ffffff;
-          color: #0f172a;
-          border: none;
-          border-radius: var(--btn-radius);
-          font-size: 0.8rem;
-          font-weight: 700;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          transition: transform 0.15s;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .btn-quick-tryon:hover {
-          transform: scale(1.02);
-        }
-
-        .btn-quick-view {
-          width: 100%;
-          padding: 0.55rem 1rem;
-          background: rgba(255, 255, 255, 0.9);
-          color: #0f172a;
-          border: none;
-          border-radius: var(--btn-radius);
-          font-size: 0.75rem;
+        .mag-hero-kicker {
+          font-size: 0.72rem;
           font-weight: 600;
-          cursor: pointer;
-        }
-
-        .product-details {
-          padding: 1rem;
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-        }
-
-        .product-category {
-          font-size: 0.68rem;
-          color: var(--text3);
+          letter-spacing: 0.28em;
           text-transform: uppercase;
-          letter-spacing: 0.06em;
-          font-weight: 600;
-          margin-bottom: 0.2rem;
+          color: #E7E5E4;
+          margin-bottom: 1.25rem;
+          display: block;
         }
 
-        .product-title {
-          font-family: var(--font-heading);
-          font-size: 0.95rem;
-          font-weight: 700;
-          color: var(--text1);
-          line-height: 1.3;
-          margin: 0 0 0.4rem 0;
+        .mag-hero-headline {
+          font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+          font-size: clamp(2.8rem, 6vw, 4.8rem);
+          font-weight: 500;
+          line-height: 1.08;
+          letter-spacing: -0.01em;
+          margin: 0 0 1.25rem 0;
+          text-shadow: 0 2px 20px rgba(0,0,0,0.4);
         }
 
-        .product-price-box {
-          display: flex;
+        .mag-hero-tagline {
+          font-size: 1.05rem;
+          font-weight: 300;
+          color: #E7E5E4;
+          max-width: 520px;
+          margin: 0 auto 2.25rem auto;
+          line-height: 1.6;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.25rem;
+          font-style: italic;
+        }
+
+        .mag-hero-btn {
+          display: inline-flex;
           align-items: center;
-          gap: 0.5rem;
-          margin-top: auto;
-          padding-top: 0.4rem;
-        }
-
-        .price-curr {
-          font-size: 1rem;
+          gap: 0.75rem;
+          padding: 0.95rem 2.5rem;
+          background: #FFFFFF;
+          color: #0A0A0A;
+          text-decoration: none;
+          font-size: 0.75rem;
           font-weight: 700;
-          color: var(--text1);
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          border-radius: 0px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+          transition: all 0.3s ease;
         }
 
-        .price-strike {
-          text-decoration: line-through;
-          color: var(--text3);
-          font-size: 0.82rem;
+        .mag-hero-btn:hover {
+          background: #0A0A0A;
+          color: #FFFFFF;
+          transform: translateY(-2px);
         }
 
-        .swatch-dots {
+        /* ── Minimalist Editorial Strip ── */
+        .mag-dispatch-strip {
+          border-top: 1px solid #E7E5E4;
+          border-bottom: 1px solid #E7E5E4;
+          padding: 1.25rem 2rem;
+          background: #FFFFFF;
           display: flex;
-          gap: 5px;
-          margin-top: 0.6rem;
-        }
-
-        .swatch-dot {
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          border: 1.5px solid var(--border);
-          cursor: pointer;
-        }
-
-        .btn-add-cart-card {
-          margin-top: 0.75rem;
-          width: 100%;
-          padding: 0.5rem;
-          background: #0f172a;
-          color: #ffffff;
-          border: none;
-          border-radius: var(--btn-radius);
-          font-size: 0.78rem;
-          font-weight: 600;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
           justify-content: center;
-          gap: 6px;
-          transition: background 0.15s;
-        }
-
-        .btn-add-cart-card:hover {
-          background: #1e293b;
-        }
-
-        /* ── Slide-Over Cart Drawer ── */
-        .cart-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.45);
-          backdrop-filter: blur(4px);
-          z-index: 100;
-          display: flex;
-          justify-content: flex-end;
-          animation: fadeIn 0.2s ease;
-        }
-
-        .cart-drawer {
-          width: 100%;
-          max-width: 420px;
-          height: 100%;
-          background: #ffffff;
-          display: flex;
-          flex-direction: column;
-          box-shadow: -8px 0 32px rgba(0,0,0,0.15);
-          animation: slideInRight 0.25s ease-out;
-        }
-
-        @keyframes slideInRight {
-          from { transform: translateX(100%); }
-          to { transform: translateX(0); }
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        .cart-header {
-          padding: 1.25rem 1.5rem;
-          border-bottom: 1px solid #e2e8f0;
-          display: flex;
           align-items: center;
+          gap: 3rem;
+          font-size: 0.72rem;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: #78716C;
+          flex-wrap: wrap;
+        }
+
+        @media (max-width: 640px) {
+          .mag-dispatch-strip { gap: 1.25rem; font-size: 0.65rem; }
+        }
+
+        /* ── Catalog Section ── */
+        .mag-catalog {
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: 5rem 3rem 8rem;
+        }
+
+        @media (max-width: 768px) {
+          .mag-catalog { padding: 3rem 1.5rem 5rem; }
+        }
+
+        .mag-catalog-header {
+          display: flex;
           justify-content: space-between;
+          align-items: flex-end;
+          margin-bottom: 3.5rem;
+          border-bottom: 1px solid #E7E5E4;
+          padding-bottom: 1.25rem;
+          flex-wrap: wrap;
+          gap: 1.5rem;
         }
 
-        .cart-items-body {
-          flex: 1;
-          overflow-y: auto;
-          padding: 1.25rem 1.5rem;
+        .mag-category-tabs {
+          display: flex;
+          gap: 2.25rem;
+          overflow-x: auto;
+        }
+
+        .mag-category-tab {
+          background: none;
+          border: none;
+          font-size: 0.82rem;
+          font-weight: 500;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #78716C;
+          cursor: pointer;
+          padding-bottom: 0.75rem;
+          position: relative;
+          transition: color 0.2s;
+        }
+
+        .mag-category-tab:hover {
+          color: #0A0A0A;
+        }
+
+        .mag-category-tab-active {
+          color: #0A0A0A;
+          font-weight: 700;
+        }
+
+        .mag-category-tab-active::after {
+          content: '';
+          position: absolute;
+          bottom: -1px;
+          left: 0;
+          right: 0;
+          height: 1.5px;
+          background: #0A0A0A;
+        }
+
+        .mag-sort-select {
+          border: none;
+          background: transparent;
+          font-size: 0.78rem;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #44403C;
+          font-weight: 600;
+          outline: none;
+          cursor: pointer;
+        }
+
+        /* ── Editorial Product Grid ── */
+        .mag-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 3rem 2rem;
+        }
+
+        @media (max-width: 1100px) {
+          .mag-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+          .mag-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem 1rem; }
+        }
+
+        @media (max-width: 480px) {
+          .mag-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+        }
+
+        .mag-card {
           display: flex;
           flex-direction: column;
-          gap: 1rem;
-        }
-
-        .cart-item-row {
-          display: flex;
-          gap: 0.85rem;
-          padding-bottom: 1rem;
-          border-bottom: 1px solid #f1f5f9;
-        }
-
-        .cart-item-img {
-          width: 60px;
-          height: 75px;
-          border-radius: 8px;
-          object-fit: cover;
-          background: #f1f5f9;
-        }
-
-        .cart-footer {
-          padding: 1.25rem 1.5rem;
-          border-top: 1px solid #e2e8f0;
-          background: #f8fafc;
-        }
-
-        .btn-checkout {
-          width: 100%;
-          padding: 0.85rem;
-          background: #0f172a;
-          color: #ffffff;
-          border: none;
-          border-radius: 8px;
-          font-weight: 700;
-          font-size: 0.92rem;
           cursor: pointer;
-          transition: background 0.15s;
+          position: relative;
+        }
+
+        .mag-image-wrap {
+          position: relative;
+          aspect-ratio: 3/4;
+          width: 100%;
+          background: #F5F5F4;
+          overflow: hidden;
+          margin-bottom: 1.1rem;
+        }
+
+        .mag-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .mag-card:hover .mag-img {
+          transform: scale(1.04);
+        }
+
+        /* Sleek Minimal Floating Hover Pill */
+        .mag-tryon-pill {
+          position: absolute;
+          bottom: 1rem;
+          left: 50%;
+          transform: translateX(-50%) translateY(10px);
+          opacity: 0;
+          background: rgba(10, 10, 10, 0.9);
+          backdrop-filter: blur(8px);
+          color: #FFFFFF;
+          border: none;
+          padding: 0.55rem 1.1rem;
+          font-size: 0.72rem;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
           display: flex;
           align-items: center;
-          justify-content: center;
-          gap: 8px;
+          gap: 0.45rem;
+          cursor: pointer;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+          transition: all 0.25s ease;
+          white-space: nowrap;
+          z-index: 5;
         }
 
-        .btn-checkout:hover {
-          background: #1e293b;
+        .mag-card:hover .mag-tryon-pill {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
         }
-      `}} />
 
-      {/* ── 1. MODERN TOP ANNOUNCEMENT BAR ── */}
+        .mag-tryon-pill:hover {
+          background: #000000;
+          color: #FFFFFF;
+        }
+
+        .mag-card-meta {
+          display: flex;
+          flex-direction: column;
+          gap: 0.3rem;
+        }
+
+        .mag-card-cat {
+          font-size: 0.68rem;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #78716C;
+          font-weight: 500;
+        }
+
+        .mag-card-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 1.05rem;
+          font-weight: 600;
+          color: #0A0A0A;
+          margin: 0;
+          line-height: 1.35;
+          transition: color 0.2s;
+        }
+
+        .mag-card:hover .mag-card-title {
+          color: #57534E;
+        }
+
+        .mag-card-price-row {
+          display: flex;
+          align-items: baseline;
+          gap: 0.6rem;
+          margin-top: 0.2rem;
+        }
+
+        .mag-price-current {
+          font-size: 0.92rem;
+          font-weight: 600;
+          color: #0A0A0A;
+        }
+
+        .mag-price-original {
+          font-size: 0.85rem;
+          color: #A8A29E;
+          text-decoration: line-through;
+        }
+
+        .mag-card-swatches {
+          display: flex;
+          gap: 0.45rem;
+          margin-top: 0.5rem;
+        }
+
+        .mag-swatch-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          border: 1px solid rgba(0,0,0,0.15);
+        }
+
+        /* ── Minimalist Magazine Footer ── */
+        .mag-footer {
+          border-top: 1px solid #E7E5E4;
+          background: #1C1917;
+          color: #D6D3D1;
+          padding: 6rem 3rem 3.5rem;
+        }
+
+        .mag-footer-inner {
+          max-width: 1400px;
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: 2fr 1fr 1fr 1.5fr;
+          gap: 4rem;
+          margin-bottom: 5rem;
+        }
+
+        @media (max-width: 900px) {
+          .mag-footer-inner {
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .mag-footer-inner {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        .mag-footer-col-title {
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #FFFFFF;
+          margin-bottom: 1.5rem;
+        }
+
+        .mag-footer-links {
+          display: flex;
+          flex-direction: column;
+          gap: 0.85rem;
+          font-size: 0.82rem;
+          color: #A8A29E;
+        }
+
+        .mag-footer-links a {
+          color: inherit;
+          text-decoration: none;
+          transition: color 0.2s;
+        }
+
+        .mag-footer-links a:hover {
+          color: #FFFFFF;
+        }
+
+        .mag-footer-brand {
+          font-family: 'Playfair Display', serif;
+          font-size: 1.8rem;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: #FFFFFF;
+          margin-bottom: 1rem;
+        }
+
+        .mag-footer-desc {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.15rem;
+          font-style: italic;
+          color: #A8A29E;
+          line-height: 1.6;
+          max-width: 380px;
+          margin: 0 0 1.5rem 0;
+        }
+      `,
+        }}
+      />
+
+      {/* ── 1. MINIMALIST WHISPER ANNOUNCEMENT ── */}
       {!isEmbedded && (
-        <div className="modern-announcement">
-          <span>⚡ VOGUESOCIAL LIVE STORE · Free Global Shipping Over $150 · 100% In-Browser AI Virtual Try-On</span>
-          <span style={{ background: 'rgba(255,255,255,0.2)', padding: '1px 8px', borderRadius: 99, fontSize: '0.68rem' }}>
-            Code: VOGUE20 (-20%)
-          </span>
+        <div className="mag-topbar">
+          Complimentary Worldwide Courier On All Orders Over $150
         </div>
       )}
 
-      {/* ── 2. STICKY MODERN GLASS HEADER ── */}
-      <header className="store-header">
-        <div className="header-left">
-          <Link to={`/store/${handle}`} className="header-logo-container">
-            {store.logo_url ? (
-              <img src={store.logo_url} alt={store.store_name} style={{ height: 36, objectFit: 'contain' }} />
-            ) : (
-              <div className="store-logo-fallback">
-                {store.store_name?.charAt(0).toUpperCase() || 'S'}
-              </div>
-            )}
-            <span style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text1)', letterSpacing: '-0.02em', fontFamily: 'var(--font-heading)' }}>
-              {store.store_name}
-            </span>
-          </Link>
-
-          {/* Subdomain & Custom Domain Live Badges */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span className="store-domain-pill" title="VogueSocial Subdomain">
-              <Globe size={11} color="#2563eb" /> {effectiveSubdomain}
-            </span>
-
-            {effectiveCustomDomain && (
-              <span className="store-domain-pill" style={{ color: '#166534', background: '#f0fdf4', borderColor: '#bbf7d0' }} title="Custom Domain SSL Active">
-                <Lock size={10} color="#16a34a" /> {effectiveCustomDomain}
-              </span>
-            )}
-          </div>
+      {/* ── 2. MAGAZINE EDITORIAL HEADER ── */}
+      <header className="mag-header">
+        {/* Left: Refined Minimal Links */}
+        <div className="mag-nav-left">
+          <a href="#collection" className="mag-nav-link">Collection</a>
+          <a href="#about" className="mag-nav-link">Editorial</a>
+          <a href="#about" className="mag-nav-link">About Atelier</a>
         </div>
 
-        <nav className="header-nav">
-          <a href="#shop">Shop All</a>
-          <a href="#shop" onClick={() => setActiveCategory('Outerwear')}>Outerwear</a>
-          <a href="#shop" onClick={() => setActiveCategory('Dresses')}>Dresses</a>
-          <a href="#shop" onClick={() => setActiveCategory('Tailored Suiting')}>Tailored Suiting</a>
-          <button
-            onClick={() => handleOpenTryOn(products[0])}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: '#2563eb', fontWeight: 700, fontSize: '0.88rem' }}
-          >
-            <Sparkles size={14} /> AI Fitting Studio
-          </button>
-        </nav>
+        {/* Center: Brand Editorial Wordmark */}
+        <Link to={`/store/${handle}`} className="mag-brand-title">
+          {store.store_name}
+        </Link>
 
-        <div className="header-actions">
+        {/* Right: Search & Shopping Bag */}
+        <div className="mag-actions-right">
           <button
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="action-icon-btn"
-            title="Search Products"
+            className="mag-icon-btn"
+            title="Search Collection"
           >
-            <Search size={18} />
+            <Search size={19} />
           </button>
 
           <button
             onClick={() => setIsCartOpen(true)}
-            className="action-icon-btn"
-            title="View Shopping Cart"
+            className="mag-icon-btn"
+            title="Shopping Bag"
           >
-            <ShoppingBag size={18} />
-            {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
+            <ShoppingBag size={19} />
+            {cartItemCount > 0 && <span className="mag-cart-badge">{cartItemCount}</span>}
           </button>
         </div>
       </header>
 
       {/* ── SEARCH DRAWER ── */}
       {isSearchOpen && (
-        <div className="search-drawer">
-          <div className="search-input-box">
-            <Search size={16} className="search-icon-pos" />
-            <input
-              type="text"
-              placeholder="Search modern apparel, silk dresses, cashmere, trench coats..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              autoFocus
-            />
-          </div>
+        <div className="mag-search-bar">
+          <input
+            type="text"
+            className="mag-search-input"
+            placeholder="Type to search garments..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            autoFocus
+          />
         </div>
       )}
 
-      {/* ── 3. MODERN FLAGSHIP HERO SECTION ── */}
-      <section className="modern-hero">
+      {/* ── 3. HIGH-FASHION EDITORIAL HERO ── */}
+      <section className="mag-hero">
         <img
           src={store.hero_image || 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=80'}
-          alt="Store collection preview"
-          className="modern-hero-img"
+          alt={store.store_name}
+          className="mag-hero-image"
         />
+        <div className="mag-hero-overlay" />
 
-        <div className="modern-hero-content">
-          <div className="modern-hero-badge">
-            <Sparkles size={12} color="#60a5fa" />
-            <span>2026 Collection · OmniTry AI Virtual Fitting Ready</span>
-          </div>
-
-          <h1 className="modern-hero-title">
-            {store.store_name}
-          </h1>
-
-          <p className="modern-hero-desc">
-            {store.tagline || 'Modern Tailoring & In-Browser AI Virtual Fitting Studio'}
+        <div className="mag-hero-content">
+          <span className="mag-hero-kicker">N° 26 · Autumn / Winter Editorial</span>
+          <h1 className="mag-hero-headline">{store.store_name}</h1>
+          <p className="mag-hero-tagline">
+            {store.tagline || 'Modern Silhouettes & Timeless Proportions'}
           </p>
-
-          <div className="modern-hero-actions">
-            <a href="#shop" className="hero-btn-primary">
-              Explore Collection <ArrowRight size={15} />
-            </a>
-
-            {products.length > 0 && (
-              <button onClick={() => handleOpenTryOn(products[0])} className="hero-btn-secondary">
-                <Sparkles size={15} color="#93c5fd" /> Test AI Virtual Try-On
-              </button>
-            )}
-          </div>
+          <a href="#collection" className="mag-hero-btn">
+            Discover Collection <ArrowRight size={14} />
+          </a>
         </div>
       </section>
 
-      {/* ── 4. MODERN TRUST & USP GUARANTEE BAR ── */}
-      <div className="perks-bar">
-        <div className="perks-grid">
-          <div className="perk-card">
-            <div className="perk-icon-wrap"><Sparkles size={18} /></div>
-            <div>
-              <div className="perk-title">Instant Virtual Fitting</div>
-              <div className="perk-sub">Fit onto your body silhouette in-browser</div>
-            </div>
-          </div>
-
-          <div className="perk-card">
-            <div className="perk-icon-wrap"><Truck size={18} /></div>
-            <div>
-              <div className="perk-title">Express Global Dispatch</div>
-              <div className="perk-sub">Shipped within 24-48 hours from Milan</div>
-            </div>
-          </div>
-
-          <div className="perk-card">
-            <div className="perk-icon-wrap"><ShieldCheck size={18} /></div>
-            <div>
-              <div className="perk-title">Haute Certified Quality</div>
-              <div className="perk-sub">100% sustainable European textiles</div>
-            </div>
-          </div>
-
-          <div className="perk-card">
-            <div className="perk-icon-wrap"><RotateCcw size={18} /></div>
-            <div>
-              <div className="perk-title">30-Day Free Returns</div>
-              <div className="perk-sub">Prepaid return shipping included</div>
-            </div>
-          </div>
-        </div>
+      {/* ── 4. REFINED DISPATCH STRIP ── */}
+      <div className="mag-dispatch-strip">
+        <span>Architectural Silhouettes</span>
+        <span>·</span>
+        <span>European Textile Heritage</span>
+        <span>·</span>
+        <span>Bespoke Virtual Fitting</span>
       </div>
 
-      {/* ── 5. MAIN CATALOG & PRODUCTS ── */}
-      <main id="shop" className="catalog-container">
-        
-        {/* Filter and Sorting Header */}
-        <div className="catalog-top-bar">
-          <div className="category-pill-group">
-            {categories.map(cat => (
+      {/* ── 5. MAIN EDITORIAL CATALOG ── */}
+      <main id="collection" className="mag-catalog">
+        {/* Category & Sorting Controls */}
+        <div className="mag-catalog-header">
+          <div className="mag-category-tabs">
+            {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`category-pill ${activeCategory === cat ? 'category-pill-active' : ''}`}
+                className={`mag-category-tab ${activeCategory === cat ? 'mag-category-tab-active' : ''}`}
               >
                 {cat}
               </button>
             ))}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text3)', fontWeight: 600 }}>Sort by:</span>
+          <div>
             <select
               value={sortBy}
-              onChange={e => setSortBy(e.target.value)}
-              className="sort-select"
+              onChange={(e) => setSortBy(e.target.value)}
+              className="mag-sort-select"
             >
-              <option value="featured">Featured Collection</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
+              <option value="featured">Sort · Featured</option>
+              <option value="price-low">Price · Low to High</option>
+              <option value="price-high">Price · High to Low</option>
             </select>
           </div>
         </div>
 
-        {/* Product Grid */}
+        {/* Product Cards Grid */}
         {filteredProducts.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '5rem 2rem', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14 }}>
-            <ShoppingBag size={40} color="var(--text3)" style={{ margin: '0 auto 1rem auto' }} />
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text1)', marginBottom: 6 }}>No garments found</h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>Try selecting a different category or clearing your search term.</p>
+          <div style={{ textAlign: 'center', padding: '6rem 2rem', color: '#78716C' }}>
+            <ShoppingBag size={36} style={{ margin: '0 auto 1rem', opacity: 0.35 }} />
+            <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.4rem', color: '#0A0A0A', marginBottom: 6 }}>
+              No Pieces in this View
+            </h3>
+            <p style={{ fontSize: '0.88rem' }}>Please select another category or clear your search term.</p>
           </div>
         ) : (
-          <div className="products-grid">
-            {filteredProducts.map(product => {
-              const activeColor = selectedColors[product.id] || product.colors?.[0] || 'Default';
-              const isSale = Boolean(product.sale_price);
+          <div className="mag-grid">
+            {filteredProducts.map((product) => {
+              const img = product.image_url || product.imageUrl || '/placeholder-product.jpg';
+              const price = product.sale_price || product.salePrice || product.price;
+              const origPrice = (product.sale_price || product.salePrice) ? product.price : null;
+              const colors = product.colors && product.colors.length > 0 ? product.colors : ['Obsidian Black', 'Camel'];
 
               return (
                 <div
                   key={product.id}
-                  className="product-card"
+                  className="mag-card"
                   onClick={() => navigate(`/store/${handle}/product/${product.id}`)}
                 >
-                  <div className="product-image-box">
-                    <img
-                      src={product.image_url || product.imageUrl}
-                      alt={product.name}
-                      className="product-img"
-                    />
+                  <div className="mag-image-wrap">
+                    <img src={img} alt={product.name} className="mag-img" />
 
-                    {product.badge && (
-                      <div className="badge-pill-top">{product.badge}</div>
-                    )}
-
-                    {/* Hover Quick Actions */}
-                    <div className="quick-actions-overlay" onClick={e => e.stopPropagation()}>
-                      <button
-                        className="btn-quick-tryon"
-                        onClick={(e) => handleOpenTryOn(product, e)}
-                      >
-                        <Sparkles size={14} color="#2563eb" />
-                        <span>Try On Virtually</span>
-                      </button>
-
-                      <button
-                        className="btn-quick-view"
-                        onClick={() => navigate(`/store/${handle}/product/${product.id}`)}
-                      >
-                        Quick Details
-                      </button>
-                    </div>
+                    <button
+                      className="mag-tryon-pill"
+                      onClick={(e) => handleOpenTryOn(product, e)}
+                    >
+                      <Sparkles size={12} />
+                      <span>Virtual Try-On</span>
+                    </button>
                   </div>
 
-                  <div className="product-details">
-                    <div className="product-category">{product.category}</div>
-                    <h3 className="product-title">{product.name}</h3>
+                  <div className="mag-card-meta">
+                    <span className="mag-card-cat">{product.category || 'Collection'}</span>
+                    <h3 className="mag-card-title">{product.name}</h3>
 
-                    <div className="product-price-box">
-                      <span className="price-curr">
-                        ${product.sale_price || product.salePrice || product.price}
-                      </span>
-                      {isSale && (
-                        <span className="price-strike">${product.price}</span>
-                      )}
+                    <div className="mag-card-price-row">
+                      <span className="mag-price-current">${price}</span>
+                      {origPrice && <span className="mag-price-original">${origPrice}</span>}
                     </div>
 
-                    {/* Color swatches */}
-                    {product.colors && product.colors.length > 0 && (
-                      <div className="swatch-dots" onClick={e => e.stopPropagation()}>
-                        {product.colors.map(c => (
-                          <div
-                            key={c}
-                            className="swatch-dot"
-                            title={c}
-                            style={{
-                              background: c.toLowerCase().includes('black') ? '#1e293b' :
-                                c.toLowerCase().includes('camel') ? '#c29a6b' :
-                                c.toLowerCase().includes('white') || c.toLowerCase().includes('cream') ? '#f8fafc' :
-                                c.toLowerCase().includes('navy') ? '#1e3a8a' :
-                                c.toLowerCase().includes('grey') || c.toLowerCase().includes('slate') ? '#94a3b8' :
-                                c.toLowerCase().includes('emerald') || c.toLowerCase().includes('olive') ? '#15803d' : '#cbd5e1',
-                              boxShadow: activeColor === c ? '0 0 0 2px #0f172a' : 'none'
-                            }}
-                            onClick={() => setSelectedColors(prev => ({ ...prev, [product.id]: c }))}
-                          />
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Direct Add to Cart button */}
-                    <button
-                      className="btn-add-cart-card"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAddToCart(product, activeColor);
-                      }}
-                    >
-                      <ShoppingBag size={13} />
-                      <span>Add to Cart</span>
-                    </button>
+                    <div className="mag-card-swatches">
+                      {colors.slice(0, 4).map((c) => (
+                        <div
+                          key={c}
+                          className="mag-swatch-dot"
+                          style={{ backgroundColor: getColorHex(c) }}
+                          title={c}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               );
@@ -1258,219 +1003,50 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
         )}
       </main>
 
-      {/* ── 6. SLIDE-OVER CART DRAWER ── */}
-      {isCartOpen && (
-        <div className="cart-overlay" onClick={() => setIsCartOpen(false)}>
-          <div className="cart-drawer" onClick={e => e.stopPropagation()}>
-            <div className="cart-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ShoppingBag size={18} />
-                <span style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }}>
-                  Shopping Bag ({cartItemCount})
-                </span>
-              </div>
-              <button
-                onClick={() => setIsCartOpen(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* Cart Items List */}
-            <div className="cart-items-body">
-              {cart.items.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#64748b' }}>
-                  <ShoppingBag size={36} style={{ margin: '0 auto 0.75rem auto', opacity: 0.4 }} />
-                  <div style={{ fontWeight: 600, fontSize: '0.92rem', color: '#0f172a', marginBottom: 4 }}>Your bag is empty</div>
-                  <div style={{ fontSize: '0.78rem' }}>Explore our catalog and try on garments with AI!</div>
-                </div>
-              ) : (
-                cart.items.map((item, idx) => (
-                  <div key={`${item.productId}-${idx}`} className="cart-item-row">
-                    <img src={item.image} alt={item.name} className="cart-item-img" />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {item.name}
-                      </div>
-                      <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: 2 }}>
-                        Color: {item.color} · Size: {item.size}
-                      </div>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a', marginTop: 4 }}>
-                        ${item.price}
-                      </div>
-
-                      {/* Quantity Controls */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #e2e8f0', borderRadius: 6, background: '#f8fafc' }}>
-                          <button
-                            onClick={() => handleUpdateQuantity(idx, -1)}
-                            style={{ padding: '2px 8px', background: 'none', border: 'none', cursor: 'pointer', color: '#475569' }}
-                          >
-                            <Minus size={11} />
-                          </button>
-                          <span style={{ fontSize: '0.78rem', fontWeight: 600, padding: '0 4px', minWidth: 16, textAlign: 'center' }}>
-                            {item.quantity || 1}
-                          </span>
-                          <button
-                            onClick={() => handleUpdateQuantity(idx, 1)}
-                            style={{ padding: '2px 8px', background: 'none', border: 'none', cursor: 'pointer', color: '#475569' }}
-                          >
-                            <Plus size={11} />
-                          </button>
-                        </div>
-
-                        <button
-                          onClick={() => handleRemoveCartItem(idx)}
-                          style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 2 }}
-                          title="Remove item"
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Cart Footer */}
-            {cart.items.length > 0 && (
-              <div className="cart-footer">
-                {/* Promo Voucher Box */}
-                <div style={{ display: 'flex', gap: 6, marginBottom: '1rem' }}>
-                  <input
-                    type="text"
-                    placeholder="Promo code (try VOGUE20)"
-                    value={promoCode}
-                    onChange={e => setPromoCode(e.target.value.toUpperCase())}
-                    style={{ flex: 1, padding: '0.45rem 0.75rem', border: '1px solid #cbd5e1', borderRadius: 6, fontSize: '0.78rem', outline: 'none' }}
-                  />
-                  <button
-                    onClick={() => {
-                      if (promoCode === 'VOGUE20') setDiscountApplied(true);
-                      else alert('Invalid coupon code. Try VOGUE20 for 20% off!');
-                    }}
-                    style={{ padding: '0.45rem 0.85rem', background: '#0f172a', color: '#fff', border: 'none', borderRadius: 6, fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
-                  >
-                    Apply
-                  </button>
-                </div>
-
-                {/* Pricing summary */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: '1rem', fontSize: '0.82rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b' }}>
-                    <span>Subtotal</span>
-                    <span>${cartSubtotal.toLocaleString()}</span>
-                  </div>
-
-                  {discountApplied && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#16a34a', fontWeight: 600 }}>
-                      <span>Vogue Promo (-20%)</span>
-                      <span>-${(cartSubtotal * 0.20).toFixed(2)}</span>
-                    </div>
-                  )}
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b' }}>
-                    <span>Global Express Shipping</span>
-                    <span>{cartSubtotal > 150 ? 'FREE' : '$15.00'}</span>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', paddingTop: 6, borderTop: '1px solid #e2e8f0' }}>
-                    <span>Total</span>
-                    <span>${finalTotal.toLocaleString()}</span>
-                  </div>
-                </div>
-
-                {checkoutSuccess ? (
-                  <div style={{ padding: '0.75rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, color: '#166534', textAlign: 'center', fontSize: '0.82rem', fontWeight: 700 }}>
-                    ✓ Order Placed! Confirmation sent to your email.
-                  </div>
-                ) : (
-                  <button
-                    className="btn-checkout"
-                    onClick={() => {
-                      setCheckoutSuccess(true);
-                      setTimeout(() => {
-                        setCart({ items: [] });
-                        setCheckoutSuccess(false);
-                        setIsCartOpen(false);
-                      }, 2500);
-                    }}
-                  >
-                    <Lock size={14} />
-                    <span>Proceed to Secure Checkout</span>
-                  </button>
-                )}
-
-                <div style={{ textAlign: 'center', marginTop: 8, fontSize: '0.68rem', color: '#94a3b8' }}>
-                  🔒 256-Bit Encrypted Edge Checkout · Powered by VogueSocial
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ── 7. INTEGRATED VIRTUAL TRY-ON MODAL ── */}
-      {isTryOnOpen && selectedTryOnProduct && (
-        <TryOnModal
-          isOpen={isTryOnOpen}
-          onClose={() => setIsTryOnOpen(false)}
-          product={selectedTryOnProduct}
-        />
-      )}
-
-      {/* ── 8. MODERN EDITORIAL FOOTER ── */}
-      <footer style={{ background: '#0f172a', color: '#f8fafc', padding: '4rem 2rem 2.5rem' }}>
-        <div style={{ maxWidth: 1240, margin: '0 auto', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1.5fr', gap: '3rem', marginBottom: '3.5rem' }}>
-          
+      {/* ── 6. MINIMALIST LUXURY FOOTER ── */}
+      <footer id="about" className="mag-footer">
+        <div className="mag-footer-inner">
+          {/* Brand Philosophy */}
           <div>
-            <div style={{ fontSize: '1.35rem', fontWeight: 800, fontFamily: 'var(--font-heading)', marginBottom: '0.85rem' }}>
-              {store.store_name}
-            </div>
-            <p style={{ fontSize: '0.82rem', color: '#94a3b8', lineHeight: 1.6, maxWidth: 360, margin: '0 0 1.25rem 0' }}>
-              {store.description || 'Modern tailoring, clean silhouettes, and zero-latency in-browser AI fitting rooms.'}
+            <div className="mag-footer-brand">{store.store_name}</div>
+            <p className="mag-footer-desc">
+              {store.description ||
+                'Founded on modern tailoring, clean architectural silhouettes, and zero-latency in-browser AI fitting.'}
             </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.72rem', color: '#cbd5e1' }}>
-              <Lock size={12} color="#4ade80" />
-              <span>TLS 1.3 Active · Verified by VogueSocial Anycast DNS</span>
+            <div style={{ fontSize: '0.75rem', color: '#78716C', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Lock size={12} color="#10B981" />
+              <span>TLS 1.3 Certified Anycast Network</span>
             </div>
           </div>
 
+          {/* Navigation */}
           <div>
-            <div style={{ fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '1rem', color: '#ffffff' }}>
-              Collections
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.8rem', color: '#94a3b8' }}>
-              <a href="#shop" style={{ color: 'inherit', textDecoration: 'none' }}>Outerwear & Trench</a>
-              <a href="#shop" style={{ color: 'inherit', textDecoration: 'none' }}>Silk Eveningwear</a>
-              <a href="#shop" style={{ color: 'inherit', textDecoration: 'none' }}>Mongolian Cashmere</a>
-              <a href="#shop" style={{ color: 'inherit', textDecoration: 'none' }}>Tailored Suiting</a>
+            <div className="mag-footer-col-title">Atelier</div>
+            <div className="mag-footer-links">
+              <a href="#collection">Collection Lookbook</a>
+              <a href="#collection">Seasonal Archive</a>
+              <a href="#about">Bespoke Fitting</a>
             </div>
           </div>
 
+          {/* Client Care */}
           <div>
-            <div style={{ fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '1rem', color: '#ffffff' }}>
-              Customer Care
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.8rem', color: '#94a3b8' }}>
+            <div className="mag-footer-col-title">Client Care</div>
+            <div className="mag-footer-links">
               <span>{store.email || 'concierge@studiolabelparis.com'}</span>
-              <span>{store.phone || '+33 1 42 68 55 00'}</span>
-              <span>Complimentary 30-Day Returns</span>
-              <span>Global Sizing Guide</span>
+              <span>Complimentary Courier</span>
+              <span>30-Day Global Returns</span>
             </div>
           </div>
 
+          {/* Newsletter */}
           <div>
-            <div style={{ fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '1rem', color: '#ffffff' }}>
-              Private Client Dispatch
-            </div>
-            <p style={{ fontSize: '0.78rem', color: '#94a3b8', lineHeight: 1.5, margin: '0 0 0.85rem 0' }}>
-              Join our private list for seasonal lookbooks, priority virtual try-on releases, and private sales.
+            <div className="mag-footer-col-title">Private Dispatch</div>
+            <p style={{ fontSize: '0.8rem', color: '#A8A29E', lineHeight: 1.5, margin: '0 0 1rem 0' }}>
+              Subscribe to private invitations, lookbooks, and priority AI fittings.
             </p>
             {subscribed ? (
-              <div style={{ padding: '0.5rem', background: 'rgba(34,197,94,0.15)', color: '#4ade80', borderRadius: 6, fontSize: '0.78rem' }}>
+              <div style={{ padding: '0.65rem', background: 'rgba(16,185,129,0.12)', color: '#34D399', fontSize: '0.78rem' }}>
                 ✓ Subscribed to Private Client List
               </div>
             ) : (
@@ -1479,12 +1055,30 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
                   type="email"
                   placeholder="Enter email..."
                   value={emailInput}
-                  onChange={e => setEmailInput(e.target.value)}
-                  style={{ flex: 1, padding: '0.5rem 0.75rem', background: '#1e293b', border: '1px solid #334155', borderRadius: 6, color: '#fff', fontSize: '0.78rem', outline: 'none' }}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: '0.55rem 0.85rem',
+                    background: '#292524',
+                    border: '1px solid #44403C',
+                    color: '#FFFFFF',
+                    fontSize: '0.78rem',
+                    outline: 'none',
+                  }}
                 />
                 <button
                   onClick={() => { if (emailInput) setSubscribed(true); }}
-                  style={{ padding: '0.5rem 0.85rem', background: '#ffffff', color: '#0f172a', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer' }}
+                  style={{
+                    padding: '0.55rem 1.1rem',
+                    background: '#FFFFFF',
+                    color: '#0A0A0A',
+                    border: 'none',
+                    fontWeight: 700,
+                    fontSize: '0.75rem',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                  }}
                 >
                   Join
                 </button>
@@ -1493,17 +1087,233 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
           </div>
         </div>
 
-        <div style={{ maxWidth: 1240, margin: '0 auto', paddingTop: '1.5rem', borderTop: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: '#64748b', flexWrap: 'wrap', gap: '0.75rem' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto', paddingTop: '2rem', borderTop: '1px solid #292524', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: '#78716C', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             &copy; {new Date().getFullYear()} {store.store_name}. Powered by <strong>VogueSocial Storefronts</strong>.
           </div>
-          <div style={{ display: 'flex', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', gap: '2rem' }}>
             <span>Privacy Policy</span>
             <span>Terms of Service</span>
-            <span>DNS Mapping Status: {store.domain_status === 'ssl_active' ? 'Secured (TLS 1.3)' : 'Anycast Active'}</span>
+            <span>Worldwide Delivery</span>
           </div>
         </div>
       </footer>
+
+      {/* ── 7. SLIDE-OVER LUXURY CART DRAWER ── */}
+      {isCartOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 60,
+            display: 'flex',
+            justifyContent: 'flex-end',
+            backgroundColor: 'rgba(10, 10, 10, 0.65)',
+            backdropFilter: 'blur(4px)',
+          }}
+          onClick={() => setIsCartOpen(false)}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: 440,
+              height: '100%',
+              backgroundColor: '#FFFFFF',
+              borderLeft: '1px solid #E7E5E4',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '-10px 0 40px rgba(0, 0, 0, 0.2)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '1.5rem',
+                borderBottom: '1px solid #E7E5E4',
+              }}
+            >
+              <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.25rem', fontWeight: 600, letterSpacing: '0.04em' }}>
+                Shopping Bag ({cartItemCount})
+              </div>
+              <button
+                onClick={() => setIsCartOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716C' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Items */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
+              {cart.items.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '5rem 1rem', color: '#78716C' }}>
+                  <ShoppingBag size={40} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
+                  <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.1rem', color: '#0A0A0A', marginBottom: 6 }}>
+                    Your bag is empty
+                  </div>
+                  <div style={{ fontSize: '0.82rem' }}>
+                    Discover the editorial collection and try on silhouettes with AI.
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  {cart.items.map((item, idx) => (
+                    <div
+                      key={`${item.productId}-${idx}`}
+                      style={{ display: 'flex', gap: '1rem', paddingBottom: '1.5rem', borderBottom: '1px solid #F5F5F4' }}
+                    >
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        style={{ width: 75, height: 100, objectFit: 'cover', background: '#F5F5F4' }}
+                      />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '0.98rem', fontWeight: 600, color: '#0A0A0A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {item.name}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#78716C', marginTop: 3 }}>
+                          Color: {item.color} · Size: {item.size}
+                        </div>
+                        <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#0A0A0A', marginTop: 6 }}>
+                          ${item.price}
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #E7E5E4' }}>
+                            <button
+                              onClick={() => handleUpdateQuantity(idx, -1)}
+                              style={{ padding: '3px 8px', background: 'none', border: 'none', cursor: 'pointer', color: '#44403C' }}
+                            >
+                              <Minus size={11} />
+                            </button>
+                            <span style={{ fontSize: '0.8rem', fontWeight: 700, padding: '0 6px', minWidth: 20, textAlign: 'center' }}>
+                              {item.quantity || 1}
+                            </span>
+                            <button
+                              onClick={() => handleUpdateQuantity(idx, 1)}
+                              style={{ padding: '3px 8px', background: 'none', border: 'none', cursor: 'pointer', color: '#44403C' }}
+                            >
+                              <Plus size={11} />
+                            </button>
+                          </div>
+
+                          <button
+                            onClick={() => handleRemoveCartItem(idx)}
+                            style={{ background: 'none', border: 'none', color: '#A8A29E', cursor: 'pointer', padding: 2 }}
+                            title="Remove"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            {cart.items.length > 0 && (
+              <div style={{ padding: '1.5rem', borderTop: '1px solid #E7E5E4', background: '#FAFAF9' }}>
+                <div style={{ display: 'flex', gap: 6, marginBottom: '1.25rem' }}>
+                  <input
+                    type="text"
+                    placeholder="Voucher code (try VOGUE20)"
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                    style={{ flex: 1, padding: '0.55rem 0.85rem', border: '1px solid #D6D3D1', fontSize: '0.8rem', outline: 'none', background: '#FFFFFF' }}
+                  />
+                  <button
+                    onClick={() => {
+                      if (promoCode === 'VOGUE20') setDiscountApplied(true);
+                    }}
+                    style={{ padding: '0.55rem 1rem', background: '#0A0A0A', color: '#FFFFFF', border: 'none', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', cursor: 'pointer' }}
+                  >
+                    Apply
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: '1.25rem', fontSize: '0.85rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#78716C' }}>
+                    <span>Subtotal</span>
+                    <span>${cartSubtotal.toLocaleString()}</span>
+                  </div>
+
+                  {discountApplied && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#16A34A', fontWeight: 600 }}>
+                      <span>VIP Promo (-20%)</span>
+                      <span>-${(cartSubtotal * 0.2).toFixed(2)}</span>
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#78716C' }}>
+                    <span>Express Worldwide Delivery</span>
+                    <span>{cartSubtotal >= 150 ? 'FREE' : '$15.00'}</span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 800, color: '#0A0A0A', paddingTop: 8, borderTop: '1px solid #E7E5E4' }}>
+                    <span>Total</span>
+                    <span>${(finalTotal + (cartSubtotal >= 150 ? 0 : 15)).toLocaleString()}</span>
+                  </div>
+                </div>
+
+                {checkoutSuccess ? (
+                  <div style={{ padding: '0.85rem', background: '#F0FDF4', border: '1px solid #BBF7D0', color: '#166534', textAlign: 'center', fontSize: '0.82rem', fontWeight: 700 }}>
+                    ✓ Order Dispatched! Confirmation sent to your inbox.
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setCheckoutSuccess(true);
+                      setTimeout(() => {
+                        setCart({ items: [] });
+                        setCheckoutSuccess(false);
+                        setIsCartOpen(false);
+                      }, 2500);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '1.1rem',
+                      background: '#0A0A0A',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.14em',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                    }}
+                  >
+                    <Lock size={14} />
+                    <span>Proceed to Checkout</span>
+                  </button>
+                )}
+
+                <div style={{ textAlign: 'center', marginTop: 10, fontSize: '0.7rem', color: '#A8A29E' }}>
+                  🔒 256-Bit Encrypted Edge Checkout · Powered by VogueSocial
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── 8. INTEGRATED VIRTUAL TRY-ON MODAL ── */}
+      {isTryOnOpen && selectedTryOnProduct && (
+        <TryOnModal
+          isOpen={isTryOnOpen}
+          onClose={() => setIsTryOnOpen(false)}
+          product={selectedTryOnProduct}
+        />
+      )}
     </div>
   );
 }
