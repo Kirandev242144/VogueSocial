@@ -87,37 +87,37 @@ export default function MerchantSalesChart() {
             <CartesianGrid
               strokeDasharray="3 3"
               vertical={false}
-              stroke={isDark ? 'rgba(203,243,130,0.06)' : '#e8ece6'}
+              stroke={isDark ? 'rgba(255,255,255,0.06)' : '#f1f5f9'}
             />
             <XAxis
               dataKey="month"
-              tick={{ fontSize: 11, fill: isDark ? 'rgba(240,250,242,0.5)' : '#5e7d6f' }}
+              tick={{ fontSize: 11, fill: isDark ? '#94a3b8' : '#64748b' }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
               tickFormatter={(v) => (metricView === 'revenue' ? `$${v / 1000}k` : `${v / 1000}k`)}
-              tick={{ fontSize: 11, fill: isDark ? 'rgba(240,250,242,0.5)' : '#5e7d6f' }}
+              tick={{ fontSize: 11, fill: isDark ? '#94a3b8' : '#64748b' }}
               axisLine={false}
               tickLine={false}
             />
             <Tooltip
               content={<CustomRevenueTooltip />}
-              cursor={{ fill: isDark ? 'rgba(203,243,130,0.04)' : '#f1f5ef' }}
+              cursor={{ fill: isDark ? 'rgba(255,255,255,0.03)' : '#f8fafc' }}
             />
             {metricView === 'revenue' ? (
               <>
                 <Bar
                   dataKey="standardRevenue"
                   stackId="a"
-                  fill={isDark ? 'rgba(203,243,130,0.2)' : '#02231c'}
+                  fill={isDark ? '#334155' : '#cbd5e1'}
                   radius={[0, 0, 0, 0]}
                   barSize={26}
                 />
                 <Bar
                   dataKey="tryonRevenue"
                   stackId="a"
-                  fill={isDark ? '#cbf382' : '#10b981'}
+                  fill={isDark ? '#94a3b8' : '#1e293b'}
                   radius={[6, 6, 0, 0]}
                   barSize={26}
                 />
@@ -125,7 +125,7 @@ export default function MerchantSalesChart() {
             ) : (
               <Bar
                 dataKey="sessions"
-                fill={isDark ? '#cbf382' : '#02231c'}
+                fill={isDark ? '#94a3b8' : '#1e293b'}
                 radius={[6, 6, 0, 0]}
                 barSize={28}
               />

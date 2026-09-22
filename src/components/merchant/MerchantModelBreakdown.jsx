@@ -7,9 +7,9 @@ import { Layers } from 'lucide-react';
 import { useMerchantTheme } from '@/app/merchant/ThemeContext';
 
 const MODEL_DEMOGRAPHICS = [
-  { name: 'Women Presets', value: 48, count: '23,180', color: '#02231c', darkColor: '#cbf382' },
-  { name: 'Men Presets', value: 28, count: '13,520', color: '#5e7d6f', darkColor: '#5e7d6f' },
-  { name: 'Custom Uploads', value: 24, count: '11,590', color: '#cbf382', darkColor: '#10b981' },
+  { name: 'Women Presets', value: 48, count: '23,180', color: '#1e293b', darkColor: '#e2e8f0' },
+  { name: 'Men Presets', value: 28, count: '13,520', color: '#64748b', darkColor: '#94a3b8' },
+  { name: 'Custom Uploads', value: 24, count: '11,590', color: '#94a3b8', darkColor: '#475569' },
 ];
 
 export default function MerchantModelBreakdown() {

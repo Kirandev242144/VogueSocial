@@ -14,7 +14,7 @@ export default function MerchantKPIs() {
       <div className={styles.kpiCard}>
         <div className={styles.kpiCardHeader}>
           <div className={styles.kpiIconWrap}>
-            <Shirt size={20} color={isDark ? '#cbf382' : '#02231c'} />
+            <Shirt size={20} color={isDark ? '#cbd5e1' : '#475569'} />
           </div>
           <span className={styles.kpiHighlightPill}>8.4x Engagement</span>
         </div>
@@ -34,7 +34,7 @@ export default function MerchantKPIs() {
       <div className={styles.kpiCard}>
         <div className={styles.kpiCardHeader}>
           <div className={styles.kpiIconWrap}>
-            <TrendingUp size={20} color={isDark ? '#34d399' : '#10b981'} />
+            <TrendingUp size={20} color={isDark ? '#cbd5e1' : '#475569'} />
           </div>
           <span className={styles.kpiHighlightPill}>✦ High Lift</span>
         </div>
@@ -54,7 +54,7 @@ export default function MerchantKPIs() {
       <div className={styles.kpiCard}>
         <div className={styles.kpiCardHeader}>
           <div className={styles.kpiIconWrap}>
-            <ShoppingBag size={20} color={isDark ? '#a5b4fc' : '#4f46e5'} />
+            <ShoppingBag size={20} color={isDark ? '#cbd5e1' : '#475569'} />
           </div>
           <span className={styles.kpiHighlightPill}>75% Try-On Driven</span>
         </div>
@@ -74,7 +74,7 @@ export default function MerchantKPIs() {
       <div className={styles.kpiCard}>
         <div className={styles.kpiCardHeader}>
           <div className={styles.kpiIconWrap}>
-            <CheckCircle2 size={20} color={isDark ? '#34d399' : '#059669'} />
+            <CheckCircle2 size={20} color={isDark ? '#cbd5e1' : '#475569'} />
           </div>
           <span className={styles.kpiHighlightPill}>Returns Cut</span>
         </div>

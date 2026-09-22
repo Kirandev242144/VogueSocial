@@ -50,7 +50,7 @@ export default function MerchantSidebar() {
         <div className={styles.logoMark}>
           <div className={styles.logoLeft}>
             <div className={styles.logoIcon}>
-              <Store size={18} color="#02231c" />
+              <Store size={18} color="#ffffff" />
             </div>
             <span className={styles.logoText}>VogueSocial</span>
           </div>
