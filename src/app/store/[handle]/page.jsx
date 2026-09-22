@@ -111,8 +111,10 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
 
       if (!loadedStore) {
         const local = getStoreByHandle(handle);
-        loadedStore = local.store;
-        loadedProducts = local.products || STORE_PRODUCTS;
+        if (local && local.store) {
+          loadedStore = local.store;
+          loadedProducts = local.products || [];
+        }
       }
 
       setStore(loadedStore);
@@ -914,92 +916,135 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
 
       {/* ── 5. MAIN EDITORIAL CATALOG ── */}
       <main id="collection" className="mag-catalog">
-        {/* Category & Sorting Controls */}
-        <div className="mag-catalog-header">
-          <div className="mag-category-tabs">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`mag-category-tab ${activeCategory === cat ? 'mag-category-tab-active' : ''}`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          <div>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="mag-sort-select"
-            >
-              <option value="featured">Sort · Featured</option>
-              <option value="price-low">Price · Low to High</option>
-              <option value="price-high">Price · High to Low</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Product Cards Grid */}
-        {filteredProducts.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '6rem 2rem', color: '#78716C' }}>
-            <ShoppingBag size={36} style={{ margin: '0 auto 1rem', opacity: 0.35 }} />
-            <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.4rem', color: '#0A0A0A', marginBottom: 6 }}>
-              No Pieces in this View
+        {products.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '6rem 2rem', maxWidth: 600, margin: '0 auto' }}>
+            <div style={{
+              width: 60,
+              height: 60,
+              borderRadius: '50%',
+              background: '#F5F5F4',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1.5rem',
+              color: '#1C1917'
+            }}>
+              <ShoppingBag size={24} />
+            </div>
+            <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.75rem', color: '#0A0A0A', marginBottom: '0.75rem', letterSpacing: '0.04em' }}>
+              Collection In Preparation
             </h3>
-            <p style={{ fontSize: '0.88rem' }}>Please select another category or clear your search term.</p>
+            <p style={{ fontSize: '0.88rem', color: '#78716C', margin: '0 auto 1.75rem', lineHeight: 1.6 }}>
+              {store?.store_name || 'This atelier'} has not published any garments to their storefront yet. Check back soon for the upcoming capsule drop.
+            </p>
+            <Link to="/shop" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '12px 28px',
+              background: '#0A0A0A',
+              color: '#FFFFFF',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              textDecoration: 'none',
+              borderRadius: 0,
+              transition: 'background 0.2s'
+            }}>
+              Explore VogueSocial Shop
+            </Link>
           </div>
         ) : (
-          <div className="mag-grid">
-            {filteredProducts.map((product) => {
-              const img = product.image_url || product.imageUrl || '/placeholder-product.jpg';
-              const price = product.sale_price || product.salePrice || product.price;
-              const origPrice = (product.sale_price || product.salePrice) ? product.price : null;
-              const colors = product.colors && product.colors.length > 0 ? product.colors : ['Obsidian Black', 'Camel'];
+          <>
+            {/* Category & Sorting Controls */}
+            <div className="mag-catalog-header">
+              <div className="mag-category-tabs">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`mag-category-tab ${activeCategory === cat ? 'mag-category-tab-active' : ''}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
 
-              return (
-                <div
-                  key={product.id}
-                  className="mag-card"
-                  onClick={() => navigate(`/store/${handle}/product/${product.id}`)}
+              <div>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="mag-sort-select"
                 >
-                  <div className="mag-image-wrap">
-                    <img src={img} alt={product.name} className="mag-img" />
+                  <option value="featured">Sort · Featured</option>
+                  <option value="price-low">Price · Low to High</option>
+                  <option value="price-high">Price · High to Low</option>
+                </select>
+              </div>
+            </div>
 
-                    <button
-                      className="mag-tryon-pill"
-                      onClick={(e) => handleOpenTryOn(product, e)}
+            {/* Product Cards Grid */}
+            {filteredProducts.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '5rem 2rem', color: '#78716C' }}>
+                <ShoppingBag size={32} style={{ margin: '0 auto 1rem', opacity: 0.35 }} />
+                <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.3rem', color: '#0A0A0A', marginBottom: 6 }}>
+                  No Pieces in this Filter
+                </h3>
+                <p style={{ fontSize: '0.88rem' }}>Please select another category or clear your search term.</p>
+              </div>
+            ) : (
+              <div className="mag-grid">
+                {filteredProducts.map((product) => {
+                  const img = product.image_url || product.imageUrl || '/placeholder-product.jpg';
+                  const price = product.sale_price || product.salePrice || product.price;
+                  const origPrice = (product.sale_price || product.salePrice) ? product.price : null;
+                  const colors = product.colors && product.colors.length > 0 ? product.colors : ['Obsidian Black', 'Camel'];
+
+                  return (
+                    <div
+                      key={product.id}
+                      className="mag-card"
+                      onClick={() => navigate(`/store/${handle}/product/${product.id}`)}
                     >
-                      <Sparkles size={12} />
-                      <span>Virtual Try-On</span>
-                    </button>
-                  </div>
+                      <div className="mag-image-wrap">
+                        <img src={img} alt={product.name} className="mag-img" />
 
-                  <div className="mag-card-meta">
-                    <span className="mag-card-cat">{product.category || 'Collection'}</span>
-                    <h3 className="mag-card-title">{product.name}</h3>
+                        <button
+                          className="mag-tryon-pill"
+                          onClick={(e) => handleOpenTryOn(product, e)}
+                        >
+                          <Sparkles size={12} />
+                          <span>Virtual Try-On</span>
+                        </button>
+                      </div>
 
-                    <div className="mag-card-price-row">
-                      <span className="mag-price-current">${price}</span>
-                      {origPrice && <span className="mag-price-original">${origPrice}</span>}
+                      <div className="mag-card-meta">
+                        <span className="mag-card-cat">{product.category || 'Collection'}</span>
+                        <h3 className="mag-card-title">{product.name}</h3>
+
+                        <div className="mag-card-price-row">
+                          <span className="mag-price-current">${price}</span>
+                          {origPrice && <span className="mag-price-original">${origPrice}</span>}
+                        </div>
+
+                        <div className="mag-card-swatches">
+                          {colors.slice(0, 4).map((c) => (
+                            <div
+                              key={c}
+                              className="mag-swatch-dot"
+                              style={{ backgroundColor: getColorHex(c) }}
+                              title={c}
+                            />
+                          ))}
+                        </div>
+                      </div>
                     </div>
-
-                    <div className="mag-card-swatches">
-                      {colors.slice(0, 4).map((c) => (
-                        <div
-                          key={c}
-                          className="mag-swatch-dot"
-                          style={{ backgroundColor: getColorHex(c) }}
-                          title={c}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
       </main>
 

@@ -210,8 +210,10 @@ export default function ProductPage({ handle: propHandle } = {}) {
 
         if (!storeData) {
           const local = getStoreByHandle(handle);
-          storeData = local.store;
-          productList = local.products || STORE_PRODUCTS;
+          if (local && local.store) {
+            storeData = local.store;
+            productList = local.products || [];
+          }
         }
 
         if (storeData) {
@@ -219,7 +221,7 @@ export default function ProductPage({ handle: propHandle } = {}) {
           
           const found = productList.find(
             (x) => String(x.id).toLowerCase() === String(id).toLowerCase() || x.id == id
-          ) || productList[0];
+          );
 
           if (found) {
             setProduct(found);

@@ -48,17 +48,20 @@ public class StoreController {
             profileOpt = profileRepository.findById(settingsOpt.get().getVendorId());
         }
 
-        // 5. Demo / Default Fallback: if studiolabel or profile not found, fallback to primary merchant
-        if (profileOpt.isEmpty()) {
+        // 5. If handle is studiolabel, fallback to primary merchant
+        if (profileOpt.isEmpty() && "studiolabel".equalsIgnoreCase(cleanHandle)) {
             profileOpt = profileRepository.findById(DEFAULT_VENDOR_ID);
-            if (profileOpt.isEmpty()) {
-                List<Profile> all = profileRepository.findAll();
-                if (!all.isEmpty()) profileOpt = Optional.of(all.get(0));
-            }
         }
 
         Profile profile = profileOpt.orElse(null);
-        String vendorId = (profile != null) ? profile.getId() : DEFAULT_VENDOR_ID;
+        String vendorId = (profile != null) ? profile.getId() : (settingsOpt.isPresent() ? settingsOpt.get().getVendorId() : null);
+
+        if (profile == null && settingsOpt.isEmpty()) {
+            Map<String, Object> err = new HashMap<>();
+            err.put("success", false);
+            err.put("error", "Storefront not found");
+            return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND).body(err);
+        }
 
         // Resolve or generate website settings
         WebsiteSettings settings;
@@ -68,7 +71,7 @@ public class StoreController {
             settings = websiteSettingsRepository.findById(vendorId)
                     .orElseGet(() -> {
                         WebsiteSettings defaults = new WebsiteSettings();
-                        defaults.setVendorId(vendorId);
+                        defaults.setVendorId(vendorId != null ? vendorId : DEFAULT_VENDOR_ID);
                         defaults.setStoreHandle(cleanHandle);
                         defaults.setStoreName(profile != null && profile.getStoreName() != null ? profile.getStoreName() : "Studio Label Paris");
                         defaults.setTagline("Modern Tailoring & AI Virtual Fitting Studio");
@@ -83,21 +86,10 @@ public class StoreController {
                     });
         }
 
-        // Fetch products for vendor
+        // Fetch products strictly for this specific vendor - NO global catalog fallback
         List<Product> rawProducts = new ArrayList<>();
-        if (profile != null) {
-            rawProducts = productRepository.findByVendorIdAndStatus(profile.getId(), "live");
-            if (rawProducts.isEmpty()) {
-                rawProducts = productRepository.findByVendorId(profile.getId());
-            }
-        }
-
-        // If specific vendor has no products, fallback to live catalog products
-        if (rawProducts.isEmpty()) {
-            rawProducts = productRepository.findByStatus("live");
-        }
-        if (rawProducts.isEmpty()) {
-            rawProducts = productRepository.findAll();
+        if (vendorId != null) {
+            rawProducts = productRepository.findByVendorIdAndStatus(vendorId, "live");
         }
 
         // Transform products into rich catalog items

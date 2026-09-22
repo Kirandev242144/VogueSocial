@@ -101,6 +101,13 @@ export default function ProductsPage() {
     }, [user?.id]);
 
     const getEffectiveVendorId = () => {
+        if (user?.role === 'merchant' && user?.id && user.id !== 'mch_tom_01') {
+            return user.id;
+        }
+        // If admin is testing/managing the platform flagship store
+        if (user?.role === 'admin') {
+            return 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c';
+        }
         if (user?.id && user.id !== 'mch_tom_01') {
             return user.id;
         }
