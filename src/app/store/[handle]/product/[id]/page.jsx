@@ -20,21 +20,11 @@ import {
   Trash2,
   Ruler,
   CheckCircle2,
-  Sliders,
-  ExternalLink,
   Info
 } from 'lucide-react';
 import styles from '../../store.module.css';
 import TryOnModal from '@/components/TryOnModal';
 import { getStoreByHandle, STORE_PRODUCTS } from '@/lib/storefrontData';
-
-const TEMPLATES = {
-  minimal: `--bg: #FFFFFF; --bg2: #F9F7F4; --surface: #FFFFFF; --border: #E8E4DE; --text1: #1A1A1A; --text2: #4A4A4A; --text3: #8A8A8A; --accent: #1A1A1A; --accent-text: #FFFFFF; --btn-radius: 0px; --card-radius: 0px; --font-heading: 'Cormorant Garamond', serif; --font-body: 'Jost', sans-serif;`,
-  luxury: `--bg: #1C1C1E; --bg2: #242426; --surface: #2A2A2C; --border: #3A3A3C; --text1: #C9A84C; --text2: #E8E8E8; --text3: #888888; --accent: #C9A84C; --accent-text: #1C1C1E; --btn-radius: 0px; --card-radius: 4px; --font-heading: 'Playfair Display', serif; --font-body: 'Montserrat', sans-serif;`,
-  streetwear: `--bg: #0A0A0A; --bg2: #111111; --surface: #1A1A1A; --border: #2A2A2A; --text1: #FFFFFF; --text2: #CCCCCC; --text3: #666666; --accent: #CCFF00; --accent-text: #0A0A0A; --btn-radius: 0px; --card-radius: 0px; --font-heading: 'Barlow Condensed', sans-serif; --font-body: 'Barlow', sans-serif;`,
-  modern: `--bg: #F8F9FF; --bg2: #FFFFFF; --surface: #FFFFFF; --border: #E8EAFF; --text1: #1E1B4B; --text2: #3730A3; --text3: #6366F1; --accent: #4F46E5; --accent-text: #FFFFFF; --btn-radius: 10px; --card-radius: 16px; --font-heading: 'Plus Jakarta Sans', sans-serif; --font-body: 'Inter', sans-serif;`,
-  boutique: `--bg: #FAF7F2; --bg2: #F5EFE8; --surface: #FFFFFF; --border: #EAE0D5; --text1: #2C1810; --text2: #5C3D2E; --text3: #9B7E6E; --accent: #C47E6B; --accent-text: #FFFFFF; --btn-radius: 24px; --card-radius: 12px; --font-heading: 'Libre Baskerville', serif; --font-body: 'Nunito', sans-serif;`,
-};
 
 const COLOR_HEX_MAP = {
   'obsidian black': '#111827',
@@ -77,19 +67,6 @@ function getColorHex(colorName) {
   return COLOR_HEX_MAP[lower] || '#475569';
 }
 
-function getLuminance(r, g, b) {
-  const a = [r, g, b].map(function (v) {
-    v /= 255;
-    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-  });
-  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
-}
-
-function hexToRgb(hex) {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
-}
-
 const DEFAULT_REVIEWS = [
   {
     id: 1,
@@ -100,7 +77,7 @@ const DEFAULT_REVIEWS = [
     size: 'Size S',
     fit: 'True to size',
     title: 'Virtual try-on was 100% accurate, magnificent drape',
-    comment: 'I tested the AI fitting room before ordering. The waist and shoulder fit rendered identically in real life. The fabric weight and finishing are pure couture quality.'
+    comment: 'Tested the AI fitting room before ordering. The waist and shoulder fit rendered identically in real life. The fabric weight and finishing are pure couture quality.'
   },
   {
     id: 2,
@@ -146,7 +123,7 @@ export default function ProductPage({ handle: propHandle } = {}) {
   // Modals & Drawers
   const [isTryOnOpen, setIsTryOnOpen] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
-  const [sizeGuideUnit, setSizeGuideUnit] = useState('cm'); // 'cm' or 'in'
+  const [sizeGuideUnit, setSizeGuideUnit] = useState('cm');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
 
@@ -240,7 +217,6 @@ export default function ProductPage({ handle: propHandle } = {}) {
         if (storeData) {
           setStore(storeData);
           
-          // Match product by id or fallback to first product
           const found = productList.find(
             (x) => String(x.id).toLowerCase() === String(id).toLowerCase() || x.id == id
           ) || productList[0];
@@ -309,7 +285,7 @@ export default function ProductPage({ handle: propHandle } = {}) {
       return { items };
     });
 
-    showToast(`Added ${quantity}x ${product.name} (${selectedSize} / ${selectedColor}) to your bag`);
+    showToast(`Added ${quantity}x ${product.name} to your bag`);
     setIsCartOpen(true);
   };
 
@@ -341,11 +317,11 @@ export default function ProductPage({ handle: propHandle } = {}) {
       if (saved.includes(product.id)) {
         saved = saved.filter((x) => x !== product.id);
         setIsWishlisted(false);
-        showToast('Removed from your saved pieces');
+        showToast('Removed from private wishlist');
       } else {
         saved.push(product.id);
         setIsWishlisted(true);
-        showToast('Saved to your private wishlist');
+        showToast('Saved to private atelier wishlist');
       }
       localStorage.setItem('vogue_wishlist', JSON.stringify(saved));
     } catch (e) {}
@@ -354,7 +330,7 @@ export default function ProductPage({ handle: propHandle } = {}) {
   const handleShare = () => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(window.location.href);
-      showToast('Product URL copied to clipboard');
+      showToast('Piece URL copied to clipboard');
     } else {
       showToast('Link ready to share');
     }
@@ -366,7 +342,7 @@ export default function ProductPage({ handle: propHandle } = {}) {
     const newEntry = {
       id: Date.now(),
       author: newReviewForm.author,
-      location: 'Verified Buyer',
+      location: 'Verified Client',
       rating: Number(newReviewForm.rating),
       date: 'Just now',
       size: newReviewForm.size,
@@ -384,7 +360,7 @@ export default function ProductPage({ handle: propHandle } = {}) {
       title: '',
       comment: ''
     });
-    showToast('Thank you! Your verified review has been published.');
+    showToast('Verified client review published.');
   };
 
   if (loading) {
@@ -392,7 +368,7 @@ export default function ProductPage({ handle: propHandle } = {}) {
       <div className={styles.loadingContainer}>
         <div className={styles.loadingBox}>
           <div className={styles.spinner} />
-          <p className={styles.loadingText}>Loading garment & fitting room...</p>
+          <p className={styles.loadingText}>Opening luxury atelier piece...</p>
         </div>
       </div>
     );
@@ -401,27 +377,15 @@ export default function ProductPage({ handle: propHandle } = {}) {
   if (!product || !store) {
     return (
       <div className={styles.notFoundContainer}>
-        <h1 className={styles.notFoundTitle}>Product Not Found</h1>
+        <h1 className={styles.notFoundTitle}>Piece Not Found</h1>
         <p className={styles.notFoundText}>
           The requested garment is currently unavailable or has been archived.
         </p>
         <Link to={`/store/${handle}`} className={styles.notFoundBtn}>
-          Return to Storefront
+          Return to Collection
         </Link>
       </div>
     );
-  }
-
-  const templateName = store.template || 'modern';
-  let cssVars = TEMPLATES[templateName] || TEMPLATES.modern;
-  if (store.accent_color) {
-    const rgb = hexToRgb(store.accent_color);
-    let accentText = '#FFFFFF';
-    if (rgb) {
-      const lum = getLuminance(rgb.r, rgb.g, rgb.b);
-      if (lum > 0.5) accentText = '#000000';
-    }
-    cssVars += ` --accent: ${store.accent_color}; --accent-text: ${accentText};`;
   }
 
   const mainImg = product.image_url || product.imageUrl || product.main_image || '/placeholder-product.jpg';
@@ -431,92 +395,118 @@ export default function ProductPage({ handle: propHandle } = {}) {
 
   const productPrice = product.sale_price || product.salePrice || product.price;
   const originalPrice = (product.sale_price || product.salePrice) ? product.price : null;
-  const productColors = product.colors && product.colors.length > 0 ? product.colors : ['Obsidian Black', 'Camel', 'Cream White'];
+  const productColors = product.colors && product.colors.length > 0 ? product.colors : ['Obsidian Black', 'Camel'];
   const productSizes = product.sizes && product.sizes.length > 0 ? product.sizes : ['XS', 'S', 'M', 'L', 'XL'];
   const stockCount = product.stock_count || product.stock || 24;
 
   return (
     <div
       style={{
-        backgroundColor: 'var(--bg)',
-        color: 'var(--text2)',
-        fontFamily: 'var(--font-body)',
+        backgroundColor: '#FAFAF9',
+        color: '#1C1917',
+        fontFamily: "'Inter', sans-serif",
         minHeight: '100vh',
       }}
     >
       <style
         dangerouslySetInnerHTML={{
           __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Jost:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        
-        :root {
-          ${cssVars}
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 
-        .compact-header {
+        /* ── Magazine Header ── */
+        .mag-header {
           position: sticky;
           top: 0;
-          z-index: 40;
-          display: flex;
-          justify-content: space-between;
+          z-index: 50;
+          background: rgba(250, 250, 249, 0.96);
+          backdrop-filter: blur(16px);
+          border-bottom: 1px solid #E7E5E4;
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
           align-items: center;
-          padding: 1.1rem 2.5rem;
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(12px);
-          border-bottom: 1px solid var(--border);
+          padding: 1.25rem 3rem;
         }
 
-        .header-logo-link {
+        @media (max-width: 768px) {
+          .mag-header {
+            padding: 1rem 1.5rem;
+            grid-template-columns: auto 1fr auto;
+          }
+        }
+
+        .mag-nav-left {
+          display: flex;
+          align-items: center;
+        }
+
+        .mag-back-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.76rem;
+          font-weight: 600;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: #57534E;
           text-decoration: none;
-          color: var(--text1);
-          font-family: var(--font-heading);
-          font-size: 1.45rem;
-          font-weight: 800;
-          letter-spacing: -0.02em;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
+          transition: color 0.2s;
         }
 
-        .header-logo-link:hover {
-          color: var(--accent);
+        .mag-back-link:hover {
+          color: #0A0A0A;
         }
 
-        .header-nav-actions {
+        .mag-brand-title {
+          font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+          font-size: 1.65rem;
+          font-weight: 600;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #0A0A0A;
+          text-decoration: none;
+          text-align: center;
+          transition: opacity 0.2s;
+        }
+
+        .mag-brand-title:hover {
+          opacity: 0.85;
+        }
+
+        .mag-actions-right {
           display: flex;
           align-items: center;
+          justify-content: flex-end;
           gap: 1.25rem;
         }
 
-        .header-icon-btn {
-          position: relative;
+        .mag-icon-btn {
           background: none;
           border: none;
           cursor: pointer;
-          color: var(--text1);
-          padding: 0.5rem;
-          border-radius: 50%;
+          color: #292524;
+          padding: 0.4rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: background 0.2s, transform 0.15s;
+          position: relative;
+          transition: transform 0.15s, color 0.2s;
         }
 
-        .header-icon-btn:hover {
-          background: var(--bg2);
-          transform: scale(1.05);
+        .mag-icon-btn:hover {
+          color: #0A0A0A;
+          transform: scale(1.06);
         }
 
-        .cart-count-badge {
+        .mag-cart-badge {
           position: absolute;
-          top: 2px;
-          right: 2px;
-          background: var(--accent);
-          color: var(--accent-text);
-          font-size: 0.7rem;
-          font-weight: 800;
-          width: 18px;
-          height: 18px;
+          top: -2px;
+          right: -2px;
+          background: #0A0A0A;
+          color: #FFFFFF;
+          font-size: 0.65rem;
+          font-weight: 700;
+          width: 17px;
+          height: 17px;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -524,896 +514,782 @@ export default function ProductPage({ handle: propHandle } = {}) {
           line-height: 1;
         }
 
-        .main-content {
-          max-width: 1280px;
+        /* ── Main Container ── */
+        .mag-main {
+          max-width: 1360px;
           margin: 0 auto;
-          padding: 2rem 2.5rem 6rem;
+          padding: 3rem 3rem 6rem;
         }
 
-        .breadcrumb {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-size: 0.85rem;
-          color: var(--text3);
-          margin-bottom: 2.25rem;
-        }
-
-        .breadcrumb a {
-          text-decoration: none;
-          color: var(--text3);
-          transition: color 0.2s;
-        }
-
-        .breadcrumb a:hover {
-          color: var(--accent);
-        }
-
-        .details-wrapper {
-          display: flex;
-          gap: 4rem;
-          align-items: flex-start;
-        }
-
-        @media (max-width: 900px) {
-          .details-wrapper {
-            flex-direction: column;
-            gap: 2.5rem;
+        @media (max-width: 768px) {
+          .mag-main {
+            padding: 1.5rem 1.5rem 4rem;
           }
         }
 
-        .left-gallery {
-          width: 52%;
+        /* Breadcrumbs */
+        .mag-breadcrumb {
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+          font-size: 0.72rem;
+          font-weight: 600;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: #A8A29E;
+          margin-bottom: 2.5rem;
+        }
+
+        .mag-breadcrumb a {
+          text-decoration: none;
+          color: #78716C;
+          transition: color 0.2s;
+        }
+
+        .mag-breadcrumb a:hover {
+          color: #0A0A0A;
+        }
+
+        .mag-breadcrumb .current {
+          color: #0A0A0A;
+        }
+
+        /* Layout Grid */
+        .mag-details-wrapper {
+          display: grid;
+          grid-template-columns: 1.15fr 1fr;
+          gap: 5rem;
+          align-items: flex-start;
+        }
+
+        @media (max-width: 960px) {
+          .mag-details-wrapper {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+          }
+        }
+
+        /* ── Gallery Left ── */
+        .mag-gallery {
           display: flex;
           flex-direction: column;
           gap: 1.25rem;
         }
 
-        @media (max-width: 900px) {
-          .left-gallery {
-            width: 100%;
-          }
-        }
-
-        .main-image-box {
+        .mag-main-image-box {
           position: relative;
           aspect-ratio: 3/4;
           width: 100%;
           overflow: hidden;
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: var(--card-radius);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+          background: #F5F5F4;
+          border: 1px solid #E7E5E4;
         }
 
-        .main-image-box img {
+        .mag-main-image-box img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.4s ease;
+          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .main-image-box:hover img {
+        .mag-main-image-box:hover img {
           transform: scale(1.03);
         }
 
-        .image-tryon-overlay {
+        /* Discreet in-image Try-On Button */
+        .mag-image-tryon-btn {
           position: absolute;
           bottom: 1.25rem;
           left: 1.25rem;
-          background: rgba(15, 23, 42, 0.85);
+          background: rgba(10, 10, 10, 0.88);
           backdrop-filter: blur(8px);
-          color: #ffffff;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 99px;
-          padding: 0.5rem 1.1rem;
-          font-size: 0.8rem;
+          color: #FFFFFF;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          padding: 0.6rem 1.25rem;
+          font-size: 0.72rem;
           font-weight: 700;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
           display: flex;
           align-items: center;
           gap: 0.5rem;
           cursor: pointer;
-          transition: all 0.2s;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+          transition: all 0.25s ease;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.25);
         }
 
-        .image-tryon-overlay:hover {
-          background: #4f46e5;
+        .mag-image-tryon-btn:hover {
+          background: #000000;
           transform: translateY(-2px);
         }
 
-        .thumbnail-strip {
+        .mag-thumbnails {
           display: flex;
-          gap: 0.85rem;
+          gap: 1rem;
           overflow-x: auto;
           padding-bottom: 0.5rem;
         }
 
-        .thumbnail-item {
+        .mag-thumb {
           width: 76px;
-          height: 98px;
-          border-radius: var(--card-radius);
-          border: 1.5px solid var(--border);
-          overflow: hidden;
+          height: 100px;
+          border: 1px solid #E7E5E4;
           cursor: pointer;
-          background: var(--surface);
-          opacity: 0.7;
+          background: #F5F5F4;
+          opacity: 0.6;
           transition: all 0.2s;
           flex-shrink: 0;
         }
 
-        .thumbnail-item:hover, .thumbnail-item-active {
+        .mag-thumb:hover, .mag-thumb-active {
           opacity: 1;
-          border-color: var(--accent);
-          transform: translateY(-2px);
+          border-color: #0A0A0A;
         }
 
-        .thumbnail-item img {
+        .mag-thumb img {
           width: 100%;
           height: 100%;
           object-fit: cover;
         }
 
-        .right-info {
-          width: 48%;
+        /* ── Right Info Column ── */
+        .mag-info {
           display: flex;
           flex-direction: column;
         }
 
-        @media (max-width: 900px) {
-          .right-info {
-            width: 100%;
-          }
-        }
-
-        .product-meta-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 0.75rem;
-        }
-
-        .tag-badge {
+        .mag-prod-kicker {
           font-size: 0.72rem;
-          font-weight: 800;
-          padding: 0.3rem 0.75rem;
-          background: var(--bg2);
-          color: var(--text1);
-          border-radius: 99px;
+          font-weight: 600;
+          letter-spacing: 0.22em;
           text-transform: uppercase;
-          letter-spacing: 0.06em;
-        }
-
-        .tag-badge-highlight {
-          background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(168,85,247,0.12) 100%);
-          color: #6366f1;
-          border: 1px solid rgba(99,102,241,0.25);
-        }
-
-        .product-title {
-          font-family: var(--font-heading);
-          font-size: 2.35rem;
-          font-weight: 800;
-          line-height: 1.18;
-          color: var(--text1);
-          margin: 0.5rem 0 1rem;
-        }
-
-        .rating-row {
+          color: #78716C;
+          margin-bottom: 0.75rem;
           display: flex;
           align-items: center;
           gap: 0.6rem;
-          font-size: 0.86rem;
-          color: var(--text2);
-          margin-bottom: 1.5rem;
         }
 
-        .stars-gold {
+        .mag-prod-title {
+          font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+          font-size: clamp(2rem, 3.2vw, 2.75rem);
+          font-weight: 500;
+          line-height: 1.15;
+          letter-spacing: -0.01em;
+          color: #0A0A0A;
+          margin: 0 0 1.25rem 0;
+        }
+
+        .mag-rating-line {
           display: flex;
           align-items: center;
-          gap: 2px;
-          color: #f59e0b;
+          gap: 0.6rem;
+          font-size: 0.8rem;
+          color: #78716C;
+          margin-bottom: 1.75rem;
         }
 
-        .price-box {
-          font-size: 1.75rem;
-          font-weight: 800;
-          margin-bottom: 1.5rem;
+        .mag-stars {
+          display: flex;
+          gap: 2px;
+        }
+
+        .mag-price-box {
           display: flex;
           align-items: baseline;
           gap: 0.85rem;
+          margin-bottom: 1.5rem;
+          padding-bottom: 1.5rem;
+          border-bottom: 1px solid #E7E5E4;
         }
 
-        .price-curr-sale {
-          color: var(--accent);
+        .mag-price-current {
+          font-size: 1.85rem;
+          font-weight: 600;
+          color: #0A0A0A;
+          font-family: 'Playfair Display', serif;
         }
 
-        .price-curr-normal {
-          color: var(--text1);
-        }
-
-        .price-old {
-          text-decoration: line-through;
-          color: var(--text3);
+        .mag-price-old {
           font-size: 1.25rem;
-          font-weight: 500;
+          color: #A8A29E;
+          text-decoration: line-through;
+          font-weight: 400;
         }
 
-        .savings-pill {
-          font-size: 0.72rem;
-          font-weight: 800;
-          background: #dcfce7;
-          color: #166534;
-          padding: 0.2rem 0.6rem;
-          border-radius: 6px;
-        }
-
-        .stock-indicator {
-          margin-bottom: 1.75rem;
-          display: inline-flex;
+        .mag-stock-note {
+          display: flex;
           align-items: center;
           gap: 0.5rem;
-          font-size: 0.85rem;
-          font-weight: 700;
-          color: #166534;
-          background: #f0fdf4;
-          padding: 0.4rem 0.85rem;
-          border-radius: 8px;
-          width: max-content;
+          font-size: 0.78rem;
+          letter-spacing: 0.04em;
+          color: #57534E;
+          margin-bottom: 2rem;
         }
 
-        .stock-dot {
-          width: 8px;
-          height: 8px;
+        .mag-stock-dot {
+          width: 6px;
+          height: 6px;
           border-radius: 50%;
-          background: #22c55e;
-          box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+          background: #16A34A;
         }
 
-        .selector-block {
+        /* Selectors */
+        .mag-selector-block {
           margin-bottom: 1.75rem;
         }
 
-        .selector-header {
+        .mag-selector-header {
           display: flex;
           justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.75rem;
+          align-items: baseline;
+          margin-bottom: 0.85rem;
         }
 
-        .selector-label {
-          font-size: 0.78rem;
-          font-weight: 800;
+        .mag-selector-label {
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: var(--text1);
-          letter-spacing: 0.08em;
+          color: #0A0A0A;
         }
 
-        .size-guide-btn {
+        .mag-selector-val {
+          font-weight: 400;
+          color: #78716C;
+          margin-left: 6px;
+        }
+
+        .mag-size-guide-btn {
           background: none;
           border: none;
-          color: var(--text2);
-          font-size: 0.78rem;
+          font-size: 0.72rem;
           font-weight: 600;
-          text-decoration: underline;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #78716C;
           cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 4px;
+          text-decoration: underline;
+          transition: color 0.2s;
         }
 
-        .size-guide-btn:hover {
-          color: var(--accent);
+        .mag-size-guide-btn:hover {
+          color: #0A0A0A;
         }
 
-        .color-selector {
+        /* Swatches */
+        .mag-swatches-grid {
           display: flex;
           align-items: center;
           gap: 0.85rem;
         }
 
-        .color-swatch-wrapper {
-          position: relative;
-          cursor: pointer;
-        }
-
-        .color-swatch {
-          width: 34px;
-          height: 34px;
+        .mag-swatch-item {
+          width: 28px;
+          height: 28px;
           border-radius: 50%;
-          border: 2px solid rgba(0, 0, 0, 0.1);
-          transition: all 0.2s;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          cursor: pointer;
+          position: relative;
+          transition: transform 0.2s;
+          border: 1px solid rgba(0,0,0,0.12);
         }
 
-        .color-swatch-active {
-          box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+        .mag-swatch-item:hover {
+          transform: scale(1.1);
         }
 
-        .size-selector {
+        .mag-swatch-active {
+          box-shadow: 0 0 0 2px #FAFAF9, 0 0 0 3.5px #0A0A0A;
+        }
+
+        /* Size buttons */
+        .mag-sizes-grid {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.75rem;
+          gap: 0.65rem;
         }
 
-        .size-btn {
-          padding: 0.75rem 1.4rem;
-          border: 1.5px solid var(--border);
-          background: transparent;
-          color: var(--text1);
-          font-size: 0.9rem;
-          font-weight: 700;
+        .mag-size-btn {
+          padding: 0.75rem 1.35rem;
+          border: 1px solid #D6D3D1;
+          background: #FFFFFF;
+          color: #0A0A0A;
+          font-size: 0.82rem;
+          font-weight: 600;
+          letter-spacing: 0.08em;
           cursor: pointer;
-          border-radius: var(--btn-radius);
           transition: all 0.2s;
-          min-width: 52px;
+          min-width: 50px;
           text-align: center;
         }
 
-        .size-btn:hover {
-          border-color: var(--text1);
-          background: var(--bg2);
+        .mag-size-btn:hover {
+          border-color: #0A0A0A;
         }
 
-        .size-btn-active {
-          background: var(--accent) !important;
-          color: var(--accent-text) !important;
-          border-color: var(--accent) !important;
+        .mag-size-btn-active {
+          background: #0A0A0A !important;
+          color: #FFFFFF !important;
+          border-color: #0A0A0A !important;
         }
 
-        .qty-row {
+        /* Stepper & Action buttons */
+        .mag-action-row {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 1rem;
+          margin-top: 1rem;
+        }
+
+        .mag-qty-stepper {
           display: flex;
           align-items: center;
-          gap: 1.5rem;
-          margin-bottom: 2rem;
+          border: 1px solid #D6D3D1;
+          background: #FFFFFF;
         }
 
-        .qty-controls {
-          display: flex;
-          align-items: center;
-          border: 1.5px solid var(--border);
-          border-radius: var(--btn-radius);
-          background: var(--surface);
-        }
-
-        .qty-btn {
+        .mag-qty-btn {
           background: none;
           border: none;
           cursor: pointer;
-          padding: 0.65rem 1.1rem;
-          color: var(--text1);
+          padding: 0.85rem 0.95rem;
+          color: #0A0A0A;
           display: flex;
           align-items: center;
           justify-content: center;
           transition: background 0.2s;
         }
 
-        .qty-btn:hover {
-          background: var(--bg2);
+        .mag-qty-btn:hover {
+          background: #F5F5F4;
         }
 
-        .qty-val {
-          width: 44px;
+        .mag-qty-num {
+          min-width: 32px;
           text-align: center;
-          font-weight: 800;
-          font-size: 0.95rem;
-          color: var(--text1);
+          font-weight: 700;
+          font-size: 0.88rem;
+          color: #0A0A0A;
         }
 
-        .action-button-grid {
-          display: flex;
-          flex-direction: column;
-          gap: 0.85rem;
-          margin-bottom: 2rem;
-        }
-
-        .cart-add-btn {
-          width: 100%;
-          background: var(--accent);
-          color: var(--accent-text);
+        .mag-btn-bag {
+          flex: 1;
+          background: #0A0A0A;
+          color: #FFFFFF;
           border: none;
-          border-radius: var(--btn-radius);
-          padding: 1.15rem;
-          font-size: 1rem;
-          font-weight: 800;
-          letter-spacing: 0.02em;
+          padding: 1.1rem 1.5rem;
+          font-size: 0.82rem;
+          font-weight: 700;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
           cursor: pointer;
-          transition: opacity 0.2s, transform 0.15s;
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 0.6rem;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+          transition: all 0.25s ease;
         }
 
-        .cart-add-btn:hover {
-          opacity: 0.92;
+        .mag-btn-bag:hover {
+          background: #262626;
           transform: translateY(-1px);
         }
 
-        .tryon-magic-btn {
+        .mag-btn-tryon {
           width: 100%;
-          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
-          color: #ffffff;
-          border: none;
-          border-radius: var(--btn-radius);
-          padding: 1.15rem;
-          font-size: 1.02rem;
-          font-weight: 800;
-          letter-spacing: 0.02em;
+          background: #1C1917;
+          color: #FFFFFF;
+          border: 1px solid #44403C;
+          padding: 1.1rem;
+          font-size: 0.82rem;
+          font-weight: 700;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 0.65rem;
-          box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
-          transition: all 0.2s;
+          margin-bottom: 1.25rem;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+          transition: all 0.25s ease;
         }
 
-        .tryon-magic-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(99, 102, 241, 0.45);
+        .mag-btn-tryon:hover {
+          background: #000000;
+          border-color: #000000;
+          transform: translateY(-1px);
         }
 
-        .secondary-actions-row {
+        .mag-secondary-links {
           display: flex;
           align-items: center;
-          gap: 1rem;
+          justify-content: space-between;
+          padding-bottom: 2rem;
+          margin-bottom: 2rem;
+          border-bottom: 1px solid #E7E5E4;
         }
 
-        .secondary-btn {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          padding: 0.8rem;
-          border: 1px solid var(--border);
-          border-radius: var(--btn-radius);
-          background: transparent;
-          color: var(--text2);
-          font-size: 0.84rem;
-          font-weight: 700;
+        .mag-sub-action {
+          background: none;
+          border: none;
           cursor: pointer;
-          transition: all 0.2s;
+          font-size: 0.75rem;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #78716C;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          transition: color 0.2s;
         }
 
-        .secondary-btn:hover {
-          background: var(--bg2);
-          color: var(--text1);
+        .mag-sub-action:hover {
+          color: #0A0A0A;
         }
 
-        .secondary-btn-active {
-          color: #e11d48;
-          border-color: #fecdd3;
-          background: #fff1f2;
-        }
-
-        /* Value props pill row */
-        .value-props-box {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 0.75rem;
-          padding: 1.25rem;
-          background: var(--bg2);
-          border-radius: var(--card-radius);
-          margin-top: 1.5rem;
-          border: 1px solid var(--border);
-        }
-
-        .prop-item {
+        /* Dispatch Promise Note */
+        .mag-promise-box {
           display: flex;
           flex-direction: column;
-          align-items: center;
-          text-align: center;
-          gap: 0.35rem;
+          gap: 0.6rem;
+          padding: 1.25rem 1.5rem;
+          background: #F5F5F4;
+          border: 1px solid #E7E5E4;
+          margin-bottom: 2.5rem;
+          font-size: 0.78rem;
+          color: #57534E;
+          letter-spacing: 0.04em;
         }
 
-        .prop-item-title {
-          font-size: 0.76rem;
-          font-weight: 800;
-          color: var(--text1);
+        /* Editorial Accordions */
+        .mag-accordion {
+          border-top: 1px solid #E7E5E4;
         }
 
-        .prop-item-sub {
-          font-size: 0.68rem;
-          color: var(--text3);
+        .mag-acc-item {
+          border-bottom: 1px solid #E7E5E4;
         }
 
-        /* Accordions */
-        .info-accordions {
-          margin-top: 2rem;
-          border-top: 1px solid var(--border);
-        }
-
-        .accordion-tab {
-          border-bottom: 1px solid var(--border);
-        }
-
-        .accordion-header {
+        .mag-acc-btn {
+          width: 100%;
+          background: none;
+          border: none;
+          padding: 1.25rem 0;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 1.25rem 0;
           cursor: pointer;
-          color: var(--text1);
-          font-weight: 800;
-          font-size: 0.95rem;
-          background: none;
-          border: none;
-          width: 100%;
+          font-size: 0.85rem;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #0A0A0A;
           text-align: left;
+          transition: color 0.2s;
         }
 
-        .accordion-header:hover {
-          color: var(--accent);
+        .mag-acc-btn:hover {
+          color: #57534E;
         }
 
-        .accordion-body {
-          padding-bottom: 1.25rem;
+        .mag-acc-content {
+          padding-bottom: 1.5rem;
           font-size: 0.88rem;
-          line-height: 1.65;
-          color: var(--text2);
+          line-height: 1.7;
+          color: #57534E;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.15rem;
         }
 
-        /* Reviews Section */
-        .reviews-section {
-          margin-top: 5rem;
-          padding-top: 4rem;
-          border-top: 1px solid var(--border);
+        /* ── Reviews Editorial Section ── */
+        .mag-reviews-section {
+          margin-top: 6rem;
+          padding-top: 4.5rem;
+          border-top: 1px solid #E7E5E4;
         }
 
-        .reviews-header-block {
+        .mag-reviews-header {
           display: flex;
           justify-content: space-between;
           align-items: flex-end;
-          margin-bottom: 2.5rem;
+          margin-bottom: 3rem;
           flex-wrap: wrap;
           gap: 1.5rem;
         }
 
-        .reviews-title {
-          font-family: var(--font-heading);
-          font-size: 2rem;
-          font-weight: 800;
-          color: var(--text1);
-          margin: 0 0 0.5rem;
+        .mag-reviews-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 2.2rem;
+          font-weight: 500;
+          color: #0A0A0A;
+          margin: 0 0 0.5rem 0;
         }
 
-        .reviews-stats-summary {
-          display: flex;
-          align-items: center;
+        .mag-reviews-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
           gap: 2rem;
-          background: var(--bg2);
-          padding: 1.5rem 2rem;
-          border-radius: var(--card-radius);
-          border: 1px solid var(--border);
+        }
+
+        @media (max-width: 900px) {
+          .mag-reviews-grid { grid-template-columns: 1fr; }
+        }
+
+        .mag-review-card {
+          background: #FFFFFF;
+          border: 1px solid #E7E5E4;
+          padding: 2rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .mag-review-quote {
+          font-family: 'Playfair Display', serif;
+          font-size: 1.15rem;
+          font-weight: 600;
+          color: #0A0A0A;
+          line-height: 1.35;
+        }
+
+        .mag-review-body {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.1rem;
+          line-height: 1.65;
+          color: #57534E;
+          margin: 0;
+          font-style: italic;
+        }
+
+        .mag-review-meta {
+          margin-top: auto;
+          padding-top: 1rem;
+          border-top: 1px solid #F5F5F4;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 0.75rem;
+          color: #78716C;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        /* ── Recommendations Grid ── */
+        .mag-recom-section {
+          margin-top: 6rem;
+          padding-top: 4.5rem;
+          border-top: 1px solid #E7E5E4;
+        }
+
+        .mag-recom-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 2.2rem;
+          font-weight: 500;
+          text-align: center;
+          color: #0A0A0A;
           margin-bottom: 3rem;
         }
 
-        @media (max-width: 640px) {
-          .reviews-stats-summary {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1.25rem;
-          }
-        }
-
-        .big-rating-score {
-          font-size: 3rem;
-          font-weight: 900;
-          color: var(--text1);
-          line-height: 1;
-        }
-
-        .write-review-btn {
-          padding: 0.75rem 1.5rem;
-          background: var(--text1);
-          color: var(--bg);
-          border: none;
-          border-radius: var(--btn-radius);
-          font-size: 0.85rem;
-          font-weight: 700;
-          cursor: pointer;
-          transition: opacity 0.2s;
-        }
-
-        .write-review-btn:hover {
-          opacity: 0.85;
-        }
-
-        .reviews-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1.5rem;
-        }
-
-        @media (max-width: 900px) {
-          .reviews-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        .review-card {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: var(--card-radius);
-          padding: 1.5rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .review-author-row {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        .review-avatar {
-          width: 38px;
-          height: 38px;
-          border-radius: 50%;
-          background: var(--bg2);
-          color: var(--text1);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 800;
-          font-size: 0.88rem;
-          border: 1px solid var(--border);
-        }
-
-        /* Related Products Section */
-        .recom-block {
-          margin-top: 5rem;
-          padding-top: 4rem;
-          border-top: 1px solid var(--border);
-        }
-
-        .recom-title {
-          font-family: var(--font-heading);
-          font-size: 2rem;
-          font-weight: 800;
-          text-align: center;
-          margin-bottom: 2.5rem;
-          color: var(--text1);
-        }
-
-        .recom-grid {
+        .mag-recom-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 1.5rem;
+          gap: 2rem;
         }
 
         @media (max-width: 900px) {
-          .recom-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-          }
+          .mag-recom-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        .recom-card {
+        .mag-recom-card {
+          text-decoration: none;
+          color: inherit;
           cursor: pointer;
           display: flex;
           flex-direction: column;
-          text-decoration: none;
-          color: inherit;
         }
 
-        .recom-image-wrap {
+        .mag-recom-img-box {
           aspect-ratio: 3/4;
           width: 100%;
-          border-radius: var(--card-radius);
-          border: 1px solid var(--border);
+          background: #F5F5F4;
           overflow: hidden;
-          background: var(--surface);
-          margin-bottom: 0.75rem;
+          margin-bottom: 1rem;
         }
 
-        .recom-card img {
+        .mag-recom-card img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.4s ease;
+          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .recom-card:hover img {
+        .mag-recom-card:hover img {
           transform: scale(1.04);
         }
 
-        .recom-name {
-          font-family: var(--font-heading);
+        .mag-recom-name {
+          font-family: 'Playfair Display', serif;
           font-size: 1.05rem;
-          font-weight: 700;
-          color: var(--text1);
-          margin-bottom: 0.25rem;
+          font-weight: 600;
+          color: #0A0A0A;
+          margin: 0 0 0.25rem 0;
           transition: color 0.2s;
         }
 
-        .recom-card:hover .recom-name {
-          color: var(--accent);
+        .mag-recom-card:hover .mag-recom-name {
+          color: #57534E;
         }
 
-        .recom-price {
-          font-weight: 800;
-          color: var(--text1);
-          font-size: 0.95rem;
+        .mag-recom-price {
+          font-size: 0.92rem;
+          font-weight: 600;
+          color: #0A0A0A;
         }
 
-        /* Floating Toast */
-        .floating-toast {
+        /* ── Minimalist Magazine Footer ── */
+        .mag-footer {
+          border-top: 1px solid #E7E5E4;
+          background: #1C1917;
+          color: #D6D3D1;
+          padding: 5rem 3rem 3rem;
+          margin-top: 6rem;
+        }
+
+        .mag-toast {
           position: fixed;
           bottom: 2rem;
           right: 2rem;
           z-index: 100;
-          background: #0f172a;
-          color: #ffffff;
-          padding: 0.85rem 1.35rem;
-          border-radius: 12px;
+          background: #0A0A0A;
+          color: #FFFFFF;
+          padding: 0.85rem 1.4rem;
           box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-          font-size: 0.88rem;
+          font-size: 0.8rem;
           font-weight: 600;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
           display: flex;
           align-items: center;
-          gap: 0.75rem;
-          animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(12px); }
-          to { opacity: 1; transform: translateY(0); }
+          gap: 0.6rem;
         }
       `,
         }}
       />
 
-      {/* ── HEADER ── */}
-      <header className="compact-header">
-        <Link to={`/store/${handle}`} className="header-logo-link">
-          {store.logo_url && (
-            <img
-              src={store.logo_url}
-              alt={store.store_name}
-              style={{ height: 28, width: 'auto', objectFit: 'contain' }}
-            />
-          )}
-          <span>{store.store_name}</span>
+      {/* ── 1. MAGAZINE EDITORIAL HEADER ── */}
+      <header className="mag-header">
+        <div className="mag-nav-left">
+          <Link to={`/store/${handle}`} className="mag-back-link">
+            <ArrowLeft size={14} /> Collection
+          </Link>
+        </div>
+
+        <Link to={`/store/${handle}`} className="mag-brand-title">
+          {store.store_name}
         </Link>
 
-        <div className="header-nav-actions">
-          <Link
-            to={`/store/${handle}`}
-            style={{
-              fontSize: '0.86rem',
-              fontWeight: 700,
-              color: 'var(--text2)',
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-            }}
-          >
-            <ArrowLeft size={16} /> Catalog
-          </Link>
-
+        <div className="mag-actions-right">
           <button
             onClick={() => setIsCartOpen(true)}
-            className="header-icon-btn"
-            title="View Bag"
+            className="mag-icon-btn"
+            title="Shopping Bag"
           >
-            <ShoppingBag size={21} />
-            {cartItemCount > 0 && <span className="cart-count-badge">{cartItemCount}</span>}
+            <ShoppingBag size={19} />
+            {cartItemCount > 0 && <span className="mag-cart-badge">{cartItemCount}</span>}
           </button>
         </div>
       </header>
 
-      {/* ── MAIN CONTENT ── */}
-      <main className="main-content">
-        {/* Breadcrumbs */}
-        <div className="breadcrumb">
-          <Link to={`/store/${handle}`}>Store</Link>
-          <ChevronRight size={13} />
-          <Link to={`/store/${handle}`}>{product.category || 'Collection'}</Link>
-          <ChevronRight size={13} />
-          <span>{product.name}</span>
+      {/* ── 2. MAIN PRODUCT CONTENT ── */}
+      <main className="mag-main">
+        {/* Subtle Editorial Breadcrumbs */}
+        <div className="mag-breadcrumb">
+          <Link to={`/store/${handle}`}>COLLECTION</Link>
+          <span>/</span>
+          <span>{product.category?.toUpperCase() || 'APPAREL'}</span>
+          <span>/</span>
+          <span className="current">{product.name?.toUpperCase()}</span>
         </div>
 
-        <div className="details-wrapper">
-          {/* LEFT: IMAGE GALLERY */}
-          <div className="left-gallery">
-            <div className="main-image-box">
+        <div className="mag-details-wrapper">
+          {/* Left: Magazine Gallery */}
+          <div className="mag-gallery">
+            <div className="mag-main-image-box">
               <img src={activeImage || mainImg} alt={product.name} />
 
               <button
                 onClick={() => setIsTryOnOpen(true)}
-                className="image-tryon-overlay"
-                title="Launch Virtual AI Fitting Room"
+                className="mag-image-tryon-btn"
+                title="Launch Fitting Room"
               >
-                <Sparkles size={16} color="#a855f7" />
-                <span>Try On Virtually</span>
+                <Sparkles size={13} />
+                <span>Virtual Fitting Room</span>
               </button>
             </div>
 
             {images.length > 1 && (
-              <div className="thumbnail-strip">
+              <div className="mag-thumbnails">
                 {images.map((img, index) => (
                   <div
                     key={index}
                     onClick={() => setActiveImage(img)}
-                    className={`thumbnail-item ${activeImage === img ? 'thumbnail-item-active' : ''}`}
+                    className={`mag-thumb ${activeImage === img ? 'mag-thumb-active' : ''}`}
                   >
-                    <img src={img} alt={`View ${index + 1}`} />
+                    <img src={img} alt={`Angle ${index + 1}`} />
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          {/* RIGHT: DETAILS & ACTIONS */}
-          <div className="right-info">
-            <div className="product-meta-row">
-              <span className="tag-badge">{product.category || 'Apparel'}</span>
-              <span className="tag-badge tag-badge-highlight">
-                <Sparkles size={12} style={{ display: 'inline', marginRight: 4 }} />
-                AI Try-On Ready
-              </span>
+          {/* Right: Atelier Info & Actions */}
+          <div className="mag-info">
+            <div className="mag-prod-kicker">
+              <span>{product.category?.toUpperCase() || 'SILHOUETTE'}</span>
+              <span>·</span>
+              <span>BESPOKE FIT READY</span>
             </div>
 
-            <h1 className="product-title">{product.name}</h1>
+            <h1 className="mag-prod-title">{product.name}</h1>
 
             {/* Rating */}
-            <div className="rating-row">
-              <div className="stars-gold">
+            <div className="mag-rating-line">
+              <div className="mag-stars">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={15} fill="#f59e0b" />
+                  <Star key={i} size={13} fill="#1C1917" color="#1C1917" />
                 ))}
               </div>
-              <span style={{ fontWeight: 700, color: 'var(--text1)' }}>4.9</span>
+              <span style={{ fontWeight: 600, color: '#0A0A0A' }}>4.9</span>
               <span>·</span>
-              <a
-                href="#reviews-section"
-                style={{ color: 'var(--text3)', textDecoration: 'underline' }}
-              >
-                {reviews.length} Customer Reviews
+              <a href="#reviews" style={{ color: '#78716C', textDecoration: 'none' }}>
+                {reviews.length} Client Reviews
               </a>
             </div>
 
             {/* Price Box */}
-            <div className="price-box">
-              {originalPrice ? (
-                <>
-                  <span className="price-curr-sale">${productPrice}</span>
-                  <span className="price-old">${originalPrice}</span>
-                  <span className="savings-pill">
-                    Save ${(originalPrice - productPrice).toFixed(0)}
-                  </span>
-                </>
-              ) : (
-                <span className="price-curr-normal">${productPrice}</span>
-              )}
+            <div className="mag-price-box">
+              <span className="mag-price-current">${productPrice} USD</span>
+              {originalPrice && <span className="mag-price-old">${originalPrice}</span>}
             </div>
 
-            {/* Stock indicator */}
-            <div className="stock-indicator">
-              <div className="stock-dot" />
+            {/* Dispatch Note */}
+            <div className="mag-stock-note">
+              <span className="mag-stock-dot" />
               <span>
-                {stockCount <= 3
-                  ? `Only ${stockCount} pieces remaining`
-                  : 'In Stock · Ships within 24 hours'}
+                Complimentary Worldwide Courier · {stockCount <= 3 ? `Only ${stockCount} pieces remaining` : 'In stock for immediate dispatch'}
               </span>
             </div>
 
-            {/* Color Swatches */}
-            <div className="selector-block">
-              <div className="selector-header">
-                <span className="selector-label">
-                  Color: <strong style={{ color: 'var(--text1)' }}>{selectedColor}</strong>
+            {/* Color Choice */}
+            <div className="mag-selector-block">
+              <div className="mag-selector-header">
+                <span className="mag-selector-label">
+                  Color <span className="mag-selector-val">/ {selectedColor}</span>
                 </span>
               </div>
-              <div className="color-selector">
+              <div className="mag-swatches-grid">
                 {productColors.map((colorName) => {
                   const hex = getColorHex(colorName);
                   const isSelected = selectedColor === colorName;
@@ -1421,48 +1297,37 @@ export default function ProductPage({ handle: propHandle } = {}) {
                     <div
                       key={colorName}
                       onClick={() => setSelectedColor(colorName)}
-                      className="color-swatch-wrapper"
+                      className={`mag-swatch-item ${isSelected ? 'mag-swatch-active' : ''}`}
+                      style={{ backgroundColor: hex }}
                       title={colorName}
-                    >
-                      <div
-                        className={`color-swatch ${isSelected ? 'color-swatch-active' : ''}`}
-                        style={{ backgroundColor: hex }}
-                      >
-                        {isSelected && (
-                          <Check
-                            size={14}
-                            color={hex.toLowerCase() === '#ffffff' || hex === '#fdfbf7' || hex === '#f5f5dc' ? '#000000' : '#ffffff'}
-                          />
-                        )}
-                      </div>
-                    </div>
+                    />
                   );
                 })}
               </div>
             </div>
 
-            {/* Size Selector */}
-            <div className="selector-block">
-              <div className="selector-header">
-                <span className="selector-label">
-                  Size: <strong style={{ color: 'var(--text1)' }}>{selectedSize}</strong>
+            {/* Size Choice */}
+            <div className="mag-selector-block">
+              <div className="mag-selector-header">
+                <span className="mag-selector-label">
+                  Size <span className="mag-selector-val">/ {selectedSize}</span>
                 </span>
                 <button
                   type="button"
                   onClick={() => setIsSizeGuideOpen(true)}
-                  className="size-guide-btn"
+                  className="mag-size-guide-btn"
                 >
-                  <Ruler size={13} /> Size Guide
+                  Size & Sizing Guide
                 </button>
               </div>
 
-              <div className="size-selector">
+              <div className="mag-sizes-grid">
                 {productSizes.map((s) => (
                   <button
                     key={s}
                     type="button"
                     onClick={() => setSelectedSize(s)}
-                    className={`size-btn ${selectedSize === s ? 'size-btn-active' : ''}`}
+                    className={`mag-size-btn ${selectedSize === s ? 'mag-size-btn-active' : ''}`}
                   >
                     {s}
                   </button>
@@ -1470,142 +1335,107 @@ export default function ProductPage({ handle: propHandle } = {}) {
               </div>
             </div>
 
-            {/* Quantity */}
-            <div className="qty-row">
-              <div>
-                <div className="selector-label" style={{ marginBottom: '0.4rem' }}>
-                  Quantity
-                </div>
-                <div className="qty-controls">
-                  <button
-                    type="button"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="qty-btn"
-                    title="Decrease Quantity"
-                  >
-                    <Minus size={15} />
-                  </button>
-                  <span className="qty-val">{quantity}</span>
-                  <button
-                    type="button"
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="qty-btn"
-                    title="Increase Quantity"
-                  >
-                    <Plus size={15} />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Main Action Buttons */}
-            <div className="action-button-grid">
-              <button onClick={handleAddToCart} className="cart-add-btn">
-                <ShoppingBag size={18} />
-                <span>Add to Bag · ${(productPrice * quantity).toLocaleString()}</span>
-              </button>
-
-              <button onClick={() => setIsTryOnOpen(true)} className="tryon-magic-btn">
-                <Sparkles size={19} />
-                <span>Try On Virtually in Fitting Room</span>
-              </button>
-            </div>
-
-            {/* Secondary Actions: Wishlist & Share */}
-            <div className="secondary-actions-row">
-              <button
-                onClick={handleToggleWishlist}
-                className={`secondary-btn ${isWishlisted ? 'secondary-btn-active' : ''}`}
-              >
-                <Heart size={16} fill={isWishlisted ? '#e11d48' : 'none'} />
-                <span>{isWishlisted ? 'Saved to Wishlist' : 'Add to Wishlist'}</span>
-              </button>
-
-              <button onClick={handleShare} className="secondary-btn">
-                <Share2 size={16} />
-                <span>Share Garment</span>
-              </button>
-            </div>
-
-            {/* Value Props */}
-            <div className="value-props-box">
-              <div className="prop-item">
-                <Truck size={20} color="var(--accent)" />
-                <span className="prop-item-title">Global Express</span>
-                <span className="prop-item-sub">2-4 days worldwide</span>
-              </div>
-              <div className="prop-item">
-                <RotateCcw size={20} color="var(--accent)" />
-                <span className="prop-item-title">30-Day Returns</span>
-                <span className="prop-item-sub">Complimentary pickup</span>
-              </div>
-              <div className="prop-item">
-                <ShieldCheck size={20} color="var(--accent)" />
-                <span className="prop-item-title">Authentic Textile</span>
-                <span className="prop-item-sub">Guaranteed origin</span>
-              </div>
-            </div>
-
-            {/* Accordions */}
-            <div className="info-accordions">
-              <div className="accordion-tab">
+            {/* Stepper & Primary Add to Bag */}
+            <div className="mag-action-row">
+              <div className="mag-qty-stepper">
                 <button
                   type="button"
-                  className="accordion-header"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="mag-qty-btn"
+                  title="Decrease"
+                >
+                  <Minus size={13} />
+                </button>
+                <span className="mag-qty-num">{quantity}</span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="mag-qty-btn"
+                  title="Increase"
+                >
+                  <Plus size={13} />
+                </button>
+              </div>
+
+              <button onClick={handleAddToCart} className="mag-btn-bag">
+                <ShoppingBag size={15} />
+                <span>ADD TO BAG · ${(productPrice * quantity).toLocaleString()}</span>
+              </button>
+            </div>
+
+            {/* Virtual Try-On Magic Button */}
+            <button onClick={() => setIsTryOnOpen(true)} className="mag-btn-tryon">
+              <Sparkles size={14} />
+              <span>VIRTUAL FITTING ROOM · TRY ON WITH AI</span>
+            </button>
+
+            {/* Wishlist & Share */}
+            <div className="mag-secondary-links">
+              <button onClick={handleToggleWishlist} className="mag-sub-action">
+                <Heart size={14} fill={isWishlisted ? '#0A0A0A' : 'none'} />
+                <span>{isWishlisted ? 'Saved in Wishlist' : 'Save to Wishlist'}</span>
+              </button>
+
+              <button onClick={handleShare} className="mag-sub-action">
+                <Share2 size={14} />
+                <span>Share Piece</span>
+              </button>
+            </div>
+
+            {/* Editorial Dispatch Promises */}
+            <div className="mag-promise-box">
+              <div>• Certified European Textile Craftsmanship</div>
+              <div>• 100% In-Browser Virtual Drape Fitting</div>
+              <div>• 30-Day Complimentary Doorstep Courier Returns</div>
+            </div>
+
+            {/* Editorial Accordions */}
+            <div className="mag-accordion">
+              <div className="mag-acc-item">
+                <button
+                  type="button"
+                  className="mag-acc-btn"
                   onClick={() => setActiveAccordion(activeAccordion === 'desc' ? '' : 'desc')}
                 >
-                  <span>Description & Editorial Notes</span>
+                  <span>Editorial Notes & Silhouette</span>
                   <span>{activeAccordion === 'desc' ? '−' : '+'}</span>
                 </button>
                 {activeAccordion === 'desc' && (
-                  <div className="accordion-body">
+                  <div className="mag-acc-content">
                     {product.description ||
-                      'Expertly tailored piece designed to harmonize modern proportions with timeless architectural simplicity.'}
+                      'An exquisitely tailored silhouette balancing modern architectural lines with supreme everyday drape.'}
                   </div>
                 )}
               </div>
 
-              <div className="accordion-tab">
+              <div className="mag-acc-item">
                 <button
                   type="button"
-                  className="accordion-header"
-                  onClick={() => setActiveAccordion(activeAccordion === 'materials' ? '' : 'materials')}
+                  className="mag-acc-btn"
+                  onClick={() => setActiveAccordion(activeAccordion === 'care' ? '' : 'care')}
                 >
-                  <span>Fabric & Garment Care</span>
-                  <span>{activeAccordion === 'materials' ? '−' : '+'}</span>
+                  <span>Fabric Composition & Care</span>
+                  <span>{activeAccordion === 'care' ? '−' : '+'}</span>
                 </button>
-                {activeAccordion === 'materials' && (
-                  <div className="accordion-body">
-                    <p style={{ margin: '0 0 0.5rem 0' }}>
-                      • 100% Sustainably milled European textile with premium soft-touch finish.
-                    </p>
-                    <p style={{ margin: '0 0 0.5rem 0' }}>
-                      • Reinforced internal seams and custom tonal hardware.
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      • Specialized dry clean recommended. Steam on reverse.
-                    </p>
+                {activeAccordion === 'care' && (
+                  <div className="mag-acc-content">
+                    Crafted from sustainably milled heritage textiles with hand-finished interior seams. Specialized delicate dry clean or gentle cold wash recommended. Steam on reverse.
                   </div>
                 )}
               </div>
 
-              <div className="accordion-tab">
+              <div className="mag-acc-item">
                 <button
                   type="button"
-                  className="accordion-header"
-                  onClick={() => setActiveAccordion(activeAccordion === 'shipping' ? '' : 'shipping')}
+                  className="mag-acc-btn"
+                  onClick={() => setActiveAccordion(activeAccordion === 'ship' ? '' : 'ship')}
                 >
-                  <span>Delivery & Complimentary Returns</span>
-                  <span>{activeAccordion === 'shipping' ? '−' : '+'}</span>
+                  <span>Complimentary Courier & Returns</span>
+                  <span>{activeAccordion === 'ship' ? '−' : '+'}</span>
                 </button>
-                {activeAccordion === 'shipping' && (
-                  <div className="accordion-body">
-                    <p style={{ margin: '0 0 0.5rem 0' }}>
-                      • Complimentary worldwide express shipping on orders over $150.
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      • Hassle-free 30-day returns and exchanges. Prepaid return label included in the box.
-                    </p>
+                {activeAccordion === 'ship' && (
+                  <div className="mag-acc-content">
+                    Delivered via express carbon-neutral courier in 2–4 business days with archival dust garment bag. Free 30-day returns with prepaid return packaging included.
                   </div>
                 )}
               </div>
@@ -1613,133 +1443,85 @@ export default function ProductPage({ handle: propHandle } = {}) {
           </div>
         </div>
 
-        {/* ── CUSTOMER REVIEWS SECTION ── */}
-        <section id="reviews-section" className="reviews-section">
-          <div className="reviews-header-block">
+        {/* ── 3. CLIENT REVIEWS SECTION ── */}
+        <section id="reviews" className="mag-reviews-section">
+          <div className="mag-reviews-header">
             <div>
-              <h2 className="reviews-title">Verified Customer Reviews</h2>
-              <p style={{ margin: 0, color: 'var(--text3)', fontSize: '0.9rem' }}>
-                Real feedback from shoppers who tested and wore this piece.
+              <h2 className="mag-reviews-title">Client Notes & Fit Testimonials</h2>
+              <p style={{ margin: 0, color: '#78716C', fontSize: '0.88rem' }}>
+                Verified observations on silhouette, drape, and virtual try-on fidelity.
               </p>
             </div>
 
             <button
               onClick={() => setIsWriteReviewOpen(true)}
-              className="write-review-btn"
+              style={{
+                padding: '0.75rem 1.75rem',
+                background: '#0A0A0A',
+                color: '#FFFFFF',
+                border: 'none',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+              }}
             >
               Write a Review
             </button>
           </div>
 
-          <div className="reviews-stats-summary">
-            <div>
-              <div className="big-rating-score">4.9</div>
-              <div className="stars-gold" style={{ marginTop: 4 }}>
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={18} fill="#f59e0b" />
-                ))}
-              </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text3)', marginTop: 4 }}>
-                Based on {reviews.length} verified ratings
-              </div>
-            </div>
-
-            <div style={{ height: 48, width: 1, background: 'var(--border)' }} />
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: '0.8rem' }}>
-                <span style={{ minWidth: 44 }}>5 Stars</span>
-                <div style={{ flex: 1, height: 6, background: 'var(--border)', borderRadius: 99, overflow: 'hidden' }}>
-                  <div style={{ width: '92%', height: '100%', background: 'var(--accent)' }} />
-                </div>
-                <span style={{ minWidth: 32, color: 'var(--text3)' }}>92%</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: '0.8rem' }}>
-                <span style={{ minWidth: 44 }}>4 Stars</span>
-                <div style={{ flex: 1, height: 6, background: 'var(--border)', borderRadius: 99, overflow: 'hidden' }}>
-                  <div style={{ width: '8%', height: '100%', background: 'var(--accent)' }} />
-                </div>
-                <span style={{ minWidth: 32, color: 'var(--text3)' }}>8%</span>
-              </div>
-            </div>
-
-            <div style={{ height: 48, width: 1, background: 'var(--border)' }} />
-
-            <div style={{ minWidth: 160 }}>
-              <div style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text1)', marginBottom: 4 }}>
-                Fit Rating
-              </div>
-              <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#16a34a' }}>
-                98% True to Size
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>
-                Based on virtual try-on feedback
-              </div>
-            </div>
-          </div>
-
-          <div className="reviews-grid">
+          <div className="mag-reviews-grid">
             {reviews.map((rev) => (
-              <div key={rev.id} className="review-card">
-                <div className="review-author-row">
-                  <div className="review-avatar">
-                    {rev.author.charAt(0)}
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--text1)' }}>
-                      {rev.author}
-                    </div>
-                    <div style={{ fontSize: '0.74rem', color: 'var(--text3)' }}>
-                      {rev.location} · {rev.date}
-                    </div>
-                  </div>
+              <div key={rev.id} className="mag-review-card">
+                <div style={{ display: 'flex', gap: 2 }}>
+                  {[...Array(rev.rating)].map((_, i) => (
+                    <Star key={i} size={12} fill="#0A0A0A" color="#0A0A0A" />
+                  ))}
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div className="stars-gold">
-                    {[...Array(rev.rating)].map((_, i) => (
-                      <Star key={i} size={14} fill="#f59e0b" />
-                    ))}
-                  </div>
-                  <span style={{ fontSize: '0.72rem', background: 'var(--bg2)', padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>
-                    {rev.size} · {rev.fit}
-                  </span>
-                </div>
-
-                <div style={{ fontWeight: 800, fontSize: '0.92rem', color: 'var(--text1)' }}>
+                <div className="mag-review-quote">
                   "{rev.title}"
                 </div>
 
-                <p style={{ margin: 0, fontSize: '0.85rem', lineHeight: 1.6, color: 'var(--text2)' }}>
-                  {rev.comment}
+                <p className="mag-review-body">
+                  "{rev.comment}"
                 </p>
+
+                <div className="mag-review-meta">
+                  <span>{rev.author} · {rev.location}</span>
+                  <span>{rev.size}</span>
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ── RELATED RECOMMENDATIONS ── */}
+        {/* ── 4. COMPLETE THE ATELIER LOOK ── */}
         {otherProducts.length > 0 && (
-          <section className="recom-block">
-            <h2 className="recom-title">Complete The Look</h2>
-            <div className="recom-grid">
+          <section className="mag-recom-section">
+            <h2 className="mag-recom-title">Complete The Look</h2>
+            <div className="mag-recom-grid">
               {otherProducts.map((p) => {
-                const img = p.image_url || p.imageUrl || p.main_image || '/placeholder-product.jpg';
+                const img = p.image_url || p.imageUrl || '/placeholder-product.jpg';
                 const pPrice = p.sale_price || p.salePrice || p.price;
                 return (
                   <div
                     key={p.id}
-                    className="recom-card"
+                    className="mag-recom-card"
                     onClick={() => {
                       navigate(`/store/${handle}/product/${p.id}`);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                   >
-                    <div className="recom-image-wrap">
+                    <div className="mag-recom-img-box">
                       <img src={img} alt={p.name} />
                     </div>
-                    <h3 className="recom-name">{p.name}</h3>
-                    <p className="recom-price">${pPrice}</p>
+                    <span style={{ fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#78716C', marginBottom: 4 }}>
+                      {p.category || 'Atelier Piece'}
+                    </span>
+                    <h3 className="mag-recom-name">{p.name}</h3>
+                    <div className="mag-recom-price">${pPrice}</div>
                   </div>
                 );
               })}
@@ -1748,31 +1530,21 @@ export default function ProductPage({ handle: propHandle } = {}) {
         )}
       </main>
 
-      {/* ── FOOTER ── */}
-      <footer
-        style={{
-          borderTop: '1px solid var(--border)',
-          background: 'var(--surface)',
-          padding: '3rem 2rem',
-          textAlign: 'center',
-          fontSize: '0.86rem',
-          color: 'var(--text3)',
-        }}
-      >
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.25rem', fontWeight: 800, color: 'var(--text1)', marginBottom: 8 }}>
-            {store.store_name}
-          </div>
-          <div style={{ marginBottom: 16 }}>
-            {store.tagline || 'Modern Tailoring & AI Virtual Fitting Studio'}
-          </div>
+      {/* ── 5. MAGAZINE FOOTER ── */}
+      <footer className="mag-footer">
+        <div style={{ maxWidth: 1360, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', fontSize: '0.78rem', color: '#A8A29E' }}>
           <div>
-            &copy; {new Date().getFullYear()} {store.store_name}. Powered by VogueSocial Anycast Storefronts.
+            &copy; {new Date().getFullYear()} {store.store_name}. Powered by <strong>VogueSocial Storefronts</strong>.
+          </div>
+          <div style={{ display: 'flex', gap: '2rem' }}>
+            <span>Privacy Policy</span>
+            <span>Terms of Atelier</span>
+            <span>Global Courier Delivery</span>
           </div>
         </div>
       </footer>
 
-      {/* ── SLIDE-OVER CART DRAWER ── */}
+      {/* ── 6. SLIDE-OVER CART DRAWER ── */}
       {isCartOpen && (
         <div
           style={{
@@ -1781,7 +1553,7 @@ export default function ProductPage({ handle: propHandle } = {}) {
             zIndex: 60,
             display: 'flex',
             justifyContent: 'flex-end',
-            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+            backgroundColor: 'rgba(10, 10, 10, 0.65)',
             backdropFilter: 'blur(4px)',
           }}
           onClick={() => setIsCartOpen(false)}
@@ -1791,122 +1563,95 @@ export default function ProductPage({ handle: propHandle } = {}) {
               width: '100%',
               maxWidth: 440,
               height: '100%',
-              backgroundColor: 'var(--bg)',
-              borderLeft: '1px solid var(--border)',
+              backgroundColor: '#FFFFFF',
+              borderLeft: '1px solid #E7E5E4',
               display: 'flex',
               flexDirection: 'column',
-              boxShadow: '-8px 0 32px rgba(0, 0, 0, 0.2)',
+              boxShadow: '-10px 0 40px rgba(0, 0, 0, 0.2)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Drawer Header */}
+            {/* Header */}
             <div
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                padding: '1.25rem 1.5rem',
-                borderBottom: '1px solid var(--border)',
+                padding: '1.5rem',
+                borderBottom: '1px solid #E7E5E4',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ShoppingBag size={20} color="var(--text1)" />
-                <span style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--text1)', fontFamily: 'var(--font-heading)' }}>
-                  Shopping Bag ({cartItemCount})
-                </span>
+              <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.25rem', fontWeight: 600, letterSpacing: '0.04em' }}>
+                Shopping Bag ({cartItemCount})
               </div>
               <button
                 onClick={() => setIsCartOpen(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716C' }}
               >
                 <X size={20} />
               </button>
             </div>
 
-            {/* Free Shipping Progress */}
-            <div style={{ padding: '0.85rem 1.5rem', background: 'var(--bg2)', borderBottom: '1px solid var(--border)', fontSize: '0.78rem' }}>
-              {cartSubtotal >= 150 ? (
-                <div style={{ color: '#16a34a', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <CheckCircle2 size={14} /> You unlocked Free Worldwide Express Shipping!
-                </div>
-              ) : (
-                <div style={{ color: 'var(--text2)' }}>
-                  Add <strong>${(150 - cartSubtotal).toFixed(2)}</strong> more for <strong>Free Express Shipping</strong>
-                </div>
-              )}
-            </div>
-
-            {/* Items List */}
+            {/* Items */}
             <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
               {cart.items.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--text3)' }}>
-                  <ShoppingBag size={42} style={{ margin: '0 auto 1rem', opacity: 0.35 }} />
-                  <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text1)', marginBottom: 6 }}>
-                    Your shopping bag is empty
+                <div style={{ textAlign: 'center', padding: '5rem 1rem', color: '#78716C' }}>
+                  <ShoppingBag size={40} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
+                  <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.1rem', color: '#0A0A0A', marginBottom: 6 }}>
+                    Your bag is empty
                   </div>
-                  <div style={{ fontSize: '0.85rem' }}>
-                    Explore the catalog and try on luxury silhouettes with AI!
+                  <div style={{ fontSize: '0.82rem' }}>
+                    Explore the collection and try on silhouettes with AI.
                   </div>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   {cart.items.map((item, idx) => (
                     <div
                       key={`${item.productId}-${idx}`}
-                      style={{
-                        display: 'flex',
-                        gap: '1rem',
-                        paddingBottom: '1.25rem',
-                        borderBottom: '1px solid var(--border)',
-                      }}
+                      style={{ display: 'flex', gap: '1rem', paddingBottom: '1.5rem', borderBottom: '1px solid #F5F5F4' }}
                     >
                       <img
                         src={item.image}
                         alt={item.name}
-                        style={{
-                          width: 72,
-                          height: 94,
-                          objectFit: 'cover',
-                          borderRadius: 6,
-                          border: '1px solid var(--border)',
-                        }}
+                        style={{ width: 75, height: 100, objectFit: 'cover', background: '#F5F5F4' }}
                       />
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '0.98rem', fontWeight: 600, color: '#0A0A0A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {item.name}
                         </div>
-                        <div style={{ fontSize: '0.76rem', color: 'var(--text3)', marginTop: 2 }}>
+                        <div style={{ fontSize: '0.75rem', color: '#78716C', marginTop: 3 }}>
                           Color: {item.color} · Size: {item.size}
                         </div>
-                        <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text1)', marginTop: 4 }}>
+                        <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#0A0A0A', marginTop: 6 }}>
                           ${item.price}
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--bg2)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #E7E5E4' }}>
                             <button
                               onClick={() => handleUpdateCartQty(idx, -1)}
-                              style={{ padding: '2px 8px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text1)' }}
+                              style={{ padding: '3px 8px', background: 'none', border: 'none', cursor: 'pointer', color: '#44403C' }}
                             >
-                              <Minus size={12} />
+                              <Minus size={11} />
                             </button>
-                            <span style={{ fontSize: '0.82rem', fontWeight: 700, padding: '0 6px', minWidth: 20, textAlign: 'center' }}>
+                            <span style={{ fontSize: '0.8rem', fontWeight: 700, padding: '0 6px', minWidth: 20, textAlign: 'center' }}>
                               {item.quantity || 1}
                             </span>
                             <button
                               onClick={() => handleUpdateCartQty(idx, 1)}
-                              style={{ padding: '2px 8px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text1)' }}
+                              style={{ padding: '3px 8px', background: 'none', border: 'none', cursor: 'pointer', color: '#44403C' }}
                             >
-                              <Plus size={12} />
+                              <Plus size={11} />
                             </button>
                           </div>
 
                           <button
                             onClick={() => handleRemoveCartItem(idx)}
-                            style={{ background: 'none', border: 'none', color: 'var(--text3)', cursor: 'pointer', padding: 2 }}
+                            style={{ background: 'none', border: 'none', color: '#A8A29E', cursor: 'pointer', padding: 2 }}
                             title="Remove"
                           >
-                            <Trash2 size={15} />
+                            <Trash2 size={14} />
                           </button>
                         </div>
                       </div>
@@ -1916,99 +1661,53 @@ export default function ProductPage({ handle: propHandle } = {}) {
               )}
             </div>
 
-            {/* Cart Footer */}
+            {/* Footer */}
             {cart.items.length > 0 && (
-              <div style={{ padding: '1.5rem', borderTop: '1px solid var(--border)', background: 'var(--surface)' }}>
-                {/* Promo Voucher */}
-                <div style={{ display: 'flex', gap: 6, marginBottom: '1rem' }}>
+              <div style={{ padding: '1.5rem', borderTop: '1px solid #E7E5E4', background: '#FAFAF9' }}>
+                <div style={{ display: 'flex', gap: 6, marginBottom: '1.25rem' }}>
                   <input
                     type="text"
-                    placeholder="Promo code (try VOGUE20)"
+                    placeholder="Voucher code (try VOGUE20)"
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                    style={{
-                      flex: 1,
-                      padding: '0.55rem 0.85rem',
-                      border: '1px solid var(--border)',
-                      borderRadius: 'var(--btn-radius)',
-                      fontSize: '0.82rem',
-                      outline: 'none',
-                      background: 'var(--bg)',
-                      color: 'var(--text1)'
-                    }}
+                    style={{ flex: 1, padding: '0.55rem 0.85rem', border: '1px solid #D6D3D1', fontSize: '0.8rem', outline: 'none', background: '#FFFFFF' }}
                   />
                   <button
                     onClick={() => {
-                      if (promoCode === 'VOGUE20') {
-                        setDiscountApplied(true);
-                        showToast('20% Vogue discount applied!');
-                      } else {
-                        showToast('Invalid coupon. Try VOGUE20');
-                      }
+                      if (promoCode === 'VOGUE20') setDiscountApplied(true);
                     }}
-                    style={{
-                      padding: '0.55rem 1rem',
-                      background: 'var(--text1)',
-                      color: 'var(--bg)',
-                      border: 'none',
-                      borderRadius: 'var(--btn-radius)',
-                      fontSize: '0.8rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                    }}
+                    style={{ padding: '0.55rem 1rem', background: '#0A0A0A', color: '#FFFFFF', border: 'none', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', cursor: 'pointer' }}
                   >
                     Apply
                   </button>
                 </div>
 
-                {/* Calculation breakdown */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: '1.25rem', fontSize: '0.85rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text3)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#78716C' }}>
                     <span>Subtotal</span>
                     <span>${cartSubtotal.toLocaleString()}</span>
                   </div>
 
                   {discountApplied && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#16a34a', fontWeight: 700 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#16A34A', fontWeight: 600 }}>
                       <span>VIP Promo (-20%)</span>
                       <span>-${(cartSubtotal * 0.2).toFixed(2)}</span>
                     </div>
                   )}
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text3)' }}>
-                    <span>Express Shipping</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#78716C' }}>
+                    <span>Express Worldwide Delivery</span>
                     <span>{cartSubtotal >= 150 ? 'FREE' : '$15.00'}</span>
                   </div>
 
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      fontSize: '1.15rem',
-                      fontWeight: 900,
-                      color: 'var(--text1)',
-                      paddingTop: 8,
-                      borderTop: '1px solid var(--border)',
-                    }}
-                  >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 800, color: '#0A0A0A', paddingTop: 8, borderTop: '1px solid #E7E5E4' }}>
                     <span>Total</span>
                     <span>${(finalTotal + (cartSubtotal >= 150 ? 0 : 15)).toLocaleString()}</span>
                   </div>
                 </div>
 
                 {checkoutSuccess ? (
-                  <div
-                    style={{
-                      padding: '0.85rem',
-                      background: '#f0fdf4',
-                      border: '1px solid #bbf7d0',
-                      borderRadius: 'var(--btn-radius)',
-                      color: '#166534',
-                      textAlign: 'center',
-                      fontSize: '0.85rem',
-                      fontWeight: 700,
-                    }}
-                  >
+                  <div style={{ padding: '0.85rem', background: '#F0FDF4', border: '1px solid #BBF7D0', color: '#166534', textAlign: 'center', fontSize: '0.82rem', fontWeight: 700 }}>
                     ✓ Order Dispatched! Confirmation sent to your inbox.
                   </div>
                 ) : (
@@ -2024,12 +1723,13 @@ export default function ProductPage({ handle: propHandle } = {}) {
                     style={{
                       width: '100%',
                       padding: '1.1rem',
-                      background: 'var(--accent)',
-                      color: 'var(--accent-text)',
+                      background: '#0A0A0A',
+                      color: '#FFFFFF',
                       border: 'none',
-                      borderRadius: 'var(--btn-radius)',
-                      fontSize: '0.98rem',
-                      fontWeight: 800,
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.14em',
+                      textTransform: 'uppercase',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -2037,12 +1737,12 @@ export default function ProductPage({ handle: propHandle } = {}) {
                       gap: 8,
                     }}
                   >
-                    <Lock size={15} />
-                    <span>Proceed to Secure Checkout</span>
+                    <Lock size={14} />
+                    <span>Proceed to Checkout</span>
                   </button>
                 )}
 
-                <div style={{ textAlign: 'center', marginTop: 10, fontSize: '0.72rem', color: 'var(--text3)' }}>
+                <div style={{ textAlign: 'center', marginTop: 10, fontSize: '0.7rem', color: '#A8A29E' }}>
                   🔒 256-Bit Encrypted Edge Checkout · Powered by VogueSocial
                 </div>
               </div>
@@ -2051,7 +1751,7 @@ export default function ProductPage({ handle: propHandle } = {}) {
         </div>
       )}
 
-      {/* ── SIZE GUIDE MODAL ── */}
+      {/* ── 7. SIZE GUIDE MODAL ── */}
       {isSizeGuideOpen && (
         <div
           style={{
@@ -2061,7 +1761,7 @@ export default function ProductPage({ handle: propHandle } = {}) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: 'rgba(15, 23, 42, 0.6)',
+            backgroundColor: 'rgba(10, 10, 10, 0.65)',
             backdropFilter: 'blur(4px)',
             padding: '1rem',
           }}
@@ -2069,72 +1769,69 @@ export default function ProductPage({ handle: propHandle } = {}) {
         >
           <div
             style={{
-              background: '#ffffff',
-              borderRadius: 16,
-              maxWidth: 580,
+              background: '#FFFFFF',
+              maxWidth: 560,
               width: '100%',
-              padding: '2rem',
+              padding: '2.5rem',
+              color: '#0A0A0A',
               boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
-              color: '#0f172a',
             }}
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Ruler size={20} color="#4f46e5" />
-                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Garment Size Guide</h3>
-              </div>
+              <h3 style={{ margin: 0, fontFamily: 'Playfair Display, serif', fontSize: '1.4rem', fontWeight: 600 }}>Atelier Sizing Guide</h3>
               <button
                 onClick={() => setIsSizeGuideOpen(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716C' }}
               >
                 <X size={20} />
               </button>
             </div>
 
-            {/* Unit switch */}
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-              <div style={{ display: 'flex', background: '#f1f5f9', borderRadius: 8, padding: 3 }}>
+              <div style={{ display: 'flex', border: '1px solid #E7E5E4' }}>
                 <button
                   onClick={() => setSizeGuideUnit('cm')}
                   style={{
                     padding: '4px 12px',
                     border: 'none',
-                    borderRadius: 6,
-                    fontSize: '0.75rem',
+                    fontSize: '0.72rem',
                     fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
                     cursor: 'pointer',
-                    background: sizeGuideUnit === 'cm' ? '#ffffff' : 'transparent',
-                    boxShadow: sizeGuideUnit === 'cm' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                    background: sizeGuideUnit === 'cm' ? '#0A0A0A' : '#FFFFFF',
+                    color: sizeGuideUnit === 'cm' ? '#FFFFFF' : '#78716C',
                   }}
                 >
-                  Centimeters (cm)
+                  CM
                 </button>
                 <button
                   onClick={() => setSizeGuideUnit('in')}
                   style={{
                     padding: '4px 12px',
                     border: 'none',
-                    borderRadius: 6,
-                    fontSize: '0.75rem',
+                    fontSize: '0.72rem',
                     fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
                     cursor: 'pointer',
-                    background: sizeGuideUnit === 'in' ? '#ffffff' : 'transparent',
-                    boxShadow: sizeGuideUnit === 'in' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                    background: sizeGuideUnit === 'in' ? '#0A0A0A' : '#FFFFFF',
+                    color: sizeGuideUnit === 'in' ? '#FFFFFF' : '#78716C',
                   }}
                 >
-                  Inches (in)
+                  IN
                 </button>
               </div>
             </div>
 
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
               <thead>
-                <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
-                  <th style={{ padding: '0.75rem' }}>Size</th>
-                  <th style={{ padding: '0.75rem' }}>Bust / Chest</th>
-                  <th style={{ padding: '0.75rem' }}>Waist</th>
-                  <th style={{ padding: '0.75rem' }}>Hips</th>
+                <tr style={{ background: '#F5F5F4', textAlign: 'left', borderBottom: '1px solid #E7E5E4' }}>
+                  <th style={{ padding: '0.65rem' }}>Size</th>
+                  <th style={{ padding: '0.65rem' }}>Bust / Chest</th>
+                  <th style={{ padding: '0.65rem' }}>Waist</th>
+                  <th style={{ padding: '0.65rem' }}>Hips</th>
                 </tr>
               </thead>
               <tbody>
@@ -2145,33 +1842,26 @@ export default function ProductPage({ handle: propHandle } = {}) {
                   { size: 'L', bustCm: '95-100', bustIn: '37.5-39.5', waistCm: '75-80', waistIn: '29.5-31.5', hipCm: '101-106', hipIn: '40-42' },
                   { size: 'XL', bustCm: '101-106', bustIn: '40-42', waistCm: '81-86', waistIn: '32-34', hipCm: '107-112', hipIn: '42-44' },
                 ].map((row) => (
-                  <tr key={row.size} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '0.75rem', fontWeight: 800 }}>{row.size}</td>
-                    <td style={{ padding: '0.75rem', color: '#475569' }}>
+                  <tr key={row.size} style={{ borderBottom: '1px solid #F5F5F4' }}>
+                    <td style={{ padding: '0.65rem', fontWeight: 700 }}>{row.size}</td>
+                    <td style={{ padding: '0.65rem', color: '#57534E' }}>
                       {sizeGuideUnit === 'cm' ? `${row.bustCm} cm` : `${row.bustIn} in`}
                     </td>
-                    <td style={{ padding: '0.75rem', color: '#475569' }}>
+                    <td style={{ padding: '0.65rem', color: '#57534E' }}>
                       {sizeGuideUnit === 'cm' ? `${row.waistCm} cm` : `${row.waistIn} in`}
                     </td>
-                    <td style={{ padding: '0.75rem', color: '#475569' }}>
+                    <td style={{ padding: '0.65rem', color: '#57534E' }}>
                       {sizeGuideUnit === 'cm' ? `${row.hipCm} cm` : `${row.hipIn} in`}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-
-            <div style={{ marginTop: '1.5rem', background: '#eff6ff', padding: '0.85rem', borderRadius: 8, fontSize: '0.78rem', color: '#1e40af', display: 'flex', gap: 8 }}>
-              <Info size={16} style={{ flexShrink: 0, marginTop: 2 }} />
-              <div>
-                <strong>Pro-fit recommendation:</strong> Try our AI Fitting Room with your uploaded photo or preset model to observe real-time silhouette drape and collar fit before ordering.
-              </div>
-            </div>
           </div>
         </div>
       )}
 
-      {/* ── WRITE REVIEW MODAL ── */}
+      {/* ── 8. WRITE REVIEW MODAL ── */}
       {isWriteReviewOpen && (
         <div
           style={{
@@ -2181,7 +1871,7 @@ export default function ProductPage({ handle: propHandle } = {}) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+            backgroundColor: 'rgba(10, 10, 10, 0.65)',
             backdropFilter: 'blur(4px)',
             padding: '1rem',
           }}
@@ -2189,29 +1879,28 @@ export default function ProductPage({ handle: propHandle } = {}) {
         >
           <div
             style={{
-              background: '#ffffff',
-              borderRadius: 16,
+              background: '#FFFFFF',
               maxWidth: 500,
               width: '100%',
-              padding: '2rem',
+              padding: '2.5rem',
+              color: '#0A0A0A',
               boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
-              color: '#0f172a',
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Write a Verified Review</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h3 style={{ margin: 0, fontFamily: 'Playfair Display, serif', fontSize: '1.4rem', fontWeight: 600 }}>Client Testimonial</h3>
               <button
                 onClick={() => setIsWriteReviewOpen(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716C' }}
               >
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleAddReview} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleAddReview} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, marginBottom: 4 }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>
                   Your Name
                 </label>
                 <input
@@ -2220,91 +1909,60 @@ export default function ProductPage({ handle: propHandle } = {}) {
                   placeholder="e.g. Sarah Jenkins"
                   value={newReviewForm.author}
                   onChange={(e) => setNewReviewForm({ ...newReviewForm, author: e.target.value })}
-                  style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #cbd5e1', borderRadius: 8, fontSize: '0.85rem', outline: 'none' }}
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #D6D3D1', fontSize: '0.85rem', outline: 'none' }}
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, marginBottom: 4 }}>
-                    Overall Rating
-                  </label>
-                  <select
-                    value={newReviewForm.rating}
-                    onChange={(e) => setNewReviewForm({ ...newReviewForm, rating: Number(e.target.value) })}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #cbd5e1', borderRadius: 8, fontSize: '0.85rem', outline: 'none', background: '#fff' }}
-                  >
-                    <option value={5}>5 Stars - Perfect</option>
-                    <option value={4}>4 Stars - Great</option>
-                    <option value={3}>3 Stars - Average</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, marginBottom: 4 }}>
-                    Fit Experience
-                  </label>
-                  <select
-                    value={newReviewForm.fit}
-                    onChange={(e) => setNewReviewForm({ ...newReviewForm, fit: e.target.value })}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #cbd5e1', borderRadius: 8, fontSize: '0.85rem', outline: 'none', background: '#fff' }}
-                  >
-                    <option value="True to size">True to size</option>
-                    <option value="Runs slightly small">Runs slightly small</option>
-                    <option value="Runs slightly large">Runs slightly large</option>
-                  </select>
-                </div>
-              </div>
-
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, marginBottom: 4 }}>
-                  Review Headline
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>
+                  Headline
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Stunning texture, AI try-on matched perfectly"
+                  placeholder="e.g. Magnificent silhouette and drape"
                   value={newReviewForm.title}
                   onChange={(e) => setNewReviewForm({ ...newReviewForm, title: e.target.value })}
-                  style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #cbd5e1', borderRadius: 8, fontSize: '0.85rem', outline: 'none' }}
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #D6D3D1', fontSize: '0.85rem', outline: 'none' }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, marginBottom: 4 }}>
-                  Detailed Experience
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>
+                  Fit & Observations
                 </label>
                 <textarea
                   required
                   rows={4}
-                  placeholder="Share details on garment fit, textile feel, and your experience with virtual fitting..."
+                  placeholder="Describe the fabric weight, shoulder silhouette, and virtual fitting experience..."
                   value={newReviewForm.comment}
                   onChange={(e) => setNewReviewForm({ ...newReviewForm, comment: e.target.value })}
-                  style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #cbd5e1', borderRadius: 8, fontSize: '0.85rem', outline: 'none', resize: 'vertical' }}
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #D6D3D1', fontSize: '0.85rem', outline: 'none', resize: 'vertical' }}
                 />
               </div>
 
               <button
                 type="submit"
                 style={{
-                  padding: '0.85rem',
-                  background: '#0f172a',
-                  color: '#ffffff',
+                  padding: '1rem',
+                  background: '#0A0A0A',
+                  color: '#FFFFFF',
                   border: 'none',
-                  borderRadius: 8,
-                  fontWeight: 800,
-                  fontSize: '0.9rem',
+                  fontWeight: 700,
+                  fontSize: '0.8rem',
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
                   cursor: 'pointer',
                   marginTop: 6,
                 }}
               >
-                Submit Review
+                Publish Testimonial
               </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* ── VIRTUAL TRY-ON MODAL ── */}
+      {/* ── 9. VIRTUAL TRY-ON MODAL ── */}
       {isTryOnOpen && (
         <TryOnModal
           isOpen={isTryOnOpen}
@@ -2316,10 +1974,10 @@ export default function ProductPage({ handle: propHandle } = {}) {
         />
       )}
 
-      {/* ── FLOATING TOAST NOTIFICATION ── */}
+      {/* ── 10. FLOATING TOAST ── */}
       {toastMessage && (
-        <div className="floating-toast">
-          <CheckCircle2 size={18} color="#4ade80" />
+        <div className="mag-toast">
+          <CheckCircle2 size={16} color="#FFFFFF" />
           <span>{toastMessage}</span>
         </div>
       )}
