@@ -57,12 +57,8 @@ function detectStoreSubdomain() {
     }
   }
 
-  // 3. Custom domains containing store keywords
-  if (hostname.includes('studiolabel')) {
-    return 'studiolabel';
-  }
-
-  return null;
+  // 3. Dynamic Custom Domains: if it's an external custom domain (e.g. shop.luxuryatelier.com)
+  return hostname;
 }
 
 export default function App() {
