@@ -126,9 +126,9 @@ const DEFAULT_REVIEWS = [
   }
 ];
 
-export default function ProductPage() {
+export default function ProductPage({ handle: propHandle } = {}) {
   const routeParams = useParams();
-  const handle = routeParams.handle || 'studiolabel';
+  const handle = (propHandle || routeParams.handle || 'studiolabel').toLowerCase();
   const id = routeParams.id || '';
   const navigate = useNavigate();
 

@@ -3,7 +3,8 @@ import React, { useEffect, useState, useMemo } from 'react';
 import {
   Search, ShoppingBag, ArrowRight, Sparkles, Star, Check, X,
   ShieldCheck, Truck, RotateCcw, Lock, ChevronDown, Filter,
-  Heart, SlidersHorizontal, Plus, Minus, Trash2, ExternalLink
+  Heart, SlidersHorizontal, Plus, Minus, Trash2, ExternalLink,
+  Globe
 } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import styles from './store.module.css';
@@ -35,10 +36,10 @@ function hexToRgb(hex) {
   return { r, g, b };
 }
 
-export default function StorefrontPage() {
+export default function StorefrontPage({ handle: propHandle } = {}) {
   const params = useParams();
   const navigate = useNavigate();
-  const handle = (params.handle || 'studiolabel').toLowerCase();
+  const handle = (propHandle || params.handle || 'studiolabel').toLowerCase();
 
   const [store, setStore] = useState(null);
   const [products, setProducts] = useState([]);

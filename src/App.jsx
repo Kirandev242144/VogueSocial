@@ -32,13 +32,55 @@ import UserProfilePage from './app/profile/page';
 import ShopPage from './app/shop/page';
 import WardrobePage from './app/wardrobe/page';
 
+function detectStoreSubdomain() {
+  if (typeof window === 'undefined') return null;
+  const hostname = window.location.hostname.toLowerCase();
+
+  // Exclude bare localhost and standard root domains
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === 'voguesocial.com' || hostname === 'www.voguesocial.com') {
+    return null;
+  }
+
+  // 1. Support local dev subdomain: e.g. studiolabel.localhost
+  if (hostname.endsWith('.localhost')) {
+    const parts = hostname.split('.');
+    if (parts.length >= 2 && parts[0] && parts[0] !== 'localhost') {
+      return parts[0];
+    }
+  }
+
+  // 2. Support production subdomains: e.g. studiolabel.voguesocial.com
+  if (hostname.endsWith('.voguesocial.com')) {
+    const sub = hostname.replace('.voguesocial.com', '');
+    if (sub && sub !== 'www' && sub !== 'api' && sub !== 'admin') {
+      return sub;
+    }
+  }
+
+  // 3. Custom domains containing store keywords
+  if (hostname.includes('studiolabel')) {
+    return 'studiolabel';
+  }
+
+  return null;
+}
+
 export default function App() {
+  const storeSubdomain = detectStoreSubdomain();
+
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Main Feed / Landing Page */}
-          <Route path="/" element={<Home />} />
+          {/* If accessed via merchant subdomain (e.g. studiolabel.localhost:3001 or studiolabel.voguesocial.com), route root to storefront */}
+          {storeSubdomain ? (
+            <>
+              <Route path="/" element={<StorefrontPage handle={storeSubdomain} />} />
+              <Route path="/product/:id" element={<ProductPage handle={storeSubdomain} />} />
+            </>
+          ) : (
+            <Route path="/" element={<Home />} />
+          )}
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/wardrobe" element={<WardrobePage />} />
           <Route path="/profile" element={<UserProfilePage />} />
