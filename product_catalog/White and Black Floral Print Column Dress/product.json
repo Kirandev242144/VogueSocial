@@ -1,0 +1,27 @@
+{
+  "id": "shp-2",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "White & Black Floral Print Column Dress",
+  "category": "dresses",
+  "subcategory": "column-dress",
+  "target_audience": "Women",
+  "sku": "DRS-WBF-002",
+  "description": "Bold monochrome motif creates clean vertical visual lines. Perfect for both day and evening.",
+  "price": 85,
+  "currency": "USD",
+  "image_url": "/product_catalog/White%20%26%20Black%20Floral%20Print%20Column%20Dress/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\White & Black Floral Print Column Dress\\image.jpg",
+  "stock": 18,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL"
+  ],
+  "colors": [
+    "#ffffff",
+    "#000000"
+  ],
+  "created_at": "2026-09-19T08:15:32.225Z"
+}

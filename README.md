@@ -1,89 +1,176 @@
-# VogueSocial - The Future of Fashion Discovery
+# VogueSocial — Haute Virtual Try-On, AI Stylist & Creator Storefronts
 
-VogueSocial is a Next.js-based social marketplace featuring advanced **AI-powered Virtual Try-On** technology. It bridges the gap between consumers, fashion designers, and merchants, allowing users to discover apparel, try on looks virtually via cloud-based GPU execution, and purchase items safely through an escrow-backed payment structure.
+> A luxury social fashion marketplace featuring **In-Chat AI Virtual Try-On**, **In-Browser AI Background Removal**, **Personal Capsule Wardrobe Management**, and **Multi-Theme Merchant Storefronts**.
 
 ---
 
-## 🚀 Key Modules & Architecture
+## 🏛️ Client Architecture Diagram
 
-The platform is designed around three main user roles, supported by key server APIs and a Supabase database backend:
+The diagram below illustrates the client-side system architecture, user workflows, in-browser AI processing pipeline, and modular component hierarchy:
+
+```mermaid
+graph TD
+    subgraph UI_Presentation_Layer ["1. Presentation & Experience Layer"]
+        NAV["Navbar & Global Navigation<br/>(Logo, Shop, Wardrobe, Try-Ons, Profile)"]
+        
+        FEED["Social Editorial Feed (/feed)<br/>• Community Try-On Posts<br/>• 'Tried via VogueSocial' Badges<br/>• 1-Click Virtual Fitting"]
+        
+        SHOP["AI Stylist Shop Studio (/shop)<br/>• Conversational AI Personal Shopper<br/>• Zero-Popup In-Chat Try-On<br/>• Real-time Scene Selector (Studio, Street, Beach)<br/>• Quick-View & Direct Checkout"]
+        
+        LOOK_MODAL["'View Full Look' 2-Column Canvas<br/>• Interactive Garment Hotspots<br/>• Frosted Glass Scene Controls<br/>• Matched Items Multi-Cart Checkout"]
+        
+        WARDROBE["Personal Capsule Wardrobe (/wardrobe)<br/>• My Clothes Catalog & Multi-Facet Filter Drawer<br/>• Mix & Match Mannequin Studio<br/>• 14-Day Daily Look Calendar Scheduler<br/>• Trip Packing Planner & Suitcase Picker"]
+        
+        STOREFRONTS["Public Merchant Storefronts (/store/:handle)<br/>• 5 Editorial Themes (Minimal, Luxury, Streetwear, Modern, Boutique)<br/>• Real-time Category Filtering & Search<br/>• Product Showcase & Virtual Try-On Integration"]
+        
+        MERCHANT_PORTAL["Merchant Dashboard (/merchant)<br/>• Website Studio & Branding Builder<br/>• Product Inventory Management<br/>• Analytics & Order Tracking"]
+    end
+
+    subgraph Client_AI_Engine ["2. Client AI & Local Compute Pipeline"]
+        WASM_AI["@imgly/background-removal<br/>(Wasm SIMD / WebGPU)<br/>• In-Browser Garment Isolation<br/>• Transparent PNG Cutouts<br/>• 100% Client-Side Privacy (0 API Cost)"]
+        
+        TRYON_MODAL["TryOnModal Engine<br/>• Silhouette Fitting Canvas<br/>• Interactive Garment Overlays<br/>• Multi-Pose & Category Alignment"]
+        
+        LOCAL_STORAGE["Client State & Persistence<br/>• VogueSocial Cart Engine<br/>• AuthContext (Role & Session)<br/>• ThemeContext (Editorial Palettes)"]
+    end
+
+    subgraph Modular_Components ["3. Modular Component Hierarchy (100% CSS Modules)"]
+        COMP_SHOP["src/components/shop/<br/>• AiStylistPanel.jsx<br/>• ViewFullLookModal.jsx<br/>• ProductCard.jsx<br/>• FilterBar.jsx"]
+        
+        COMP_WARDROBE["src/components/wardrobe/<br/>• WardrobeHeader.jsx<br/>• WardrobeTabs.jsx<br/>• SubtleAiStylistBar.jsx<br/>• ClothesTab.jsx & GarmentCard.jsx<br/>• FilterDrawer.jsx<br/>• OutfitsTab.jsx & OutfitCard.jsx<br/>• CalendarTab.jsx<br/>• TripPlannerTab.jsx<br/>• CreateTripModal.jsx<br/>• PackClothesModal.jsx<br/>• AddGarmentModal.jsx<br/>• MixMatchStylingModal.jsx"]
+        
+        COMP_MERCHANT["src/components/merchant/<br/>• WebsiteSettings.jsx<br/>• ThemeSelector.jsx<br/>• ProductFormModal.jsx"]
+    end
+
+    %% Flow Connections
+    NAV --> FEED
+    NAV --> SHOP
+    NAV --> WARDROBE
+    NAV --> MERCHANT_PORTAL
+    
+    SHOP --> LOOK_MODAL
+    SHOP --> TRYON_MODAL
+    FEED --> TRYON_MODAL
+    
+    WARDROBE --> WASM_AI
+    WASM_AI --> COMP_WARDROBE
+    WARDROBE --> TRYON_MODAL
+    
+    STOREFRONTS --> TRYON_MODAL
+    STOREFRONTS --> LOCAL_STORAGE
+    SHOP --> LOCAL_STORAGE
+    
+    SHOP -.-> COMP_SHOP
+    WARDROBE -.-> COMP_WARDROBE
+    MERCHANT_PORTAL -.-> COMP_MERCHANT
+```
+
+---
+
+## ✨ Key Features & Capabilities
+
+### 1. In-Chat AI Stylist & Zero-Popup Virtual Try-On
+- **Conversational Assistant**: Chat directly with an intelligent AI personal shopper to receive contextual garment pairings, outfit recommendations, and trend advice.
+- **Zero-Popup Inline Fitting**: Clicking **"Try On"** does not disrupt the user with blocking modals; it renders the virtual fitting directly in the chat thread with animated progress and high-definition results.
+- **Dynamic Scene Selector**: Switch model backdrops on the fly between **Studio**, **Street**, **Beach**, and **Custom** lighting.
+- **2-Column "View Full Look" Experience**: Deep visual exploration canvas featuring glowing interactive hotspots on garments, frosted glass toolbar, and a direct "Shop this Look" sidebar.
+
+### 2. Client-Side In-Browser AI Background Removal
+- Powered by **`@imgly/background-removal`** running on WebAssembly & WebGPU.
+- **100% Private & Free**: Garment photos taken on floors, hangers, or beds are segmented directly inside the user's browser—images never leave the user's device for cutout processing.
+- **Transparent PNG Cutout Output**: Automatically outputs pure transparent PNG base64 assets with a subtle transparency checkerboard preview and 1-click revert capability.
+
+### 3. Personal Capsule Wardrobe Studio
+- **My Clothes Catalog**: Digital clothing organizer featuring search, sorting (most worn, least worn, newest), category chips, and a slide-down multi-facet filter drawer (brand, season, occasion, color swatches).
+- **Mix & Match Styling Mannequin**: Multi-slot outfit builder to assemble tops, bottoms, outerwear, and shoes into coordinated looks.
+- **Daily Look Calendar**: 14-day upcoming outfit scheduler to assign looks to specific dates and log daily wear counts.
+- **Trip Packing Planner**:
+  - Curated high-resolution destination cover thumbnails (Tokyo, Paris, Milan, New York, London, Bali, Dubai).
+  - Dedicated **Suitcase Garment Picker** to pack/unpack wardrobe pieces.
+  - Interactive **Travel Essentials Checklist** with custom item creation.
+
+### 4. Multi-Theme Public Merchant Storefronts (`/store/[handle]`)
+- Dynamic merchant stores driven by 5 curated architectural template themes:
+  - **Minimal**: Crisp editorial serif typography, clean stark borders, gallery aesthetic.
+  - **Luxury**: Dark obsidian surfaces, gold accents (`#C9A84C`), Playfair Display typography.
+  - **Streetwear**: High-contrast dark mode, bold Barlow Condensed typography, neon lime accent (`#CCFF00`).
+  - **Modern**: Plus Jakarta Sans, rounded pills, indigo accents.
+  - **Boutique**: Earthy warm tones, Libre Baskerville, soft terracotta accents.
+- Responsive product detail pages with color chips, size selectors, stock status, and virtual try-on buttons.
+
+### 5. Code Quality & Standards
+- **Strict 100% CSS Modules**: Zero inline styles (`style={...}`) across all components.
+- **Pure React JSX**: Fast, lightweight component structure powered by Vite.
+
+---
+
+## 📁 Repository Structure
 
 ```
-                  ┌───────────────────────────────┐
-                  │          Super Admin          │
-                  │   Disputes, Escrow, Webhooks  │
-                  └───────────────┬───────────────┘
-                                  │
-      ┌───────────────────────────┼───────────────────────────┐
-      ▼                                                       ▼
-┌───────────────────────────┐                           ┌───────────────────────────┐
-│     Merchants / Vendors   │ ◄─── Sync Product Catalog ──► │         Customers         │
-│  Onboarding, Dashboards   │                           │ Virtual Try-on, Profiles  │
-└───────────────────────────┘                           └───────────────────────────┘
+virtual-try-on/
+├── public/
+│   ├── Shop_images/             # High-res curated editorial apparel catalog
+│   └── product_catalog/         # Multi-angle garment assets
+├── src/
+│   ├── app/
+│   │   ├── admin/               # Admin verification & dispute portals
+│   │   ├── brand/[handle]/      # Public creator brand hubs
+│   │   ├── feed/                # Social lookbook community feed
+│   │   ├── merchant/            # Merchant studio, analytics, and website builder
+│   │   ├── product/[id]/        # Product detail with 'Tried via VogueSocial'
+│   │   ├── profile/             # User account settings
+│   │   ├── shop/                # AI Stylist & Zero-Popup Try-On shop
+│   │   ├── store/[handle]/      # Multi-theme public merchant storefronts
+│   │   └── wardrobe/            # Personal wardrobe & trip packing planner
+│   ├── components/
+│   │   ├── merchant/            # Storefront builder subcomponents
+│   │   ├── shop/                # AI Stylist & View Full Look subcomponents
+│   │   ├── wardrobe/            # 13 modular wardrobe subcomponents
+│   │   ├── Navbar.jsx           # Global sticky editorial navigation
+│   │   └── TryOnModal.jsx       # Interactive virtual fitting canvas
+│   ├── context/
+│   │   └── AuthContext.jsx      # Client session & authentication context
+│   └── lib/
+│       ├── data.js              # Social feed & product catalog data
+│       ├── shopData.js          # AI stylist match matrix & product catalog
+│       └── wardrobeConstants.js # Color swatches, destination presets, categories
+├── package.json
+└── vite.config.js
 ```
 
 ---
 
-## 👥 User Roles & Features
+## 🛠️ Getting Started
 
-### 1. Customers (End-Users)
-*   **Virtual Try-On Output & Interface**: Select any compatible apparel item and see high-fidelity virtual overlays showing how it looks.
-*   **Social Feed Page**: An editorial fashion feed where customers can browse looks uploaded by creators and purchase matching outfits. 
-*   **Brand Profiles**: Consumers can click any creator or designer avatar to open their public **Brand Hub** (`/brand/[handle]`), featuring banner art, bio details, location data, follower counts, and their catalog sorted by clothing type (Tops & Jackets, Bottoms & Trousers, Dresses & Jumpsuits, Lifestyle & Others).
-*   **Social Media Sharing (Facebook & Instagram)**:
-    *   *Manual Share Loop (UGC)*: Instead of background auto-posting (which violates privacy and Meta developer policies), customers can generate a **Share Style Card** directly from the Try-On output panel.
-    *   *Web Share API*: Launches the native mobile/browser share menu to post structured image cards directly to Instagram/Facebook Stories or WhatsApp in one tap.
+### Prerequisites
+- **Node.js**: v18+ (tested on Node v20/v24)
+- **npm** or **yarn**
 
-### 2. Merchants / Vendors
-*   **Complete Onboarding Flow**: Multi-step registration process allowing vendors to configure store details (name, categories, website URLs, locations, social handles) and upload business registration documents.
-*   **Merchant Dashboard**: View sales statistics, manage inventory, monitor payouts, and audit API usage.
-*   **Meta Catalog Integration (Facebook/Instagram Sync)**:
-    *   *Export (VogueSocial ➔ Facebook)*: Push local products directly to the vendor's Facebook Shop catalog using Meta's Batch Graph API (`POST /v18.0/catalog_{id}/batch_items`).
-    *   *Import (Facebook ➔ VogueSocial)*: Pull catalog feeds directly from Facebook to onboard vendors quickly, checking for duplicates.
-    *   *Smart "Clothing-Only" Filter*: Automatically filters out incompatible items (shoes, accessories, etc.), ensuring only apparel suited for Virtual Try-On is processed.
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/Kirandev242144/VogueSocial.git
 
-### 3. Super Admins
-*   **Vendor Approval**: Review pending merchant registrations and approve/reject their status.
-*   **Escrow & Dispute Resolution Board**: Full control over active and settled transaction disputes (Claimant names, reason categories like "Damaged Item" or "Wrong Size", and dispute statuses: `open`, `under_review`, `resolved_refunded`, `resolved_released`).
-*   **Developer API Webhook Console**: Simulate incoming Shippo carrier updates. Delivering packages automatically releases corresponding escrow funds after a **48-Hour Auto-Release** settlement window.
+# Navigate into project directory
+cd VogueSocial
 
----
+# Install dependencies
+npm install
+```
 
-## ⚡ Core API Integrations
+### Development Server
+```bash
+npm run dev
+```
+The application will launch at `http://localhost:3001` (or `http://localhost:3000`).
 
-### 1. RunPod AI API (`/api/try-on`)
-*   Manages serverless GPU execution to process image-to-image Virtual Try-On models.
-*   Handles token authentication and queries the status of rendering jobs synchronously or asynchronously.
-
-### 2. Stripe Payments & Escrow Payouts (`/api/orders`)
-*   Creates payment intents and holds customer funds in platform escrow.
-*   Safely releases payments to vendor balances upon delivery confirmation or resolves/refunds disputes directly to customer credit cards through admin arbitration.
-
-### 3. Shippo Delivery Webhook Console (`/api/webhooks/shipping`)
-*   Listens to incoming carrier tracking events.
-*   Injects a `tracker.updated` event to unlock and release held vendor payments upon package arrival.
+### Production Build
+```bash
+npm run build
+```
+Compiles optimized assets in `dist/` with clean WebAssembly SIMD and WebGPU bundles.
 
 ---
 
-## ⛃ Database Schema (Supabase)
-
-The database schema spans six major tables:
-
-1.  **`public.profiles`**: Contains account data for customers, vendors, and admins. Stores store handles, category settings, location metrics, and onboarding approval states.
-2.  **`public.products`**: Contains names, descriptions, sizing parameters, prices, and image URLs.
-3.  **`public.orders`**: Stores transactions, status codes (`pending`, `shipped`, `delivered`, `cancelled`), and escrow parameters (`held`, `released`, `refunded`, `disputed`).
-4.  **`public.order_items`**: Maps orders to specific product quantities and unit prices.
-5.  **`public.payouts`**: Audits completed vendor balance transfers and stores Stripe transfer IDs.
-6.  **`public.disputes`**: Records reasons, claims text, and arbitration notes for contested orders.
-
----
-
-## 🔮 Future Roadmap & Planned Updates
-
-We plan to implement the following high-impact features in future releases of VogueSocial:
-
-1. **Instagram/Facebook Shopping Graph API Auto-Publishing**: Real-time product inventory sync automation as soon as a designer publishes a product on the platform.
-2. **Enhanced AI Virtual Try-On Capabilities**: Incorporating multi-pose options, high-definition model adjustments, and accessory overlays (e.g. sunglasses, bags, hats).
-3. **In-App Direct Checkout**: Facilitating seamless purchases inside Instagram/Facebook Shops directly linked to the VogueSocial Stripe escrow account.
-4. **Real-Time WebAR Try-On (Camera Feed)**: Implementing a real-time WebAR interface where users can preview clothing styles using their device's camera.
-5. **Social Styling Community Hub**: Enabling users to build public virtual lookbooks, vote on friend outfits, follow specific stylists, and share style recommendations.
+## 📄 License
+Proprietary & Confidential · VogueSocial Platform 2026

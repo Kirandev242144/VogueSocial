@@ -102,5 +102,69 @@
         "message": "Facebook Integration initialized."
       }
     ]
+  },
+  "tom@gmail.com": {
+    "connected": true,
+    "page_name": "VogueSocial Boutique",
+    "catalog_name": "VS_Apparel_Catalog",
+    "auto_sync": false,
+    "clothing_only": true,
+    "logs": [
+      {
+        "timestamp": "2026-08-24T05:43:59.404Z",
+        "type": "info",
+        "message": "Triggered manual Facebook Import..."
+      },
+      {
+        "timestamp": "2026-08-24T05:43:59.404Z",
+        "type": "info",
+        "message": "[Meta Graph API] GET /v18.0/page_VogueSocial Boutique/subscribed_apps"
+      },
+      {
+        "timestamp": "2026-08-24T05:43:59.404Z",
+        "type": "info",
+        "message": "[Meta Graph API] Fetching product catalog matching clothing filters..."
+      },
+      {
+        "timestamp": "2026-08-24T05:43:59.660Z",
+        "type": "success",
+        "message": "[Meta Graph API] Pulled clothing product: \"Meta Fitted Cropped Vest\" ($38) -> Saved to DB (ID: dd8d7fe4)"
+      },
+      {
+        "timestamp": "2026-08-24T05:43:59.790Z",
+        "type": "success",
+        "message": "[Meta Graph API] Pulled clothing product: \"Meta High-Rise Cargo Pants\" ($72) -> Saved to DB (ID: 45082950)"
+      },
+      {
+        "timestamp": "2026-08-24T05:43:59.917Z",
+        "type": "success",
+        "message": "[Meta Graph API] Pulled clothing product: \"Meta Knit Slip Dress\" ($88) -> Saved to DB (ID: 66e3d272)"
+      },
+      {
+        "timestamp": "2026-08-24T05:43:59.918Z",
+        "type": "success",
+        "message": "[Import Service] Sync finished. Imported 3 clothing items into database catalog."
+      },
+      {
+        "timestamp": "2026-08-24T05:43:51.139Z",
+        "type": "info",
+        "message": "Settings updated. Connected: YES, Auto-Sync: DISABLED."
+      },
+      {
+        "timestamp": "2026-08-24T05:43:44.619Z",
+        "type": "info",
+        "message": "Settings updated. Connected: YES, Auto-Sync: ACTIVE."
+      },
+      {
+        "timestamp": "2026-08-24T05:43:41.008Z",
+        "type": "info",
+        "message": "Settings updated. Connected: YES, Auto-Sync: DISABLED."
+      },
+      {
+        "timestamp": "2026-08-24T05:43:41.007Z",
+        "type": "info",
+        "message": "Facebook Integration initialized."
+      }
+    ]
   }
 }

@@ -1,0 +1,27 @@
+{
+  "id": "shp-1",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Floral Print Puff Sleeve A-Line Maxi Dress",
+  "category": "dresses",
+  "subcategory": "maxi-dress",
+  "target_audience": "Women",
+  "sku": "DRS-FLR-001",
+  "description": "Balances athletic shoulders with flattering A-line flare. High quality breathable summer fabric.",
+  "price": 59.99,
+  "currency": "USD",
+  "image_url": "/product_catalog/Floral%20Print%20Puff%20Sleeve%20A-Line%20Maxi%20Dress/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Floral Print Puff Sleeve A-Line Maxi Dress\\image.jpg",
+  "stock": 25,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L"
+  ],
+  "colors": [
+    "#1e40af",
+    "#ffffff",
+    "#1e293b"
+  ],
+  "created_at": "2026-09-19T08:15:31.923Z"
+}

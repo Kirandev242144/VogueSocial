@@ -1,0 +1,315 @@
+﻿.sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  border-right: 1px solid #f1f5f9;
+  background: #ffffff;
+  padding: 1.5rem 1.25rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  font-family: inherit;
+}
+
+/* Character Selector */
+.characterSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sectionHeading {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.characterCarousel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.carouselNavBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.carouselNavBtn:hover {
+  color: #0f172a;
+}
+
+.charactersList {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.characterItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.avatarRing {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  padding: 2px;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.characterItemActive .avatarRing {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.characterImg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.characterName {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.characterItemActive .characterName {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.carouselTrack {
+  width: 100%;
+  height: 3px;
+  background: #f1f5f9;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 0.25rem;
+}
+
+.carouselProgress {
+  width: 35%;
+  height: 100%;
+  background: #94a3b8;
+  border-radius: 99px;
+}
+
+/* Accordions */
+.filterSection {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 1.25rem;
+}
+
+.accordionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  padding: 0 0 0.85rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+  cursor: pointer;
+  text-align: left;
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.categoryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.hiddenCheckbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.customCheckbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.checkboxChecked {
+  background: #0f172a;
+  border-color: #0f172a;
+}
+
+.checkIcon {
+  color: #ffffff;
+}
+
+.categoryLabel {
+  font-size: 0.82rem;
+  color: #334155;
+}
+
+.categoryCount {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Sizes */
+.sizesRow {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.sizeBtn {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.sizeBtn:hover {
+  border-color: #0f172a;
+}
+
+.sizeBtnActive {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+/* Price Range */
+.priceContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.priceRangeSlider {
+  width: 100%;
+  accent-color: #0f172a;
+  cursor: pointer;
+}
+
+.priceLabels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.priceCurrent {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* User Footer Card */
+.userFooterCard {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.userAvatarContainer {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.userAvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.userInfoCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.userNameText {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.userRoleBadge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.userActionBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+
+.userActionBtn:hover {
+  color: #0f172a;
+}

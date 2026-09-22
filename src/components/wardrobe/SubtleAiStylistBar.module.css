@@ -1,0 +1,61 @@
+.subtleAiBar {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 12px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.subtleAiLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.sunIcon {
+  color: #EAB308;
+}
+
+.subtleAiBadge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #0F172A;
+  background: #E2E8F0;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.subtleAiRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quickTryOnPill {
+  background: #CCFF00;
+  color: #0A0A0A;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.quickTryOnPill:hover {
+  background: #B8E600;
+  transform: translateY(-1px);
+}

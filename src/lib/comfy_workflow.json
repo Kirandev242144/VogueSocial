@@ -1,0 +1,274 @@
+{
+  "1": {
+    "inputs": {
+      "ckpt_name": "RealVisXL_V4.0_Lightning.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint (SDXL)"
+    }
+  },
+  "2": {
+    "inputs": {
+      "clip_name": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors"
+    },
+    "class_type": "CLIPVisionLoader",
+    "_meta": {
+      "title": "Load CLIP Vision (IP-Adapter Encoders)"
+    }
+  },
+  "3": {
+    "inputs": {
+      "image": "input_person.png",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Person (Model Image)"
+    }
+  },
+  "4": {
+    "inputs": {
+      "image": "input_garment.png",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Garment (Product Image)"
+    }
+  },
+  "5": {
+    "inputs": {
+      "control_net_name": "controlnet-openpose-sdxl-1.0.safetensors"
+    },
+    "class_type": "ControlNetLoader",
+    "_meta": {
+      "title": "Load ControlNet (OpenPose)"
+    }
+  },
+  "6": {
+    "inputs": {
+      "detect_hand": "enable",
+      "detect_body": "enable",
+      "detect_face": "enable",
+      "image": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "OpenposePreprocessor",
+    "_meta": {
+      "title": "OpenPose Pose Extractor"
+    }
+  },
+  "7": {
+    "inputs": {
+      "strength": 0.8,
+      "start_percent": 0.0,
+      "end_percent": 1.0,
+      "positive": [
+        "8",
+        0
+      ],
+      "negative": [
+        "9",
+        0
+      ],
+      "control_net": [
+        "5",
+        0
+      ],
+      "image": [
+        "6",
+        0
+      ]
+    },
+    "class_type": "ControlNetApplyAdvanced",
+    "_meta": {
+      "title": "Apply ControlNet Pose Lock"
+    }
+  },
+  "8": {
+    "inputs": {
+      "text": "photorealistic, high quality, professional studio model photo, wearing the garment, fit body, sharp focus",
+      "clip": [
+        "1",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Positive Text Prompt"
+    }
+  },
+  "9": {
+    "inputs": {
+      "text": "blurry, low quality, deformed, disfigured, bad hands, mutated, cropped, text, watermark, bad lighting",
+      "clip": [
+        "1",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Negative Text Prompt"
+    }
+  },
+  "10": {
+    "inputs": {
+      "preset": "PLUS (high strength)",
+      "lora_strength": 0.0,
+      "provider": "CPU",
+      "model": [
+        "1",
+        0
+      ]
+    },
+    "class_type": "IPAdapterUnifiedLoader",
+    "_meta": {
+      "title": "Apply IP-Adapter Garment"
+    }
+  },
+  "11": {
+    "inputs": {
+      "weight": 0.85,
+      "weight_type": "linear",
+      "combine_embeds": "concat",
+      "start_at": 0.0,
+      "end_at": 1.0,
+      "embeds_scaling": "V only",
+      "ipadapter": [
+        "10",
+        1
+      ],
+      "image": [
+        "4",
+        0
+      ],
+      "model": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "IPAdapterAdvanced",
+    "_meta": {
+      "title": "IP-Adapter Detail Mapping"
+    }
+  },
+  "12": {
+    "inputs": {
+      "seed": 42,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 0.75,
+      "model": [
+        "11",
+        0
+      ],
+      "positive": [
+        "7",
+        0
+      ],
+      "negative": [
+        "7",
+        1
+      ],
+      "latent_image": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler Generator"
+    }
+  },
+  "13": {
+    "inputs": {
+      "pixels": [
+        "3",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ],
+      "mask": [
+        "17",
+        1
+      ],
+      "grow_mask_by": 6
+    },
+    "class_type": "VAEEncodeForInpaint",
+    "_meta": {
+      "title": "VAE Encode for Inpaint"
+    }
+  },
+  "14": {
+    "inputs": {
+      "samples": [
+        "12",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decoder (Latent to Pixels)"
+    }
+  },
+  "15": {
+    "inputs": {
+      "filename_prefix": "voguesocial_tryon",
+      "images": [
+        "16",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Result Image"
+    }
+  },
+  "16": {
+    "inputs": {
+      "destination": [
+        "3",
+        0
+      ],
+      "source": [
+        "14",
+        0
+      ],
+      "mask": [
+        "17",
+        1
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "Blend Clothes Back"
+    }
+  },
+  "17": {
+    "inputs": {
+      "images": [
+        "3",
+        0
+      ],
+      "cloth_type": "upper_clothes"
+    },
+    "class_type": "ClothesSegment",
+    "_meta": {
+      "title": "Segment Clothing"
+    }
+  }
+}

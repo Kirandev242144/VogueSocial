@@ -1,0 +1,27 @@
+{
+  "id": "match-2",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Premium Cotton T-Shirt",
+  "category": "tops",
+  "subcategory": "t-shirts",
+  "target_audience": "Unisex",
+  "sku": "TOP-COT-013",
+  "description": "100% combed ringspun cotton heavyweight crewneck tee.",
+  "price": 29.99,
+  "currency": "USD",
+  "image_url": "/product_catalog/Premium%20Cotton%20T-Shirt/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Premium Cotton T-Shirt\\image.jpg",
+  "stock": 50,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL"
+  ],
+  "colors": [
+    "#1e293b",
+    "#ffffff"
+  ],
+  "created_at": "2026-09-19T08:15:33.711Z"
+}

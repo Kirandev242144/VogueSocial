@@ -1,0 +1,322 @@
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modalDialog {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.modalLargeDialog {
+  max-width: 860px;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #0F172A;
+  margin: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+}
+
+.closeBtn:hover {
+  color: #0F172A;
+  background: #F1F5F9;
+}
+
+.stylingCanvasGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.mannequinStack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mannequinSlot {
+  background: #F8FAFC;
+  border: 1.5px dashed #CBD5E1;
+  border-radius: 12px;
+  height: 95px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.15s ease;
+}
+
+.mannequinSlot:hover {
+  border-color: #0F172A;
+  background: #F1F5F9;
+}
+
+.mannequinSlotActive {
+  border-color: #0F172A;
+  background: #F1F5F9;
+}
+
+.mannequinSlotFilled {
+  border-style: solid;
+  border-color: #E2E8F0;
+  background: #FFFFFF;
+}
+
+.slotImg {
+  max-height: 80px;
+  object-fit: contain;
+}
+
+.slotPlaceholder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748B;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.slotClearBtn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(15, 23, 42, 0.6);
+  border: none;
+  color: #FFFFFF;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slotClearBtn:hover {
+  background: #0F172A;
+}
+
+.stylingBtnRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.secondaryBtn {
+  flex: 1;
+  background: #FFFFFF;
+  color: #0F172A;
+  border: 1px solid #E2E8F0;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.secondaryBtn:hover {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+}
+
+.tryOnBtn {
+  flex: 1;
+  background: #CCFF00;
+  color: #0A0A0A;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s ease;
+}
+
+.tryOnBtn:hover {
+  background: #B8E600;
+}
+
+.saveOutfitInputRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.formInput {
+  flex: 1;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #0F172A;
+  font-size: 12px;
+  outline: none;
+}
+
+.formInput:focus {
+  border-color: #0F172A;
+}
+
+.primaryBtn {
+  background: #0F172A;
+  color: #FFFFFF;
+  border: 1px solid #0F172A;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primaryBtn:hover {
+  background: #1E293B;
+}
+
+.selectorDrawer {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 440px;
+  overflow-y: auto;
+}
+
+.selectorDrawerTitle {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #0F172A;
+  margin: 0;
+}
+
+.selectorItemsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.selectorItemCard {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 8px;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.selectorItemCard:hover {
+  border-color: #0F172A;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.selectorItemImgBox {
+  height: 76px;
+  background: #F8FAFC;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.selectorItemImg {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.selectorItemName {
+  font-size: 11px;
+  font-weight: 600;
+  color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brandSubtext {
+  font-size: 9px;
+  color: #64748B;
+}
+
+.emptyDrawerNotice {
+  text-align: center;
+  padding: 36px 12px;
+  color: #64748B;
+  font-size: 12px;
+}
+
+.subNotice {
+  font-size: 11px;
+  color: #94A3B8;
+  margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .stylingCanvasGrid {
+    grid-template-columns: 1fr;
+  }
+}

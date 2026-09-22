@@ -19,6 +19,15 @@
 
 # production
 /build
+/dist
+dist/
+dist
+
+# java / spring backend target
+target/
+spring-backend/target/
+*.log
+spring-backend/*.log
 
 # misc
 .DS_Store

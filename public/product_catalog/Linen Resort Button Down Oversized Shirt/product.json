@@ -1,0 +1,28 @@
+{
+  "id": "shp-6",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Linen Resort Button Down Oversized Shirt",
+  "category": "tops",
+  "subcategory": "button-down",
+  "target_audience": "Unisex",
+  "sku": "TOP-LIN-006",
+  "description": "Lightweight breathable weave perfect for sunny weekend strolls.",
+  "price": 65,
+  "currency": "USD",
+  "image_url": "/product_catalog/Linen%20Resort%20Button%20Down%20Oversized%20Shirt/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Linen Resort Button Down Oversized Shirt\\image.jpg",
+  "stock": 35,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL"
+  ],
+  "colors": [
+    "#f8fafc",
+    "#cbd5e1",
+    "#d97706"
+  ],
+  "created_at": "2026-09-19T08:15:32.905Z"
+}

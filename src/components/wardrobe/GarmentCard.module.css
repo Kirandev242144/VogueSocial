@@ -1,0 +1,197 @@
+.itemCard {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.itemCard:hover {
+  transform: translateY(-3px);
+  border-color: #CBD5E1;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+}
+
+.imageWrapper {
+  height: 200px;
+  background: #F8FAFC;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.itemImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.itemCard:hover .itemImage {
+  transform: scale(1.04);
+}
+
+.wearBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(4px);
+  border-radius: 16px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.categoryBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #0F172A;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.cardContent {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.itemName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.cardMetaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.itemBrand {
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.colorDots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.colorDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid #CBD5E1;
+}
+
+.paletteWhite { background-color: #FFFFFF; }
+.paletteBlack { background-color: #0F172A; }
+.paletteGrey { background-color: #64748B; }
+.paletteBlue { background-color: #2563EB; }
+.paletteNavy { background-color: #1E3A8A; }
+.paletteBeige { background-color: #E2D7C5; }
+.paletteBrown { background-color: #78350F; }
+.paletteRed { background-color: #DC2626; }
+.paletteGreen { background-color: #16A34A; }
+.palettePink { background-color: #DB2777; }
+.paletteLavender { background-color: #9333EA; }
+.paletteYellow { background-color: #EAB308; }
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #F1F5F9;
+}
+
+.wearBtn {
+  flex: 1;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  color: #1E293B;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.wearBtn:hover {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+}
+
+.tryOnBtn {
+  flex: 1;
+  background: #CCFF00;
+  border: none;
+  color: #0A0A0A;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: background 0.15s ease;
+}
+
+.tryOnBtn:hover {
+  background: #B8E600;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  color: #94A3B8;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+}
+
+.deleteBtn:hover {
+  color: #EF4444;
+  background: #FEF2F2;
+}

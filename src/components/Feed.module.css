@@ -38,22 +38,21 @@
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 2rem;
-    /* Larger gap for breathability */
-    padding-bottom: 4rem;
+    column-gap: 2rem;
+    row-gap: 3.5rem;
+    padding-bottom: 5rem;
 }
 
 /* Sharp Editorial Card */
 .postCard {
     background: transparent;
     border-radius: 0;
-    /* SHARP EDGES */
     overflow: visible;
     border: none;
     box-shadow: none;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.65rem;
     transition: transform 0.3s ease;
     text-decoration: none;
     color: inherit;
@@ -65,20 +64,38 @@
 
 /* Header - Minimal */
 .cardHeader {
-    padding: 0;
+    padding: 0 2px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.8rem;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0;
+}
+
+.authorLink {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    flex: 1;
+}
+
+.cardContentLink {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .authorAvatar {
     width: 32px;
     height: 32px;
-    border-radius: 0;
-    /* Square avatars for brutalist/sharp look? Or keep circle for contrast? Let's go circle for human element */
     border-radius: 50%;
     object-fit: cover;
+    position: relative;
+    overflow: hidden;
 }
 
 .authorInfo {
@@ -147,6 +164,10 @@
     /* Subtle border container */
 }
 
+.singleImageGrid {
+    grid-template-columns: 1fr;
+}
+
 .mainImageContainer {
     position: relative;
     height: 100%;
@@ -193,49 +214,64 @@
     backdrop-filter: blur(2px);
 }
 
-/* Footer - Clean */
+/* Footer - Clean & Spaced */
 .cardFooter {
-    padding: 0;
+    padding: 0 2px;
+    margin-top: 0.85rem;
     display: flex;
-    align-items: flex-start;
-    /* Align top if title wraps */
+    align-items: center;
     justify-content: space-between;
+    gap: 1rem;
     border: none;
+    min-height: 32px;
 }
 
 .storyLabel {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--text-primary, #111827);
     text-transform: uppercase;
-    letter-spacing: 0.02em;
-    padding: 0;
-    background: none;
+    letter-spacing: 0.05em;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
 }
 
 .actions {
     display: flex;
-    gap: 1.2rem;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
 }
 
 .actionBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
     background: transparent;
     border: none;
-    padding: 0;
-    width: auto;
-    height: auto;
-    border-radius: 0;
     box-shadow: none;
     cursor: pointer;
-    color: var(--text-secondary);
-    transition: color 0.2s;
+    color: #64748b;
+    transition: all 0.2s ease;
+    line-height: 1;
 }
 
 .actionBtn:hover {
-    transform: none;
-    background: transparent;
-    color: var(--text-primary);
-    border: none;
+    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.05);
+    color: #0f172a;
+}
+
+.actionBtn:active {
+    transform: scale(0.95);
 }
 
 /* Try On Button - Sharp & Bold */
@@ -320,7 +356,7 @@
     border-radius: 0;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.65rem;
     transition: transform 0.3s ease;
     text-decoration: none;
     color: inherit;
@@ -333,7 +369,7 @@
 .userContent {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 0;
 }
 
 .userImageContainer {
@@ -382,45 +418,81 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 0.5rem;
+    gap: 1rem;
+    margin-top: 0.85rem;
+    padding: 0 2px;
+    min-height: 32px;
 }
 
 .userMetrics {
     display: flex;
-    gap: 1.2rem;
+    align-items: center;
+    gap: 0.85rem;
 }
 
 .metricBtn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
     background: transparent;
     border: none;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: #64748b;
     cursor: pointer;
-    transition: color 0.2s;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    line-height: 1;
 }
 
 .metricBtn:hover {
-    color: var(--primary-text);
-    /* or Primary Accent */
+    color: #0f172a;
+    background: rgba(0, 0, 0, 0.04);
 }
 
 .trySimilarBtn {
+    display: inline-flex;
+    align-items: center;
     background: transparent;
     border: none;
-    color: var(--text-secondary);
+    color: #64748b;
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.06em;
     cursor: pointer;
-    border-bottom: 1px solid transparent;
-    transition: all 0.2s;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
 }
 
 .trySimilarBtn:hover {
-    color: var(--text-primary);
-    border-bottom-color: var(--text-primary);
+    color: #0f172a;
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.emptyFeed {
+    text-align: center;
+    padding: 4rem 0;
+    color: #666666;
+}
+
+.postVideo {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.metricBtnActive {
+    color: #ef4444 !important;
+}
+
+.actionBtnActive {
+    color: #ef4444 !important;
+}
+
+.heartLiked {
+    fill: #ef4444 !important;
+    stroke: #ef4444 !important;
 }

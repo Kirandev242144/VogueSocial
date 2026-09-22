@@ -1,0 +1,26 @@
+{
+  "id": "feed-2",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Wide-Leg Silk Trousers",
+  "category": "bottoms",
+  "subcategory": "trousers",
+  "target_audience": "Women",
+  "sku": "BTM-TRS-015",
+  "description": "Wide-leg silk trousers crafted from lustrous pure silk.",
+  "price": 195,
+  "currency": "USD",
+  "image_url": "/product_catalog/Wide-Leg%20Silk%20Trousers/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Wide-Leg Silk Trousers\\image.jpg",
+  "stock": 18,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L"
+  ],
+  "colors": [
+    "#ffffff",
+    "#cbd5e1"
+  ],
+  "created_at": "2026-09-19T08:15:33.716Z"
+}

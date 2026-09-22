@@ -1,0 +1,118 @@
+.filterDrawer {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filterDrawerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filterDrawerTitle {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #0F172A;
+}
+
+.filterResetBtn {
+  background: none;
+  border: none;
+  color: #EF4444;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+}
+
+.filterGroupTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748B;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.filterOptionsWrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filterOptionPill {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  color: #475569;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filterOptionPill:hover {
+  border-color: #CBD5E1;
+  color: #0F172A;
+}
+
+.filterOptionPillActive {
+  background: #0F172A;
+  color: #FFFFFF;
+  font-weight: 600;
+  border-color: #0F172A;
+}
+
+.colorSwatchesRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.colorSwatchBtn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1px solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.colorSwatchBtn:hover {
+  transform: scale(1.1);
+}
+
+.colorSwatchActive {
+  border: 2px solid #0F172A;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.2);
+}
+
+.paletteWhite { background-color: #FFFFFF; color: #0F172A; }
+.paletteBlack { background-color: #0F172A; color: #FFFFFF; }
+.paletteGrey { background-color: #64748B; color: #FFFFFF; }
+.paletteBlue { background-color: #2563EB; color: #FFFFFF; }
+.paletteNavy { background-color: #1E3A8A; color: #FFFFFF; }
+.paletteBeige { background-color: #E2D7C5; color: #0F172A; }
+.paletteBrown { background-color: #78350F; color: #FFFFFF; }
+.paletteRed { background-color: #DC2626; color: #FFFFFF; }
+.paletteGreen { background-color: #16A34A; color: #FFFFFF; }
+.palettePink { background-color: #DB2777; color: #FFFFFF; }
+.paletteLavender { background-color: #9333EA; color: #FFFFFF; }
+.paletteYellow { background-color: #EAB308; color: #0F172A; }

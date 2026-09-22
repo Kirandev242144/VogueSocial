@@ -1,0 +1,829 @@
+[
+  {
+    "id": "shp-1",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Floral Print Puff Sleeve A-Line Maxi Dress",
+    "category": "dresses",
+    "subcategory": "maxi-dress",
+    "target_audience": "Women",
+    "sku": "DRS-FLR-001",
+    "description": "Balances athletic shoulders with flattering A-line flare. High quality breathable summer fabric.",
+    "price": 59.99,
+    "currency": "USD",
+    "image_url": "/product_catalog/Floral%20Print%20Puff%20Sleeve%20A-Line%20Maxi%20Dress/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Floral Print Puff Sleeve A-Line Maxi Dress\\image.jpg",
+    "stock": 25,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#1e40af",
+      "#ffffff",
+      "#1e293b"
+    ],
+    "created_at": "2026-09-19T08:15:31.923Z"
+  },
+  {
+    "id": "shp-2",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "White & Black Floral Print Column Dress",
+    "category": "dresses",
+    "subcategory": "column-dress",
+    "target_audience": "Women",
+    "sku": "DRS-WBF-002",
+    "description": "Bold monochrome motif creates clean vertical visual lines. Perfect for both day and evening.",
+    "price": 85,
+    "currency": "USD",
+    "image_url": "/product_catalog/White%20%26%20Black%20Floral%20Print%20Column%20Dress/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\White & Black Floral Print Column Dress\\image.jpg",
+    "stock": 18,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "#ffffff",
+      "#000000"
+    ],
+    "created_at": "2026-09-19T08:15:32.225Z"
+  },
+  {
+    "id": "shp-3",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Classic Black Mini Shift Dress",
+    "category": "dresses",
+    "subcategory": "mini-dress",
+    "target_audience": "Women",
+    "sku": "DRS-BLK-003",
+    "description": "Essential wardrobe staple that layers under structured jackets.",
+    "price": 45,
+    "currency": "USD",
+    "image_url": "/product_catalog/Classic%20Black%20Mini%20Shift%20Dress/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Classic Black Mini Shift Dress\\image.jpg",
+    "stock": 30,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M"
+    ],
+    "colors": [
+      "#000000"
+    ],
+    "created_at": "2026-09-19T08:15:32.462Z"
+  },
+  {
+    "id": "shp-4",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Red Embroidered Cotton Tiered Dress",
+    "category": "dresses",
+    "subcategory": "tiered-dress",
+    "target_audience": "Women",
+    "sku": "DRS-RED-004",
+    "description": "Warm ruby tone with artisan embroidery for effortless vibrancy.",
+    "price": 69.99,
+    "currency": "USD",
+    "image_url": "/product_catalog/Red%20Embroidered%20Cotton%20Tiered%20Dress/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Red Embroidered Cotton Tiered Dress\\image.jpg",
+    "stock": 20,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "#dc2626",
+      "#b91c1c"
+    ],
+    "created_at": "2026-09-19T08:15:32.606Z"
+  },
+  {
+    "id": "shp-5",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Black Leather Biker Moto Jacket",
+    "category": "outerwear",
+    "subcategory": "moto-jacket",
+    "target_audience": "Unisex",
+    "sku": "OUT-LTR-005",
+    "description": "Adds a high-fashion rebellious contrast over romantic floral dresses. Premium faux grain leather.",
+    "price": 149,
+    "currency": "USD",
+    "image_url": "/product_catalog/Black%20Leather%20Biker%20Moto%20Jacket/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Black Leather Biker Moto Jacket\\image.jpg",
+    "stock": 15,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "#0f172a",
+      "#334155"
+    ],
+    "created_at": "2026-09-19T08:15:32.814Z"
+  },
+  {
+    "id": "shp-6",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Linen Resort Button Down Oversized Shirt",
+    "category": "tops",
+    "subcategory": "button-down",
+    "target_audience": "Unisex",
+    "sku": "TOP-LIN-006",
+    "description": "Lightweight breathable weave perfect for sunny weekend strolls.",
+    "price": 65,
+    "currency": "USD",
+    "image_url": "/product_catalog/Linen%20Resort%20Button%20Down%20Oversized%20Shirt/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Linen Resort Button Down Oversized Shirt\\image.jpg",
+    "stock": 35,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "#f8fafc",
+      "#cbd5e1",
+      "#d97706"
+    ],
+    "created_at": "2026-09-19T08:15:32.905Z"
+  },
+  {
+    "id": "shp-7",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "High-Waist Tailored Pleated Trousers",
+    "category": "bottoms",
+    "subcategory": "trousers",
+    "target_audience": "Women",
+    "sku": "BTM-TRS-007",
+    "description": "Elongates legs with crisp front pleating and sharp tailoring.",
+    "price": 89,
+    "currency": "USD",
+    "image_url": "/product_catalog/High-Waist%20Tailored%20Pleated%20Trousers/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\High-Waist Tailored Pleated Trousers\\image.jpg",
+    "stock": 22,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#0f172a",
+      "#64748b",
+      "#d4d4d8"
+    ],
+    "created_at": "2026-09-19T08:15:33.075Z"
+  },
+  {
+    "id": "shp-8",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Emerald Silk Bias Cut Midi Slip Dress",
+    "category": "dresses",
+    "subcategory": "slip-dress",
+    "target_audience": "Women",
+    "sku": "DRS-SLK-008",
+    "description": "Ultra-luxurious drape that glides smoothly over natural curves.",
+    "price": 110,
+    "currency": "USD",
+    "image_url": "/product_catalog/Emerald%20Silk%20Bias%20Cut%20Midi%20Slip%20Dress/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Emerald Silk Bias Cut Midi Slip Dress\\image.jpg",
+    "stock": 14,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#047857",
+      "#065f46"
+    ],
+    "created_at": "2026-09-19T08:15:33.172Z"
+  },
+  {
+    "id": "shp-9",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Minimalist Gold Ankle Strap Heeled Sandals",
+    "category": "shoes",
+    "subcategory": "heels",
+    "target_audience": "Women",
+    "sku": "SHO-SAN-009",
+    "description": "Clean delicate lines elevate any dress without overpowering.",
+    "price": 120,
+    "currency": "USD",
+    "image_url": "/product_catalog/Minimalist%20Gold%20Ankle%20Strap%20Heeled%20Sandals/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Minimalist Gold Ankle Strap Heeled Sandals\\image.jpg",
+    "stock": 19,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#d97706",
+      "#0f172a"
+    ],
+    "created_at": "2026-09-19T08:15:33.267Z"
+  },
+  {
+    "id": "shp-10",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Structured Artisanal Leather Crossbody Tote",
+    "category": "accessories",
+    "subcategory": "bags",
+    "target_audience": "Women",
+    "sku": "ACC-TOT-010",
+    "description": "Architectural silhouette crafted from buttery Italian calf leather.",
+    "price": 175,
+    "currency": "USD",
+    "image_url": "/product_catalog/Structured%20Artisanal%20Leather%20Crossbody%20Tote/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Structured Artisanal Leather Crossbody Tote\\image.jpg",
+    "stock": 16,
+    "status": "live",
+    "sizes": [
+      "One Size"
+    ],
+    "colors": [
+      "#78350f",
+      "#000000"
+    ],
+    "created_at": "2026-09-19T08:15:33.338Z"
+  },
+  {
+    "id": "shp-11",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Oversized Wool Blend Boucle Coat",
+    "category": "outerwear",
+    "subcategory": "coats",
+    "target_audience": "Women",
+    "sku": "OUT-BOU-011",
+    "description": "Statement cocoon silhouette that adds runway drama to daily outfits.",
+    "price": 220,
+    "currency": "USD",
+    "image_url": "/product_catalog/Oversized%20Wool%20Blend%20Boucle%20Coat/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Oversized Wool Blend Boucle Coat\\image.jpg",
+    "stock": 12,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#e2e8f0",
+      "#94a3b8"
+    ],
+    "created_at": "2026-09-19T08:15:33.481Z"
+  },
+  {
+    "id": "shp-12",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Pleated Satin Evening Midi Skirt",
+    "category": "bottoms",
+    "subcategory": "skirts",
+    "target_audience": "Women",
+    "sku": "BTM-SKR-012",
+    "description": "Liquid sheen catches evening candlelight effortlessly.",
+    "price": 78,
+    "currency": "USD",
+    "image_url": "/product_catalog/Pleated%20Satin%20Evening%20Midi%20Skirt/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Pleated Satin Evening Midi Skirt\\image.jpg",
+    "stock": 24,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#312e81",
+      "#1e1b4b"
+    ],
+    "created_at": "2026-09-19T08:15:33.555Z"
+  },
+  {
+    "id": "match-2",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Premium Cotton T-Shirt",
+    "category": "tops",
+    "subcategory": "t-shirts",
+    "target_audience": "Unisex",
+    "sku": "TOP-COT-013",
+    "description": "100% combed ringspun cotton heavyweight crewneck tee.",
+    "price": 29.99,
+    "currency": "USD",
+    "image_url": "/product_catalog/Premium%20Cotton%20T-Shirt/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Premium Cotton T-Shirt\\image.jpg",
+    "stock": 50,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "#1e293b",
+      "#ffffff"
+    ],
+    "created_at": "2026-09-19T08:15:33.711Z"
+  },
+  {
+    "id": "feed-1",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Structured Wool Blazer",
+    "category": "outerwear",
+    "subcategory": "blazers",
+    "target_audience": "Women",
+    "sku": "OUT-BLZ-014",
+    "description": "Structured double-breasted wool blazer with tailored structure.",
+    "price": 280,
+    "currency": "USD",
+    "image_url": "/product_catalog/Structured%20Wool%20Blazer/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Structured Wool Blazer\\image.jpg",
+    "stock": 15,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#1e293b",
+      "#64748b"
+    ],
+    "created_at": "2026-09-19T08:15:33.713Z"
+  },
+  {
+    "id": "feed-2",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Wide-Leg Silk Trousers",
+    "category": "bottoms",
+    "subcategory": "trousers",
+    "target_audience": "Women",
+    "sku": "BTM-TRS-015",
+    "description": "Wide-leg silk trousers crafted from lustrous pure silk.",
+    "price": 195,
+    "currency": "USD",
+    "image_url": "/product_catalog/Wide-Leg%20Silk%20Trousers/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Wide-Leg Silk Trousers\\image.jpg",
+    "stock": 18,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#ffffff",
+      "#cbd5e1"
+    ],
+    "created_at": "2026-09-19T08:15:33.716Z"
+  },
+  {
+    "id": "feed-3",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Pointed Toe Ankle Boots",
+    "category": "shoes",
+    "subcategory": "boots",
+    "target_audience": "Women",
+    "sku": "SHO-BOT-016",
+    "description": "Pointed toe Italian leather ankle boots with sleek silhouette.",
+    "price": 450,
+    "currency": "USD",
+    "image_url": "/product_catalog/Pointed%20Toe%20Ankle%20Boots/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Pointed Toe Ankle Boots\\image.jpg",
+    "stock": 10,
+    "status": "live",
+    "sizes": [
+      "37",
+      "38",
+      "39",
+      "40"
+    ],
+    "colors": [
+      "#000000"
+    ],
+    "created_at": "2026-09-19T08:15:33.719Z"
+  },
+  {
+    "id": "feed-4",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Ribbed Tank Top",
+    "category": "tops",
+    "subcategory": "tanks",
+    "target_audience": "Women",
+    "sku": "TOP-TNK-017",
+    "description": "Minimalist ribbed knit cotton tank top for effortless layering.",
+    "price": 45,
+    "currency": "USD",
+    "image_url": "/product_catalog/Ribbed%20Tank%20Top/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Ribbed Tank Top\\image.jpg",
+    "stock": 40,
+    "status": "live",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#000000",
+      "#ffffff"
+    ],
+    "created_at": "2026-09-19T08:15:33.720Z"
+  },
+  {
+    "id": "feed-5",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Classic Gold Hoops",
+    "category": "accessories",
+    "subcategory": "jewelry",
+    "target_audience": "Women",
+    "sku": "ACC-JW-018",
+    "description": "Polished chunky gold-plated hoops with secure latch.",
+    "price": 120,
+    "currency": "USD",
+    "image_url": "/product_catalog/Classic%20Gold%20Hoops/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Classic Gold Hoops\\image.jpg",
+    "stock": 25,
+    "status": "live",
+    "sizes": [
+      "One Size"
+    ],
+    "colors": [
+      "#d4af37"
+    ],
+    "created_at": "2026-09-19T08:15:33.722Z"
+  },
+  {
+    "id": "feed-6",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "No Human Is Illegal T-Shirt",
+    "category": "tops",
+    "subcategory": "graphic-tees",
+    "target_audience": "Unisex",
+    "sku": "TOP-GRP-019",
+    "description": "Statement cotton t-shirt with heart barbed wire graphic. 100% of proceeds go to humanitarian aid.",
+    "price": 35,
+    "currency": "USD",
+    "image_url": "/product_catalog/No%20Human%20Is%20Illegal%20T-Shirt/image.png",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\No Human Is Illegal T-Shirt\\image.png",
+    "stock": 60,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "#000000"
+    ],
+    "created_at": "2026-09-19T08:15:33.724Z"
+  },
+  {
+    "id": "feed-7",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Vibrant Summer Floral Dress",
+    "category": "dresses",
+    "subcategory": "summer-dress",
+    "target_audience": "Women",
+    "sku": "DRS-GRN-020",
+    "description": "Emerald green tiered floral wrap dress for warm summer days.",
+    "price": 120,
+    "currency": "USD",
+    "image_url": "/product_catalog/Vibrant%20Summer%20Floral%20Dress/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Vibrant Summer Floral Dress\\image.jpg",
+    "stock": 22,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#059669"
+    ],
+    "created_at": "2026-09-19T08:15:33.726Z"
+  },
+  {
+    "id": "feed-8",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Summer Breeze Set",
+    "category": "one-pieces",
+    "subcategory": "matching-sets",
+    "target_audience": "Women",
+    "sku": "SET-BRZ-021",
+    "description": "Lightweight two-piece summer crop top and matching shorts set.",
+    "price": 115,
+    "currency": "USD",
+    "image_url": "/product_catalog/Summer%20Breeze%20Set/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Summer Breeze Set\\image.jpg",
+    "stock": 16,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#f8fafc"
+    ],
+    "created_at": "2026-09-19T08:15:33.728Z"
+  },
+  {
+    "id": "feed-9",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Midnight Silk Dress",
+    "category": "one-pieces",
+    "subcategory": "evening-dress",
+    "target_audience": "Women",
+    "sku": "DRS-MID-022",
+    "description": "Elegant midnight black silk evening gown.",
+    "price": 320,
+    "currency": "USD",
+    "image_url": "/product_catalog/Midnight%20Silk%20Dress/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Midnight Silk Dress\\image.jpg",
+    "stock": 10,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#000000"
+    ],
+    "created_at": "2026-09-19T08:15:33.729Z"
+  },
+  {
+    "id": "feed-10",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Knotted Casual Tee",
+    "category": "tops",
+    "subcategory": "t-shirts",
+    "target_audience": "Women",
+    "sku": "TOP-KNT-023",
+    "description": "Relaxed cotton everyday tee with front knot detail.",
+    "price": 55,
+    "currency": "USD",
+    "image_url": "/product_catalog/Knotted%20Casual%20Tee/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Knotted Casual Tee\\image.jpg",
+    "stock": 30,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#ffffff"
+    ],
+    "created_at": "2026-09-19T08:15:33.731Z"
+  },
+  {
+    "id": "feed-11",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Sculpting Leggings",
+    "category": "bottoms",
+    "subcategory": "activewear",
+    "target_audience": "Women",
+    "sku": "BTM-LEG-024",
+    "description": "High-compression sculpting leggings for workout and studio.",
+    "price": 85,
+    "currency": "USD",
+    "image_url": "/product_catalog/Sculpting%20Leggings/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Sculpting Leggings\\image.jpg",
+    "stock": 35,
+    "status": "live",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#0f172a"
+    ],
+    "created_at": "2026-09-19T08:15:33.733Z"
+  },
+  {
+    "id": "feed-12",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Cargo Pocket Trousers",
+    "category": "bottoms",
+    "subcategory": "cargo",
+    "target_audience": "Men",
+    "sku": "BTM-CRG-025",
+    "description": "Multi-pocket utility cargo trousers with tapered cuff.",
+    "price": 110,
+    "currency": "USD",
+    "image_url": "/product_catalog/Cargo%20Pocket%20Trousers/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Cargo Pocket Trousers\\image.jpg",
+    "stock": 20,
+    "status": "live",
+    "sizes": [
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "colors": [
+      "#3f3f46"
+    ],
+    "created_at": "2026-09-19T08:15:33.735Z"
+  },
+  {
+    "id": "feed-13",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Distressed Boyfriend Jeans",
+    "category": "bottoms",
+    "subcategory": "denim",
+    "target_audience": "Women",
+    "sku": "BTM-DNM-026",
+    "description": "Relaxed vintage wash denim with hand-distressed detailing.",
+    "price": 160,
+    "currency": "USD",
+    "image_url": "/product_catalog/Distressed%20Boyfriend%20Jeans/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Distressed Boyfriend Jeans\\image.jpg",
+    "stock": 15,
+    "status": "live",
+    "sizes": [
+      "26",
+      "28",
+      "30",
+      "32"
+    ],
+    "colors": [
+      "#60a5fa"
+    ],
+    "created_at": "2026-09-19T08:15:33.736Z"
+  },
+  {
+    "id": "feed-14",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Bell Sleeve Blouse",
+    "category": "tops",
+    "subcategory": "blouses",
+    "target_audience": "Women",
+    "sku": "TOP-BEL-027",
+    "description": "Dramatic bell sleeve lightweight crepe blouse.",
+    "price": 145,
+    "currency": "USD",
+    "image_url": "/product_catalog/Bell%20Sleeve%20Blouse/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Bell Sleeve Blouse\\image.jpg",
+    "stock": 14,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#ffffff"
+    ],
+    "created_at": "2026-09-19T08:15:33.738Z"
+  },
+  {
+    "id": "feed-15",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Women Halter Neck Printed Jumpsuit",
+    "category": "one-pieces",
+    "subcategory": "jumpsuits",
+    "target_audience": "Women",
+    "sku": "ONE-JMP-028",
+    "description": "Elegant halter neck jumpsuit featuring a vibrant print and comfortable fit.",
+    "price": 65,
+    "currency": "USD",
+    "image_url": "/product_catalog/Women%20Halter%20Neck%20Printed%20Jumpsuit/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Women Halter Neck Printed Jumpsuit\\image.jpg",
+    "stock": 22,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#f43f5e"
+    ],
+    "created_at": "2026-09-19T08:15:33.740Z"
+  },
+  {
+    "id": "feed-16",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Women Solid Shirt Dress with Belt",
+    "category": "one-pieces",
+    "subcategory": "shirt-dress",
+    "target_audience": "Women",
+    "sku": "ONE-SHR-029",
+    "description": "A versatile solid shirt dress with a waist belt for a flattering silhouette.",
+    "price": 78,
+    "currency": "USD",
+    "image_url": "/product_catalog/Women%20Solid%20Shirt%20Dress%20with%20Belt/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Women Solid Shirt Dress with Belt\\image.jpg",
+    "stock": 25,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#b91c1c"
+    ],
+    "created_at": "2026-09-19T08:15:33.743Z"
+  },
+  {
+    "id": "feed-17",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Chemistry Floral Print Midi Dress",
+    "category": "one-pieces",
+    "subcategory": "midi-dress",
+    "target_audience": "Women",
+    "sku": "ONE-FLR-030",
+    "description": "A beautiful floral print midi dress from Chemistry with premium fabric.",
+    "price": 89,
+    "currency": "USD",
+    "image_url": "/product_catalog/Chemistry%20Floral%20Print%20Midi%20Dress/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Chemistry Floral Print Midi Dress\\image.jpg",
+    "stock": 19,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#1e293b"
+    ],
+    "created_at": "2026-09-19T08:15:33.746Z"
+  },
+  {
+    "id": "top-1",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Structured Double-Breasted Trench",
+    "category": "outerwear",
+    "subcategory": "trench-coats",
+    "target_audience": "Women",
+    "sku": "OUT-TRN-031",
+    "description": "Water-repellent gabardine classic tailored trench coat with horn buttons.",
+    "price": 520,
+    "currency": "USD",
+    "image_url": "/product_catalog/Structured%20Double-Breasted%20Trench/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Structured Double-Breasted Trench\\image.jpg",
+    "stock": 12,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      "#d4b996",
+      "#1c1917"
+    ],
+    "created_at": "2026-09-19T08:15:33.810Z"
+  },
+  {
+    "id": "top-2",
+    "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+    "name": "Minimalist Relaxed Cashmere Knit",
+    "category": "tops",
+    "subcategory": "sweaters",
+    "target_audience": "Unisex",
+    "sku": "TOP-CSH-032",
+    "description": "100% Grade-A Mongolian cashmere relaxed crewneck sweater.",
+    "price": 290,
+    "currency": "USD",
+    "image_url": "/product_catalog/Minimalist%20Relaxed%20Cashmere%20Knit/image.jpg",
+    "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Minimalist Relaxed Cashmere Knit\\image.jpg",
+    "stock": 18,
+    "status": "live",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "#e5e7eb",
+      "#78716c"
+    ],
+    "created_at": "2026-09-19T08:15:33.932Z"
+  }
+]

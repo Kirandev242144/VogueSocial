@@ -1,0 +1,27 @@
+{
+  "id": "shp-5",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Black Leather Biker Moto Jacket",
+  "category": "outerwear",
+  "subcategory": "moto-jacket",
+  "target_audience": "Unisex",
+  "sku": "OUT-LTR-005",
+  "description": "Adds a high-fashion rebellious contrast over romantic floral dresses. Premium faux grain leather.",
+  "price": 149,
+  "currency": "USD",
+  "image_url": "/product_catalog/Black%20Leather%20Biker%20Moto%20Jacket/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Black Leather Biker Moto Jacket\\image.jpg",
+  "stock": 15,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL"
+  ],
+  "colors": [
+    "#0f172a",
+    "#334155"
+  ],
+  "created_at": "2026-09-19T08:15:32.814Z"
+}

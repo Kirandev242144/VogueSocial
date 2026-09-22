@@ -57,10 +57,17 @@
 .mainVisual {
     width: 100%;
     height: 80vh;
+    max-height: 760px;
+    min-height: 500px;
     position: relative;
-    background: #f0f0f0;
-    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
 
 .masonryGrid {
@@ -730,4 +737,929 @@
     gap: 0.8rem;
     color: #14532d;
     font-size: 0.9rem;
+    cursor: pointer;
+}
+
+/* ── DYNAMIC MYSQL COMMENTS & LIKES STYLES ── */
+.commentsSection {
+    margin-top: 2rem;
+    border-top: 1px solid #e4e4e7;
+    padding-top: 1.5rem;
+}
+
+.commentsHeading {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    color: #111;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.commentInputArea {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.commentInput {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    border: 1px solid #e4e4e7;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #111;
+    background: #fafafa;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.commentInput:focus {
+    background: #ffffff;
+    border-color: #111111;
+}
+
+.postCommentBtn {
+    background: #111111;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 0 1.5rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.postCommentBtn:hover {
+    opacity: 0.85;
+}
+
+.postCommentBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.commentsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.commentCard {
+    display: flex;
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #f1f5f9;
+}
+
+.commentAvatarImg {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.commentAvatarFallback {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #111111;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.commentBody {
+    flex: 1;
+}
+
+.commentAuthorRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+}
+
+.commentAuthor {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #111111;
+}
+
+.commentDate {
+    font-size: 0.72rem;
+    color: #94a3b8;
+}
+
+.commentText {
+    font-size: 0.88rem;
+    color: #334155;
+    line-height: 1.45;
+}
+
+/* Like Button for Product */
+.likeActionBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem 0.9rem;
+    border-radius: 99px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #111111;
+    transition: all 0.2s;
+}
+
+.likeActionBtn:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
+}
+
+.likeActionBtnActive {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #ef4444;
+}
+
+.statItemClickable {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+}
+
+.mediaCover {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.mediaContain {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+}
+
+.vendorLinkMini {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.followBtnMini {
+    margin-left: auto;
+}
+
+/* Modal & Checkout Styles (Zero Inline CSS) */
+.loadingContainer {
+    padding: 4rem;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #64748b;
+}
+
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modalDialog {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    max-width: 480px;
+    width: 100%;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.modalTitle {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0;
+}
+
+.modalCloseBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    padding: 4px;
+    border-radius: 6px;
+    transition: color 0.15s;
+}
+
+.modalCloseBtn:hover {
+    color: #0f172a;
+}
+
+.modalBody {
+    padding: 1.5rem;
+}
+
+.productSummaryCard {
+    border: 1px solid #f1f5f9;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    background: #fafafa;
+    margin-bottom: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.productSummaryDetails {
+    text-align: left;
+}
+
+.productSummaryTitle {
+    font-size: 0.88rem;
+    color: #0f172a;
+    display: block;
+    font-weight: 700;
+}
+
+.productSummaryVendor {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.productSummaryPrice {
+    font-weight: 800;
+    color: #0f172a;
+    font-size: 1.05rem;
+}
+
+.formGroup {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.formLabel {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #334155;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+    letter-spacing: 0.03em;
+}
+
+.formInput {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    outline: none;
+    margin-bottom: 0.5rem;
+    color: #0f172a;
+    background: #ffffff;
+    box-sizing: border-box;
+}
+
+.formInput:focus {
+    border-color: #0f172a;
+}
+
+.formRow {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.formInputHalf {
+    width: 50%;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    outline: none;
+    color: #0f172a;
+    background: #ffffff;
+    box-sizing: border-box;
+}
+
+.formInputHalf:focus {
+    border-color: #0f172a;
+}
+
+.cardInputContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    background: #fafafa;
+}
+
+.cardNumberInput {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 0.88rem;
+    color: #334155;
+    flex: 1;
+}
+
+.cardExpiry {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.payBtn {
+    width: 100%;
+    padding: 0.85rem;
+    background: #0f172a;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.2s;
+    margin-top: 0.5rem;
+}
+
+.payBtn:hover {
+    opacity: 0.9;
+}
+
+.payBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Escrow Success Modal Styles */
+.successModalBody {
+    padding: 2rem 1.5rem;
+    text-align: center;
+}
+
+.successIconCircle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.successTitle {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+}
+
+.successText {
+    font-size: 0.82rem;
+    color: #64748b;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.escrowInfoBox {
+    border: 1px solid #f1f5f9;
+    border-radius: 8px;
+    padding: 1rem;
+    background: #fafafa;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: left;
+    font-size: 0.78rem;
+}
+
+.escrowInfoRow {
+    display: flex;
+    justify-content: space-between;
+}
+
+.escrowLabel {
+    color: #64748b;
+}
+
+.escrowVal {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.escrowValMuted {
+    color: #64748b;
+}
+
+.escrowStatusTag {
+    color: #8b5cf6;
+    font-weight: 700;
+}
+
+.escrowDisclaimer {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    line-height: 1.4;
+    margin-bottom: 1.5rem;
+}
+
+.modalActions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.disputeBtn {
+    width: 100%;
+    padding: 0.8rem;
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.disputeBtn:hover {
+    background: rgba(239, 68, 68, 0.15);
+}
+
+.continueBtn {
+    width: 100%;
+    padding: 0.8rem;
+    background: #0f172a;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.continueBtn:hover {
+    opacity: 0.9;
+}
+
+.thumbnailActive {
+    border: 2px solid #0f172a !important;
+}
+
+.thumbnailInactive {
+    border: 2px solid transparent !important;
+}
+
+.videoVisual {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+/* Image containment and fill utilities */
+.mediaCover {
+    object-fit: cover !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.mediaContain {
+    object-fit: contain !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Community Post Floating Badges */
+.triedViaBadge {
+    position: absolute;
+    top: 1.25rem;
+    left: 1.25rem;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.45rem 0.95rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.01em;
+}
+
+.sparkleIcon {
+    font-size: 0.9rem;
+}
+
+.tryOnVisualBtn {
+    position: absolute;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    background: #ffffff;
+    color: #0f172a;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 0.65rem 1.2rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 2;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.tryOnVisualBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    background: #f8fafc;
+}
+
+/* Community Author Card */
+.communityAuthorTitle {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.25rem 0;
+}
+
+.communityBadge {
+    font-size: 0.75rem;
+    color: #6366f1;
+    font-weight: 600;
+    background: #eef2ff;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    display: inline-block;
+}
+
+/* Garment in This Try-On Section */
+.shopLookSection {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.shopLookHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.85rem;
+}
+
+.shopLookOverline {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.15rem;
+}
+
+.shopLookHeading {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.verifiedFitBadge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #059669;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    padding: 0.3rem 0.7rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.featuredProductCard {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+    transition: border-color 0.2s;
+}
+
+.featuredProductCard:hover {
+    border-color: #cbd5e1;
+}
+
+.featuredProductThumbWrap {
+    position: relative;
+    width: 100px;
+    height: 130px;
+    min-width: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #e2e8f0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    flex-shrink: 0;
+}
+
+.itemCategoryBadge {
+    position: absolute;
+    bottom: 0.35rem;
+    left: 0.35rem;
+    background: rgba(15, 23, 42, 0.75);
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    text-transform: capitalize;
+    letter-spacing: 0.02em;
+}
+
+.featuredProductDetails {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.prodBrandRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.prodBrandName {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.miniRating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.featuredProductName {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.featuredProductPrice {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.fitNoteRow {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.15rem;
+    margin-bottom: 0.4rem;
+}
+
+.fitNoteDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    flex-shrink: 0;
+}
+
+.fitNoteText {
+    font-size: 0.75rem;
+    color: #475569;
+    font-weight: 500;
+}
+
+.featuredProductActions {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 0.3rem;
+}
+
+.tryOnFeaturedBtn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.6rem 0.8rem;
+    background: #ffffff;
+    border: 1px solid #0f172a;
+    color: #0f172a;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tryOnFeaturedBtn:hover {
+    background: #0f172a;
+    color: #ffffff;
+}
+
+.buyFeaturedBtn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.6rem 0.8rem;
+    background: #0f172a;
+    border: 1px solid #0f172a;
+    color: #ffffff;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.buyFeaturedBtn:hover {
+    background: #1e293b;
+    border-color: #1e293b;
+}
+
+/* Fallback styles for generic product lists */
+.productsList {
+    margin-top: 1rem;
+}
+
+.productItem {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.productImage {
+    width: 60px;
+    height: 80px;
+    min-width: 60px;
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f1f5f9;
+    flex-shrink: 0;
+}
+
+.productInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.productInfo h5 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 0.35rem 0;
+}
+
+.priceRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.shopBtn {
+    padding: 0.4rem 0.8rem;
+    background: #0f172a;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.loadingContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    font-size: 1.1rem;
+    color: var(--text-secondary, #666);
+    font-weight: 500;
+}
+
+.notFoundContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    padding: 3rem 1.5rem;
+}
+
+.notFoundTitle {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary, #111);
+    margin-bottom: 0.75rem;
+}
+
+.notFoundText {
+    font-size: 1rem;
+    color: var(--text-secondary, #666);
+    margin-bottom: 2rem;
+    max-width: 420px;
+}
+
+.notFoundBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    background: #000;
+    color: #fff;
+    border-radius: 99px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.notFoundBtn:hover {
+    background: #222;
+    transform: translateY(-1px);
 }

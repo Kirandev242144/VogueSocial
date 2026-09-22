@@ -46,6 +46,10 @@
     flex-shrink: 0;
 }
 
+.logoImg {
+    object-fit: contain;
+}
+
 /* Search Bar - Boxy & Wide */
 .searchContainer {
     flex: 1;
@@ -125,6 +129,12 @@
     /* Brand Accent */
 }
 
+.navItemActive {
+    color: #0f172a;
+    font-weight: 700;
+    border-bottom: 2px solid #0f172a;
+}
+
 .iconBtn {
     background: transparent;
     border: none;
@@ -195,6 +205,10 @@
     cursor: pointer;
 }
 
+.userAvatarImg {
+    border-radius: 50%;
+}
+
 
 
 
@@ -208,14 +222,14 @@
 
 .dropdown {
     position: absolute;
-    top: 120%;
+    top: calc(100% + 10px);
     right: 0;
-    width: 200px;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    padding: 0.5rem;
+    width: 270px;
+    background: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 14px;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+    padding: 0.65rem;
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
@@ -223,25 +237,156 @@
     animation: fadeIn 0.2s ease-out;
 }
 
+.dropdownHeader {
+    padding: 0.5rem 0.6rem 0.75rem;
+    border-bottom: 1px solid #f4f4f5;
+    margin-bottom: 0.35rem;
+}
+
+.dropdownUserName {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #09090b;
+    margin-bottom: 0.15rem;
+}
+
+.dropdownUserEmail {
+    font-size: 0.75rem;
+    color: #71717a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.dropdownUserBadgeCustomer {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #2563eb;
+    background: #eff6ff;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+
+.dropdownUserBadgeMerchant {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+
+.dropdownUserBadgeAdmin {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #7c3aed;
+    background: #f5f3ff;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+
+.dropdownDivider {
+    height: 1px;
+    background: #f4f4f5;
+    margin: 0.35rem 0;
+}
+
+.dropdownSectionLabel {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #a1a1aa;
+    padding: 0.3rem 0.6rem 0.15rem;
+}
+
+.dropdownRoleRow {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+    padding: 0.2rem 0.4rem 0.4rem;
+}
+
+.dropdownRolePill {
+    border: 1px solid #e4e4e7;
+    background: #fafafa;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.35rem 0.2rem;
+    color: #27272a;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+}
+
+.dropdownRolePill:hover {
+    background: #f4f4f5;
+    border-color: #09090b;
+}
+
+.dropdownRolePillActive {
+    background: #09090b;
+    color: #ffffff;
+    border-color: #09090b;
+}
+
 .dropdownItem {
-    padding: 0.8rem 1rem;
+    padding: 0.6rem 0.75rem;
     border-radius: 8px;
     text-decoration: none;
-    color: var(--text-primary);
-    font-size: 0.9rem;
+    color: #27272a;
+    font-size: 0.85rem;
     font-weight: 500;
-    transition: background 0.2s;
+    transition: background 0.15s;
     background: transparent;
     border: none;
     text-align: left;
     cursor: pointer;
     display: flex;
     align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .dropdownItem:hover {
-    background: #f8f9fa;
-    color: #000;
+    background: #f4f4f5;
+    color: #09090b;
+}
+
+.dropdownSignOut {
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #dc2626;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.15s;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dropdownSignOut:hover {
+    background: #fef2f2;
 }
 
 @keyframes fadeIn {

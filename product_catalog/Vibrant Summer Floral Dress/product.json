@@ -1,0 +1,25 @@
+{
+  "id": "feed-7",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Vibrant Summer Floral Dress",
+  "category": "dresses",
+  "subcategory": "summer-dress",
+  "target_audience": "Women",
+  "sku": "DRS-GRN-020",
+  "description": "Emerald green tiered floral wrap dress for warm summer days.",
+  "price": 120,
+  "currency": "USD",
+  "image_url": "/product_catalog/Vibrant%20Summer%20Floral%20Dress/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Vibrant Summer Floral Dress\\image.jpg",
+  "stock": 22,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L"
+  ],
+  "colors": [
+    "#059669"
+  ],
+  "created_at": "2026-09-19T08:15:33.726Z"
+}
