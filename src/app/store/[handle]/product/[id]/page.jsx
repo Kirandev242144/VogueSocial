@@ -4,6 +4,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ShoppingBag, Sparkles, ChevronRight, Truck } from 'lucide-react';
 import styles from '../../store.module.css';
 import TryOnModal from '@/components/TryOnModal';
+import { getStoreByHandle } from '@/lib/storefrontData';
+
 const TEMPLATES = {
     minimal: `--bg: #FFFFFF; --bg2: #F9F7F4; --surface: #FFFFFF; --border: #E8E4DE; --text1: #1A1A1A; --text2: #4A4A4A; --text3: #8A8A8A; --accent: #1A1A1A; --accent-text: #FFFFFF; --btn-radius: 0px; --card-radius: 0px; --font-heading: 'Cormorant Garamond', serif; --font-body: 'Jost', sans-serif;`,
     luxury: `--bg: #1C1C1E; --bg2: #242426; --surface: #2A2A2C; --border: #3A3A3C; --text1: #C9A84C; --text2: #E8E8E8; --text3: #888888; --accent: #C9A84C; --accent-text: #1C1C1E; --btn-radius: 0px; --card-radius: 4px; --font-heading: 'Playfair Display', serif; --font-body: 'Montserrat', sans-serif;`,
@@ -39,20 +41,35 @@ export default function ProductPage() {
     useEffect(() => {
         async function fetchData() {
             try {
-                const res = await fetch(`/api/store/${handle}`);
-                if (!res.ok)
-                    return;
-                const data = await res.json();
-                setStore(data.store);
-                const p = data.products?.find((x) => x.id === id || x.id.toString() === id);
-                if (p) {
-                    setProduct(p);
-                    setActiveImage(p.image_url || p.main_image || p.images?.[0]);
-                    if (p.colors?.length)
-                        setSelectedColor(p.colors[0]);
-                    if (p.sizes?.length)
-                        setSelectedSize(p.sizes[0]);
-                    setOtherProducts((data.products || []).filter((x) => x.id !== p.id).slice(0, 4));
+                let storeData = null;
+                let productList = [];
+                try {
+                    const res = await fetch(`/api/store/${handle}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        storeData = data.store;
+                        productList = data.products || [];
+                    }
+                } catch (e) {}
+
+                if (!storeData) {
+                    const local = getStoreByHandle(handle);
+                    storeData = local.store;
+                    productList = local.products || [];
+                }
+
+                if (storeData) {
+                    setStore(storeData);
+                    const p = productList.find((x) => x.id === id || x.id.toString() === id) || productList[0];
+                    if (p) {
+                        setProduct(p);
+                        setActiveImage(p.image_url || p.main_image || p.images?.[0]);
+                        if (p.colors?.length)
+                            setSelectedColor(p.colors[0]);
+                        if (p.sizes?.length)
+                            setSelectedSize(p.sizes[0]);
+                        setOtherProducts(productList.filter((x) => x.id !== p.id).slice(0, 4));
+                    }
                 }
             }
             catch (err) {
