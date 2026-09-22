@@ -131,7 +131,7 @@ export default function StorefrontPage() {
   const handleAddToCart = (product, colorChoice = null) => {
     const color = colorChoice || selectedColors[product.id] || product.colors?.[0] || 'Default';
     const size = product.sizes?.[0] || 'M';
-    const price = product.sale_price || product.price;
+    const price = product.sale_price || product.salePrice || product.price;
 
     setCart(prev => {
       const items = [...prev.items];
@@ -146,7 +146,7 @@ export default function StorefrontPage() {
           productId: product.id,
           name: product.name,
           price: price,
-          image: product.image_url,
+          image: product.image_url || product.imageUrl,
           color: color,
           size: size,
           quantity: 1
@@ -184,9 +184,9 @@ export default function StorefrontPage() {
     setSelectedTryOnProduct({
       id: product.id,
       name: product.name,
-      image_url: product.image_url,
+      image_url: product.image_url || product.imageUrl,
       category: product.category,
-      price: product.sale_price || product.price
+      price: product.sale_price || product.salePrice || product.price
     });
     setIsTryOnOpen(true);
   };
@@ -241,6 +241,7 @@ export default function StorefrontPage() {
 
   const effectiveSubdomain = `${handle}.voguesocial.com`;
   const effectiveCustomDomain = store.custom_domain;
+  const isEmbedded = typeof window !== 'undefined' && window.location.search.includes('embedded=true');
 
   return (
     <div
@@ -960,12 +961,14 @@ export default function StorefrontPage() {
       `}} />
 
       {/* ── 1. MODERN TOP ANNOUNCEMENT BAR ── */}
-      <div className="modern-announcement">
-        <span>⚡ VOGUESOCIAL LIVE STORE · Free Global Shipping Over $150 · 100% In-Browser AI Virtual Try-On</span>
-        <span style={{ background: 'rgba(255,255,255,0.2)', padding: '1px 8px', borderRadius: 99, fontSize: '0.68rem' }}>
-          Code: VOGUE20 (-20%)
-        </span>
-      </div>
+      {!isEmbedded && (
+        <div className="modern-announcement">
+          <span>⚡ VOGUESOCIAL LIVE STORE · Free Global Shipping Over $150 · 100% In-Browser AI Virtual Try-On</span>
+          <span style={{ background: 'rgba(255,255,255,0.2)', padding: '1px 8px', borderRadius: 99, fontSize: '0.68rem' }}>
+            Code: VOGUE20 (-20%)
+          </span>
+        </div>
+      )}
 
       {/* ── 2. STICKY MODERN GLASS HEADER ── */}
       <header className="store-header">
@@ -1171,7 +1174,7 @@ export default function StorefrontPage() {
                 >
                   <div className="product-image-box">
                     <img
-                      src={product.image_url}
+                      src={product.image_url || product.imageUrl}
                       alt={product.name}
                       className="product-img"
                     />
@@ -1205,7 +1208,7 @@ export default function StorefrontPage() {
 
                     <div className="product-price-box">
                       <span className="price-curr">
-                        ${product.sale_price || product.price}
+                        ${product.sale_price || product.salePrice || product.price}
                       </span>
                       {isSale && (
                         <span className="price-strike">${product.price}</span>
