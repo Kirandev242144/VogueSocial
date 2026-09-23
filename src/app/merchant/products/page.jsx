@@ -2,17 +2,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from '../merchant.module.css';
-import { Package, Plus, Edit2, Trash2, Search, ImagePlus, RefreshCw, Facebook, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Package, Plus, Edit2, Trash2, Search, ImagePlus, RefreshCw, Facebook, CheckCircle2, ArrowRight, ArrowLeft, UploadCloud, Star, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { FacebookShopSync } from '@/components/merchant';
 import { useAuth } from '@/context/AuthContext';
-
-const SAMPLE_PRESET_IMAGES = [
-    { label: 'Silk Slip Dress', url: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80' },
-    { label: 'Wool Trench Coat', url: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=800&q=80' },
-    { label: 'Tailored Blazer', url: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800&q=80' },
-    { label: 'Cashmere Knit', url: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&q=80' },
-    { label: 'Wide-Leg Trousers', url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&q=80' }
-];
 
 const CATEGORIES = ['Tops', 'Bottoms', 'Dresses & Jumpsuits', 'Casual', 'Formal', 'Ethnic', 'Streetwear', 'Luxury', 'Athleisure'];
 const TARGET_AUDIENCES = ['Women', 'Men', 'Unisex', 'Kids'];
@@ -82,9 +74,8 @@ export default function ProductsPage() {
     const [step, setStep] = useState(1);
     const [editingId, setEditingId] = useState(null);
     const [form, setForm] = useState(BLANK_PRODUCT);
-    const mainFileInputRef = useRef(null);
-    const backFileInputRef = useRef(null);
-    const galleryFileInputRef = useRef(null);
+    const fileInputRef = useRef(null);
+    const [isDragging, setIsDragging] = useState(false);
     // Image inputs
     const [detailImgInput, setDetailImgInput] = useState('');
     const [colorInput, setColorInput] = useState('');
@@ -259,68 +250,122 @@ export default function ProductsPage() {
         nextV[index] = { ...nextV[index], [field]: value };
         setForm(p => ({ ...p, variants: nextV }));
     };
-    const addDetailImage = () => {
-        if (!detailImgInput.trim())
-            return;
-        setForm(p => ({ ...p, additional_images: [...p.additional_images, detailImgInput.trim()] }));
-        setDetailImgInput('');
+
+    // ── MULTI-IMAGE GALLERY HELPERS ──
+    const getAllImages = () => {
+        return [form.image_url, ...(form.additional_images || [])].filter(Boolean);
     };
-    const removeDetailImage = (index) => {
-        setForm(p => ({ ...p, additional_images: p.additional_images.filter((_, i) => i !== index) }));
+
+    const updateAllImages = (imgs) => {
+        const unique = Array.from(new Set(imgs.filter(Boolean)));
+        const main = unique[0] || '';
+        const extras = unique.slice(1);
+        setForm(p => ({
+            ...p,
+            image_url: main,
+            additional_images: extras,
+            back_image_url: unique[1] || ''
+        }));
     };
-    const handleImageFile = (file, targetField) => {
-        if (!file) return;
-        if (!file.type.startsWith('image/')) {
-            showToast('Please upload an image file (PNG, JPG, WEBP).', 'error');
+
+    const processImageFile = (file) => {
+        return new Promise((resolve) => {
+            if (!file || !file.type.startsWith('image/')) {
+                resolve(null);
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = 1200;
+                    if (width > maxDim || height > maxDim) {
+                        if (width > height) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        } else {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    resolve(compressedDataUrl);
+                };
+                img.onerror = () => resolve(null);
+                img.src = e.target.result;
+            };
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(file);
+        });
+    };
+
+    const handleMultipleFilesUpload = async (fileList) => {
+        if (!fileList || fileList.length === 0) return;
+        const files = Array.from(fileList);
+        showToast(`Processing ${files.length} photo${files.length > 1 ? 's' : ''}...`, 'info');
+        const results = await Promise.all(files.map(f => processImageFile(f)));
+        const valid = results.filter(Boolean);
+        if (valid.length === 0) {
+            showToast('Please select valid image files (JPG, PNG, WEBP).', 'error');
             return;
         }
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-                const maxDim = 1200;
-                if (width > maxDim || height > maxDim) {
-                    if (width > height) {
-                        height = Math.round((height * maxDim) / width);
-                        width = maxDim;
-                    } else {
-                        width = Math.round((width * maxDim) / height);
-                        height = maxDim;
-                    }
-                }
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        const current = getAllImages();
+        updateAllImages([...current, ...valid]);
+        showToast(`Added ${valid.length} photo${valid.length > 1 ? 's' : ''} to gallery!`, 'success');
+    };
 
-                if (targetField === 'main') {
-                    setForm(p => ({ ...p, image_url: compressedDataUrl }));
-                } else if (targetField === 'back') {
-                    setForm(p => ({ ...p, back_image_url: compressedDataUrl }));
-                } else if (targetField === 'gallery') {
-                    setForm(p => ({ ...p, additional_images: [...p.additional_images, compressedDataUrl] }));
-                }
-                showToast('Image uploaded and processed!', 'success');
-            };
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
+    const handleAddImageUrl = () => {
+        if (!detailImgInput.trim()) return;
+        const url = detailImgInput.trim();
+        const current = getAllImages();
+        updateAllImages([...current, url]);
+        setDetailImgInput('');
+        showToast('Image URL added to gallery.', 'success');
+    };
+
+    const handleRemoveImage = (index) => {
+        const current = getAllImages();
+        const next = current.filter((_, i) => i !== index);
+        updateAllImages(next);
+        showToast('Photo removed from gallery.', 'info');
+    };
+
+    const handleSetCover = (index) => {
+        const current = getAllImages();
+        if (index <= 0 || index >= current.length) return;
+        const chosen = current[index];
+        const rest = current.filter((_, i) => i !== index);
+        updateAllImages([chosen, ...rest]);
+        showToast('★ Set as main storefront cover!', 'success');
+    };
+
+    const handleMoveImage = (fromIdx, toIdx) => {
+        const current = getAllImages();
+        if (toIdx < 0 || toIdx >= current.length) return;
+        const moved = [...current];
+        const [target] = moved.splice(fromIdx, 1);
+        moved.splice(toIdx, 0, target);
+        updateAllImages(moved);
     };
 
     const handleNextStep = () => {
         if (step === 1) {
             if (!form.name || !form.name.trim()) {
-                showToast('Please enter a product name.', 'error');
+                showToast('Please enter a product name before proceeding.', 'error');
                 return;
             }
         }
         if (step === 2) {
-            if (!form.image_url) {
-                showToast('Please upload, pick a preset, or paste a main image.', 'error');
+            const imgs = getAllImages();
+            if (imgs.length === 0) {
+                showToast('Please upload at least one product photo for your listing.', 'error');
                 return;
             }
         }
@@ -601,20 +646,57 @@ export default function ProductsPage() {
             </div>
 
             {/* Stepper Progress Bar */}
-            <div style={{ display: 'flex', background: 'var(--d-card)', borderBottom: '1px solid var(--d-border2)', padding: '0.65rem 1.5rem', gap: '0.5rem', overflowX: 'auto' }}>
-              {['1. Basic Info', '2. Images', '3. Pricing & Variants', '4. Inventory', '5. Shipping & Returns', '6. Review & Submit'].map((label, idx) => {
-                const stepNum = idx + 1;
-                const active = step === stepNum;
-                const completed = step > stepNum;
-                return (<button key={label} onClick={() => setStep(stepNum)} style={{
-                        padding: '4px 10px', borderRadius: 8, fontSize: '0.72rem', fontWeight: 700,
-                        border: 'none', cursor: 'pointer', whiteSpace: 'nowrap',
-                        background: active ? '#6366f1' : completed ? '#e0e7ff' : 'transparent',
-                        color: active ? '#ffffff' : completed ? '#4338ca' : 'var(--d-t3)'
+            <div style={{ display: 'flex', background: 'var(--d-card)', borderBottom: '1px solid var(--d-border2)', padding: '0.75rem 1.75rem', gap: '0.5rem', overflowX: 'auto', alignItems: 'center' }}>
+              {[
+                { num: 1, label: 'Basic Info' },
+                { num: 2, label: 'Images' },
+                { num: 3, label: 'Pricing & Variants' },
+                { num: 4, label: 'Inventory' },
+                { num: 5, label: 'Shipping & Returns' },
+                { num: 6, label: 'Review & Submit' }
+              ].map((item) => {
+                const active = step === item.num;
+                const completed = step > item.num;
+                return (
+                  <button
+                    key={item.num}
+                    type="button"
+                    onClick={() => setStep(item.num)}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '6px 12px',
+                      borderRadius: 20,
+                      fontSize: '0.74rem',
+                      fontWeight: active ? 700 : 600,
+                      border: 'none',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.18s ease',
+                      background: active ? '#0f172a' : completed ? '#f1f5f9' : 'transparent',
+                      color: active ? '#ffffff' : completed ? '#1e293b' : 'var(--d-t3)',
+                      boxShadow: active ? '0 2px 8px rgba(15,23,42,0.18)' : 'none'
+                    }}
+                  >
+                    <span style={{
+                      width: 16,
+                      height: 16,
+                      borderRadius: '50%',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.66rem',
+                      fontWeight: 800,
+                      background: active ? 'rgba(255,255,255,0.25)' : completed ? '#cbd5e1' : 'var(--d-border)',
+                      color: active ? '#ffffff' : '#0f172a'
                     }}>
-                    {label}
-                  </button>);
-            })}
+                      {completed ? '✓' : item.num}
+                    </span>
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* Modal Body: STEP CONTENT */}
@@ -658,163 +740,326 @@ export default function ProductsPage() {
                   </div>
                 </div>)}
 
-              {/* STEP 2: PRODUCT IMAGES */}
-              {step === 2 && (<div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  {/* Curated Presets Bar */}
-                  <div style={{ background: 'var(--d-card)', border: '1px solid var(--d-border)', borderRadius: 10, padding: '0.75rem 1rem' }}>
-                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--d-t2)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span>✨ Quick Presets (Click any to test instantly):</span>
+              {/* STEP 2: PRODUCT IMAGES (MULTIPLE UPLOAD GALLERY) */}
+              {step === 2 && (<div style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
+                  {/* Header Info */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+                    <div>
+                      <div style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--d-t1)', letterSpacing: '-0.01em' }}>
+                        Product Media Gallery ({getAllImages().length} Photos)
+                      </div>
+                      <p style={{ fontSize: '0.78rem', color: 'var(--d-t3)', margin: '2px 0 0' }}>
+                        Upload multiple photos of this garment. The first photo is your <strong>Main Storefront Cover</strong>.
+                      </p>
                     </div>
-                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                      {SAMPLE_PRESET_IMAGES.map((preset) => (
-                        <button
-                          key={preset.label}
-                          type="button"
-                          onClick={() => setForm(p => ({ ...p, image_url: preset.url }))}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 6,
-                            padding: '4px 10px',
-                            borderRadius: 20,
-                            border: form.image_url === preset.url ? '2px solid #6366f1' : '1px solid var(--d-border)',
-                            background: form.image_url === preset.url ? '#eef2ff' : 'var(--d-bg)',
-                            color: form.image_url === preset.url ? '#4338ca' : 'var(--d-t1)',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            transition: 'all 0.15s ease'
-                          }}
-                        >
-                          <img src={preset.url} alt="" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
-                          {preset.label}
-                        </button>
-                      ))}
-                    </div>
+                    {getAllImages().length > 0 && (
+                      <span style={{ fontSize: '0.74rem', fontWeight: 700, padding: '4px 10px', borderRadius: 20, background: '#f1f5f9', color: '#0f172a', border: '1px solid #e2e8f0' }}>
+                        ✓ {getAllImages().length} Photo{getAllImages().length > 1 ? 's' : ''} Uploaded
+                      </span>
+                    )}
                   </div>
 
-                  <div className={styles.fRow}>
-                    {/* Main Image */}
-                    <div className={styles.fGroup}>
-                      <label className={styles.fLabel}>Main Product Image (Front) *</label>
-                      <input
-                        type="file"
-                        ref={mainFileInputRef}
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        onChange={(e) => {
-                          if (e.target.files?.[0]) handleImageFile(e.target.files[0], 'main');
-                        }}
-                      />
-                      <div
-                        className={styles.uploadZone}
-                        onClick={() => !form.image_url && mainFileInputRef.current?.click()}
-                        onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          if (e.dataTransfer.files?.[0]) handleImageFile(e.dataTransfer.files[0], 'main');
-                        }}
-                        style={{ cursor: form.image_url ? 'default' : 'pointer' }}
-                      >
-                        {form.image_url ? (<div style={{ position: 'relative', width: '100%' }}>
-                            <img src={form.image_url} alt="" style={{ width: '100%', height: 150, objectFit: 'cover', borderRadius: 8 }}/>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); setForm(p => ({ ...p, image_url: '' })); }}
-                              style={{ position: 'absolute', top: 6, right: 6, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                            >✕</button>
-                          </div>) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '1rem 0' }}>
-                              <ImagePlus size={32} color="#6366f1"/>
-                              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--d-t1)' }}>Click to browse or drag & drop photo</div>
-                              <p style={{ fontSize: '0.72rem', color: 'var(--d-t4)', margin: 0 }}>PNG, JPG, WEBP from your device</p>
-                            </div>
-                          )}
-                      </div>
-                      <input className={styles.fInput} style={{ marginTop: 6 }} placeholder="Or paste main image URL..." value={form.image_url} onChange={e => setForm(p => ({ ...p, image_url: e.target.value }))}/>
+                  {/* Multi-file Drag & Drop Area */}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    multiple
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      if (e.target.files) handleMultipleFilesUpload(e.target.files);
+                    }}
+                  />
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); }}
+                    onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsDragging(false);
+                      if (e.dataTransfer.files) handleMultipleFilesUpload(e.dataTransfer.files);
+                    }}
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{
+                      border: isDragging ? '2px dashed #0f172a' : '2px dashed var(--d-border)',
+                      borderRadius: 14,
+                      padding: '2rem 1.5rem',
+                      background: isDragging ? '#f8fafc' : 'var(--d-card)',
+                      cursor: 'pointer',
+                      textAlign: 'center',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      transition: 'all 0.18s ease'
+                    }}
+                  >
+                    <div style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 12,
+                      background: isDragging ? '#e2e8f0' : 'var(--d-panel)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
+                    }}>
+                      <UploadCloud size={26} color="#0f172a"/>
                     </div>
-
-                    {/* Back Image */}
-                    <div className={styles.fGroup}>
-                      <label className={styles.fLabel}>Back View Image (Optional)</label>
-                      <input
-                        type="file"
-                        ref={backFileInputRef}
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        onChange={(e) => {
-                          if (e.target.files?.[0]) handleImageFile(e.target.files[0], 'back');
-                        }}
-                      />
-                      <div
-                        className={styles.uploadZone}
-                        onClick={() => !form.back_image_url && backFileInputRef.current?.click()}
-                        onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          if (e.dataTransfer.files?.[0]) handleImageFile(e.dataTransfer.files[0], 'back');
-                        }}
-                        style={{ cursor: form.back_image_url ? 'default' : 'pointer' }}
-                      >
-                        {form.back_image_url ? (<div style={{ position: 'relative', width: '100%' }}>
-                            <img src={form.back_image_url} alt="" style={{ width: '100%', height: 150, objectFit: 'cover', borderRadius: 8 }}/>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); setForm(p => ({ ...p, back_image_url: '' })); }}
-                              style={{ position: 'absolute', top: 6, right: 6, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                            >✕</button>
-                          </div>) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '1rem 0' }}>
-                              <ImagePlus size={32} color="var(--d-t4)"/>
-                              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--d-t1)' }}>Click to upload back view</div>
-                              <p style={{ fontSize: '0.72rem', color: 'var(--d-t4)', margin: 0 }}>Optional secondary angle</p>
-                            </div>
-                          )}
+                    <div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--d-t1)' }}>
+                        Click to browse or drag & drop multiple photos
                       </div>
-                      <input className={styles.fInput} style={{ marginTop: 6 }} placeholder="Or paste back view image URL..." value={form.back_image_url} onChange={e => setForm(p => ({ ...p, back_image_url: e.target.value }))}/>
+                      <p style={{ fontSize: '0.74rem', color: 'var(--d-t3)', margin: '3px 0 0' }}>
+                        Supports PNG, JPG, WEBP • Select multiple images simultaneously
+                      </p>
                     </div>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                      style={{
+                        marginTop: 4,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        padding: '6px 16px',
+                        borderRadius: 8,
+                        border: '1px solid var(--d-border)',
+                        background: 'var(--d-panel)',
+                        color: 'var(--d-t1)',
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+                      }}
+                    >
+                      <Plus size={14}/> Choose Files from Device
+                    </button>
                   </div>
 
-                  {/* Additional Images */}
-                  <div className={styles.fGroup}>
-                    <label className={styles.fLabel}>Additional / Detail Images Gallery</label>
+                  {/* URL fallback bar */}
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                     <input
-                      type="file"
-                      ref={galleryFileInputRef}
-                      accept="image/*"
-                      style={{ display: 'none' }}
-                      multiple
-                      onChange={(e) => {
-                        if (e.target.files) {
-                          Array.from(e.target.files).forEach(f => handleImageFile(f, 'gallery'));
+                      className={styles.fInput}
+                      placeholder="Or paste an image URL (https://...)"
+                      value={detailImgInput}
+                      onChange={e => setDetailImgInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddImageUrl();
                         }
                       }}
+                      style={{ fontSize: '0.82rem' }}
                     />
-                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                      <button
-                        type="button"
-                        className={styles.btnGhost}
-                        onClick={() => galleryFileInputRef.current?.click()}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6 }}
-                      >
-                        <ImagePlus size={14}/> Upload Files
-                      </button>
-                      <input className={styles.fInput} placeholder="Or paste detail shot URL..." value={detailImgInput} onChange={e => setDetailImgInput(e.target.value)}/>
-                      <button type="button" className={styles.btnGhost} onClick={addDetailImage}>Add URL</button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAddImageUrl}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        padding: '0.6rem 1.25rem',
+                        borderRadius: 10,
+                        border: '1.5px solid var(--d-border)',
+                        background: 'var(--d-card)',
+                        color: 'var(--d-t1)',
+                        fontSize: '0.82rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      + Add URL
+                    </button>
+                  </div>
 
-                    <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                      {form.additional_images.map((img, idx) => (<div key={idx} style={{ position: 'relative', width: 80, height: 80, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--d-border)' }}>
-                          <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
-                          <button
-                            type="button"
-                            onClick={() => removeDetailImage(idx)}
-                            style={{ position: 'absolute', top: 2, right: 2, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 18, height: 18, fontSize: '0.65rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          >✕</button>
-                        </div>))}
-                    </div>
+                  {/* Gallery Grid of uploaded photos */}
+                  <div>
+                    {getAllImages().length === 0 ? (
+                      <div style={{
+                        padding: '2rem 1rem',
+                        textAlign: 'center',
+                        border: '1px dashed var(--d-border)',
+                        borderRadius: 12,
+                        background: 'var(--d-card)',
+                        color: 'var(--d-t4)',
+                        fontSize: '0.82rem'
+                      }}>
+                        No photos uploaded yet. Upload front, back, and lookbook angles of your piece.
+                      </div>
+                    ) : (
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
+                        gap: '0.85rem'
+                      }}>
+                        {getAllImages().map((img, idx) => {
+                          const isCover = idx === 0;
+                          return (
+                            <div
+                              key={idx}
+                              style={{
+                                position: 'relative',
+                                height: 175,
+                                borderRadius: 12,
+                                overflow: 'hidden',
+                                background: 'var(--d-card)',
+                                border: isCover ? '2.5px solid #0f172a' : '1.5px solid var(--d-border)',
+                                boxShadow: isCover ? '0 4px 14px rgba(15,23,42,0.18)' : '0 1px 4px rgba(0,0,0,0.05)',
+                                transition: 'all 0.18s ease'
+                              }}
+                            >
+                              <img
+                                src={img}
+                                alt={`Product view ${idx + 1}`}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+
+                              {/* Cover / Position Badge */}
+                              <div style={{
+                                position: 'absolute',
+                                top: 8,
+                                left: 8,
+                                zIndex: 2,
+                                background: isCover ? '#0f172a' : 'rgba(0,0,0,0.65)',
+                                backdropFilter: 'blur(4px)',
+                                color: '#ffffff',
+                                padding: isCover ? '3px 8px' : '2px 7px',
+                                borderRadius: 6,
+                                fontSize: '0.68rem',
+                                fontWeight: 700,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                letterSpacing: '0.01em',
+                                boxShadow: '0 2px 6px rgba(0,0,0,0.25)'
+                              }}>
+                                {isCover ? <>★ Main Cover</> : `#${idx + 1}`}
+                              </div>
+
+                              {/* Delete button */}
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveImage(idx)}
+                                title="Remove photo"
+                                style={{
+                                  position: 'absolute',
+                                  top: 8,
+                                  right: 8,
+                                  zIndex: 2,
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: '50%',
+                                  background: 'rgba(239,68,68,0.92)',
+                                  backdropFilter: 'blur(4px)',
+                                  border: 'none',
+                                  color: '#ffffff',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: '0.72rem',
+                                  boxShadow: '0 2px 6px rgba(0,0,0,0.25)'
+                                }}
+                              >
+                                ✕
+                              </button>
+
+                              {/* Reorder & Set as cover controls */}
+                              <div style={{
+                                position: 'absolute',
+                                bottom: 6,
+                                left: 6,
+                                right: 6,
+                                display: 'flex',
+                                gap: 4,
+                                zIndex: 2
+                              }}>
+                                {!isCover && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSetCover(idx)}
+                                    title="Set as main cover image"
+                                    style={{
+                                      flex: 1,
+                                      background: 'rgba(255,255,255,0.95)',
+                                      backdropFilter: 'blur(6px)',
+                                      border: '1px solid #e2e8f0',
+                                      color: '#0f172a',
+                                      borderRadius: 6,
+                                      padding: '4px 6px',
+                                      fontSize: '0.68rem',
+                                      fontWeight: 700,
+                                      cursor: 'pointer',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      gap: 3,
+                                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
+                                    }}
+                                  >
+                                    <Star size={10} fill="#0f172a"/> Make Cover
+                                  </button>
+                                )}
+                                {idx > 0 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMoveImage(idx, idx - 1)}
+                                    title="Move backward"
+                                    style={{
+                                      width: 24,
+                                      height: 24,
+                                      background: 'rgba(255,255,255,0.95)',
+                                      backdropFilter: 'blur(6px)',
+                                      border: '1px solid #e2e8f0',
+                                      color: '#0f172a',
+                                      borderRadius: 6,
+                                      cursor: 'pointer',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      fontSize: '0.72rem',
+                                      fontWeight: 800,
+                                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
+                                    }}
+                                  >
+                                    ←
+                                  </button>
+                                )}
+                                {idx < getAllImages().length - 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMoveImage(idx, idx + 1)}
+                                    title="Move forward"
+                                    style={{
+                                      width: 24,
+                                      height: 24,
+                                      background: 'rgba(255,255,255,0.95)',
+                                      backdropFilter: 'blur(6px)',
+                                      border: '1px solid #e2e8f0',
+                                      color: '#0f172a',
+                                      borderRadius: 6,
+                                      cursor: 'pointer',
+                                      display: 'center',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      fontSize: '0.72rem',
+                                      fontWeight: 800,
+                                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
+                                    }}
+                                  >
+                                    →
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>)}
 
@@ -977,14 +1222,21 @@ export default function ProductsPage() {
 
                   <div className={styles.panel} style={{ padding: '1.25rem' }}>
                     <div style={{ display: 'flex', gap: 16 }}>
-                      <img src={form.image_url || '/Shop_images/1/basic2-500x750.jpeg'} alt="" style={{ width: 90, height: 110, objectFit: 'cover', borderRadius: 8 }}/>
+                      <img src={form.image_url || '/Shop_images/1/basic2-500x750.jpeg'} alt="" style={{ width: 90, height: 115, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--d-border)' }}/>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--d-t1)' }}>{form.name || 'Untitled Item'}</div>
                         <div style={{ fontSize: '0.8rem', color: 'var(--d-t3)' }}>{form.category} · {form.target_audience} · SKU: {form.sku}</div>
-                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#6366f1', marginTop: 4 }}>${form.price} {form.currency}</div>
+                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a', marginTop: 4 }}>${form.price} {form.currency}</div>
                         <div style={{ fontSize: '0.78rem', color: 'var(--d-t2)', marginTop: 4 }}>
-                          {form.colors.length} Colors · {form.sizes.length} Sizes · {form.variants.reduce((s, v) => s + Number(v.stock), 0)} Total Stock Units
+                          {getAllImages().length} Photos · {form.colors.length} Colors · {form.sizes.length} Sizes · {form.variants.reduce((s, v) => s + Number(v.stock), 0)} Total Stock Units
                         </div>
+                        {getAllImages().length > 1 && (
+                          <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+                            {getAllImages().slice(1).map((extraImg, i) => (
+                              <img key={i} src={extraImg} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'cover', border: '1px solid var(--d-border)' }} />
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -992,14 +1244,97 @@ export default function ProductsPage() {
             </div>
 
             {/* Modal Footer Controls */}
-            <div className={styles.modalFooter} style={{ justifyContent: 'space-between' }}>
-              {step > 1 ? (<button className={styles.btnGhost} onClick={() => setStep(step - 1)}><ArrowLeft size={14}/> Back</button>) : <div />}
+            <div className={styles.modalFooter} style={{ justifyContent: 'space-between', padding: '1.15rem 1.75rem', background: 'var(--d-card)', borderTop: '1px solid var(--d-border2)' }}>
+              {step > 1 ? (
+                <button
+                  type="button"
+                  onClick={() => setStep(step - 1)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '0.55rem 1.15rem',
+                    borderRadius: 10,
+                    border: '1.5px solid var(--d-border)',
+                    background: 'var(--d-card)',
+                    color: 'var(--d-t2)',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <ArrowLeft size={14}/> Back
+                </button>
+              ) : <div />}
 
-              <div style={{ display: 'flex', gap: '0.65rem' }}>
-                <button className={styles.btnGhost} onClick={() => submitProduct('draft')}>Save as Draft</button>
-                {step < 6 ? (<button className={styles.btnPrimary} onClick={handleNextStep}>Next Step <ArrowRight size={14}/></button>) : (<button className={styles.btnPrimary} style={{ background: '#16a34a' }} onClick={() => submitProduct('live')}>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => submitProduct('draft')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '0.55rem 1.25rem',
+                    borderRadius: 10,
+                    border: '1.5px solid var(--d-border)',
+                    background: 'var(--d-panel)',
+                    color: 'var(--d-t1)',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  Save as Draft
+                </button>
+
+                {step < 6 ? (
+                  <button
+                    type="button"
+                    onClick={handleNextStep}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '0.55rem 1.45rem',
+                      borderRadius: 10,
+                      border: 'none',
+                      background: '#0f172a',
+                      color: '#ffffff',
+                      fontSize: '0.84rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(15,23,42,0.18)',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    Next Step <ArrowRight size={14}/>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => submitProduct('live')}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '0.6rem 1.65rem',
+                      borderRadius: 10,
+                      border: 'none',
+                      background: '#15803d',
+                      color: '#ffffff',
+                      fontSize: '0.88rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 16px rgba(21,128,61,0.28)',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
                     Publish Live to Store & Catalog 🚀
-                  </button>)}
+                  </button>
+                )}
               </div>
             </div>
           </div>

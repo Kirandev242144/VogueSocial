@@ -121,8 +121,28 @@ public class StoreController {
             item.put("reviews_count", 48);
 
             // Default fashion colors and sizes
-            item.put("colors", Arrays.asList("Obsidian Black", "Camel", "Cream White"));
-            item.put("sizes", Arrays.asList("XS", "S", "M", "L", "XL"));
+            List<String> defaultColors = Arrays.asList("Obsidian Black", "Camel", "Cream White");
+            List<String> defaultSizes = Arrays.asList("XS", "S", "M", "L", "XL");
+            item.put("colors", defaultColors);
+            item.put("sizes", defaultSizes);
+
+            if (p.getAdminNotes() != null && !p.getAdminNotes().isEmpty()) {
+                try {
+                    com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                    Map<String, Object> notes = mapper.readValue(p.getAdminNotes(), Map.class);
+                    if (notes.containsKey("additional_images")) {
+                        item.put("additional_images", notes.get("additional_images"));
+                        item.put("images", notes.get("additional_images"));
+                    }
+                    if (notes.containsKey("colors") && notes.get("colors") instanceof List && !((List<?>) notes.get("colors")).isEmpty()) {
+                        item.put("colors", notes.get("colors"));
+                    }
+                    if (notes.containsKey("sizes") && notes.get("sizes") instanceof List && !((List<?>) notes.get("sizes")).isEmpty()) {
+                        item.put("sizes", notes.get("sizes"));
+                    }
+                } catch (Exception ignored) {}
+            }
+            item.put("adminNotes", p.getAdminNotes());
 
             formattedProducts.add(item);
         }
