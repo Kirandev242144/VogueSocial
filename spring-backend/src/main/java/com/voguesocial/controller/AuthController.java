@@ -29,9 +29,15 @@ public class AuthController {
         if (name == null) {
             name = (String) req.get("fullName");
         }
-        String role = (String) req.getOrDefault("role", "user");
         String storeName = (String) req.get("storeName");
         String storeHandle = (String) req.get("storeHandle");
+        String rawRole = (String) req.get("role");
+        String role = "user";
+        if (rawRole != null && !rawRole.trim().isEmpty()) {
+            role = rawRole.trim().toLowerCase();
+        } else if ((storeName != null && !storeName.trim().isEmpty()) || (storeHandle != null && !storeHandle.trim().isEmpty())) {
+            role = "merchant";
+        }
 
         if (email == null || !email.contains("@")) {
             Map<String, Object> err = new HashMap<>();
