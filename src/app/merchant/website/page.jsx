@@ -241,9 +241,14 @@ export default function WebsitePage() {
   };
 
   const currentHandle = subdomain.trim().toLowerCase() || 'studiolabel';
-  const liveSubdomainUrl = `https://${currentHandle}.voguesocial.com`;
+  const isLocalDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname.endsWith('.localhost') || window.location.hostname === '127.0.0.1');
+  const portSuffix = typeof window !== 'undefined' && window.location.port ? `:${window.location.port}` : ':3001';
+  const localSubdomainUrl = `http://${currentHandle}.localhost${portSuffix}`;
+  const prodSubdomainUrl = `https://${currentHandle}.voguesocial.com`;
+  const liveSubdomainUrl = isLocalDev ? localSubdomainUrl : prodSubdomainUrl;
   const storePreviewUrl = `/store/${currentHandle}?embedded=true&t=${previewKey}`;
-  const directStoreUrl = `/store/${currentHandle}`;
+  const directStoreUrl = isLocalDev ? localSubdomainUrl : `/store/${currentHandle}`;
+
 
   return (
     <>
@@ -266,14 +271,15 @@ export default function WebsitePage() {
         </div>
 
         <div className={styles.topbarRight}>
-          <Link
-            to={directStoreUrl}
+          <a
+            href={directStoreUrl}
             target="_blank"
+            rel="noreferrer"
             className={styles.btnSecondary}
             style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}
           >
             <ExternalLink size={13} /> Visit Live Storefront
-          </Link>
+          </a>
           <button
             className={styles.btnPrimary}
             onClick={() => handleSaveSettings()}
@@ -408,10 +414,20 @@ export default function WebsitePage() {
                       </span>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4, fontSize: '0.78rem', color: 'var(--d-t3)' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Globe size={12} color="#2563eb" /> {currentHandle}.voguesocial.com
-                      </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4, fontSize: '0.78rem', color: 'var(--d-t3)', flexWrap: 'wrap' }}>
+                      <a
+                        href={liveSubdomainUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#2563eb', textDecoration: 'none', fontWeight: 600 }}
+                      >
+                        <Globe size={12} color="#2563eb" /> {isLocalDev ? `${currentHandle}.localhost${portSuffix}` : `${currentHandle}.voguesocial.com`}
+                      </a>
+                      {isLocalDev && (
+                        <span style={{ fontSize: '0.68rem', background: '#eff6ff', color: '#1e40af', padding: '1px 6px', borderRadius: 4, border: '1px solid #bfdbfe', fontWeight: 600 }}>
+                          Local Subdomain Active
+                        </span>
+                      )}
                       {customDomain && (
                         <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#166534' }}>
                           <Lock size={11} color="#16a34a" /> {customDomain} (SSL Active)
@@ -426,17 +442,19 @@ export default function WebsitePage() {
                     onClick={() => handleCopy(liveSubdomainUrl, 'store-url')}
                     className={styles.btnSecondary}
                     style={{ fontSize: '0.78rem', padding: '0.45rem 0.85rem' }}
+                    title={isLocalDev ? `Copy ${localSubdomainUrl}` : `Copy ${prodSubdomainUrl}`}
                   >
                     {copied === 'store-url' ? <><Check size={13} color="#16a34a" /> Copied</> : <><Copy size={13} /> Copy Link</>}
                   </button>
-                  <Link
-                    to={directStoreUrl}
+                  <a
+                    href={liveSubdomainUrl}
                     target="_blank"
+                    rel="noreferrer"
                     className={styles.btnPrimary}
                     style={{ fontSize: '0.78rem', padding: '0.45rem 0.95rem', textDecoration: 'none' }}
                   >
                     <ExternalLink size={13} /> Open Store in New Tab
-                  </Link>
+                  </a>
                 </div>
               </div>
             </div>
@@ -489,8 +507,8 @@ export default function WebsitePage() {
                   fontSize: '0.75rem', color: '#475569'
                 }}>
                   <Lock size={11} color="#16a34a" />
-                  <span style={{ fontWeight: 600 }}>https://{currentHandle}.voguesocial.com</span>
-                  <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>· Edge Anycast</span>
+                  <span style={{ fontWeight: 600 }}>{isLocalDev ? `http://${currentHandle}.localhost${portSuffix}` : `https://${currentHandle}.voguesocial.com`}</span>
+                  <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>· {isLocalDev ? 'Local Dynamic Subdomain' : 'Edge Anycast'}</span>
                 </div>
 
                 {/* Reload / External Link Controls */}
@@ -503,15 +521,16 @@ export default function WebsitePage() {
                   >
                     <RefreshCw size={13} /> Refresh
                   </button>
-                  <Link
-                    to={directStoreUrl}
+                  <a
+                    href={liveSubdomainUrl}
                     target="_blank"
+                    rel="noreferrer"
                     className={styles.btnSecondary}
                     title="Open Fullscreen in New Window"
-                    style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', textDecoration: 'none' }}
+                    style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', textDecoration: 'none', display: 'flex', alignItems: 'center' }}
                   >
                     <ExternalLink size={13} />
-                  </Link>
+                  </a>
                 </div>
               </div>
 
@@ -713,22 +732,33 @@ export default function WebsitePage() {
                   </button>
                 </div>
 
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   <button
                     onClick={() => handleCopy(liveSubdomainUrl, 'subdomain-url')}
                     className={styles.btnSecondary}
                     style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem' }}
                   >
-                    {copied === 'subdomain-url' ? <><Check size={12} color="#16a34a" /> Copied</> : <><Copy size={12} /> Copy Subdomain URL</>}
+                    {copied === 'subdomain-url' ? <><Check size={12} color="#16a34a" /> Copied</> : <><Copy size={12} /> Copy {isLocalDev ? 'Local Subdomain' : 'Subdomain'} URL</>}
                   </button>
-                  <Link
-                    to={directStoreUrl}
+                  <a
+                    href={liveSubdomainUrl}
                     target="_blank"
+                    rel="noreferrer"
                     className={styles.btnSecondary}
-                    style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem', textDecoration: 'none' }}
+                    style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}
                   >
                     <ExternalLink size={12} /> Open in New Tab
-                  </Link>
+                  </a>
+                  {isLocalDev && (
+                    <button
+                      onClick={() => handleCopy(prodSubdomainUrl, 'prod-url')}
+                      className={styles.btnSecondary}
+                      style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem', color: '#64748b' }}
+                      title="Production URL for when deployed to public web with DNS"
+                    >
+                      {copied === 'prod-url' ? <><Check size={12} color="#16a34a" /> Copied Prod URL</> : <><Copy size={12} /> Copy Prod URL</>}
+                    </button>
+                  )}
                 </div>
               </div>
 
