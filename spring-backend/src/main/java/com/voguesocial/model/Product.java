@@ -44,7 +44,7 @@ public class Product {
 
     @JsonProperty("description")
     @JsonAlias({"desc", "description"})
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(name = "price", precision = 10, scale = 2)
@@ -60,12 +60,12 @@ public class Product {
 
     @JsonProperty("imageUrl")
     @JsonAlias({"image_url", "imageUrl", "image"})
-    @Column(name = "image_url", columnDefinition = "TEXT")
+    @Column(name = "image_url", columnDefinition = "LONGTEXT")
     private String imageUrl;
 
     @JsonProperty("backImageUrl")
     @JsonAlias({"back_image_url", "backImageUrl"})
-    @Column(name = "back_image_url", columnDefinition = "TEXT")
+    @Column(name = "back_image_url", columnDefinition = "LONGTEXT")
     private String backImageUrl;
 
     @Column(name = "stock")
@@ -76,7 +76,7 @@ public class Product {
 
     @JsonProperty("adminNotes")
     @JsonAlias({"admin_notes", "adminNotes"})
-    @Column(name = "admin_notes", columnDefinition = "TEXT")
+    @Column(name = "admin_notes", columnDefinition = "LONGTEXT")
     private String adminNotes;
 
     @JsonProperty("createdAt")

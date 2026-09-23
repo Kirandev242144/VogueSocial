@@ -1,10 +1,18 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from '../merchant.module.css';
 import { Package, Plus, Edit2, Trash2, Search, ImagePlus, RefreshCw, Facebook, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { FacebookShopSync } from '@/components/merchant';
 import { useAuth } from '@/context/AuthContext';
+
+const SAMPLE_PRESET_IMAGES = [
+    { label: 'Silk Slip Dress', url: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80' },
+    { label: 'Wool Trench Coat', url: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=800&q=80' },
+    { label: 'Tailored Blazer', url: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800&q=80' },
+    { label: 'Cashmere Knit', url: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&q=80' },
+    { label: 'Wide-Leg Trousers', url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&q=80' }
+];
 
 const CATEGORIES = ['Tops', 'Bottoms', 'Dresses & Jumpsuits', 'Casual', 'Formal', 'Ethnic', 'Streetwear', 'Luxury', 'Athleisure'];
 const TARGET_AUDIENCES = ['Women', 'Men', 'Unisex', 'Kids'];
@@ -74,6 +82,9 @@ export default function ProductsPage() {
     const [step, setStep] = useState(1);
     const [editingId, setEditingId] = useState(null);
     const [form, setForm] = useState(BLANK_PRODUCT);
+    const mainFileInputRef = useRef(null);
+    const backFileInputRef = useRef(null);
+    const galleryFileInputRef = useRef(null);
     // Image inputs
     const [detailImgInput, setDetailImgInput] = useState('');
     const [colorInput, setColorInput] = useState('');
@@ -257,15 +268,86 @@ export default function ProductsPage() {
     const removeDetailImage = (index) => {
         setForm(p => ({ ...p, additional_images: p.additional_images.filter((_, i) => i !== index) }));
     };
-    // Submit product (Draft vs Live Publish)
-    const submitProduct = async (targetStatus) => {
-        if (!form.name || !form.name.trim() || !form.price) {
-            showToast('Product Name and Price are required.', 'error');
+    const handleImageFile = (file, targetField) => {
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+            showToast('Please upload an image file (PNG, JPG, WEBP).', 'error');
             return;
         }
-        if (!form.image_url) {
-            showToast('Main Product Image is required.', 'error');
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const maxDim = 1200;
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    } else {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+                if (targetField === 'main') {
+                    setForm(p => ({ ...p, image_url: compressedDataUrl }));
+                } else if (targetField === 'back') {
+                    setForm(p => ({ ...p, back_image_url: compressedDataUrl }));
+                } else if (targetField === 'gallery') {
+                    setForm(p => ({ ...p, additional_images: [...p.additional_images, compressedDataUrl] }));
+                }
+                showToast('Image uploaded and processed!', 'success');
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleNextStep = () => {
+        if (step === 1) {
+            if (!form.name || !form.name.trim()) {
+                showToast('Please enter a product name.', 'error');
+                return;
+            }
+        }
+        if (step === 2) {
+            if (!form.image_url) {
+                showToast('Please upload, pick a preset, or paste a main image.', 'error');
+                return;
+            }
+        }
+        if (step === 3) {
+            if (!form.price || Number(form.price) <= 0) {
+                showToast('Please enter a regular price for the item.', 'error');
+                return;
+            }
+        }
+        setStep(s => Math.min(6, s + 1));
+    };
+
+    // Submit product (Draft vs Live Publish)
+    const submitProduct = async (targetStatus) => {
+        if (!form.name || !form.name.trim()) {
+            showToast('Product Name is required.', 'error');
             return;
+        }
+        if (targetStatus === 'live') {
+            if (!form.price || Number(form.price) <= 0) {
+                showToast('Product Regular Price is required to publish live.', 'error');
+                return;
+            }
+            if (!form.image_url) {
+                showToast('Main Product Image is required to publish live.', 'error');
+                return;
+            }
         }
         const totalStock = form.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0) || Number(form.stock) || 25;
         const vendorId = getEffectiveVendorId();
@@ -284,7 +366,7 @@ export default function ProductsPage() {
             back_image_url: form.back_image_url || '',
             backImageUrl: form.back_image_url || '',
             additional_images: form.additional_images || [],
-            price: Number(form.price),
+            price: form.price ? Number(form.price) : 0,
             sale_price: form.sale_price ? Number(form.sale_price) : null,
             salePrice: form.sale_price ? Number(form.sale_price) : null,
             currency: form.currency || 'USD',
@@ -578,15 +660,77 @@ export default function ProductsPage() {
 
               {/* STEP 2: PRODUCT IMAGES */}
               {step === 2 && (<div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  {/* Curated Presets Bar */}
+                  <div style={{ background: 'var(--d-card)', border: '1px solid var(--d-border)', borderRadius: 10, padding: '0.75rem 1rem' }}>
+                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--d-t2)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span>✨ Quick Presets (Click any to test instantly):</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      {SAMPLE_PRESET_IMAGES.map((preset) => (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => setForm(p => ({ ...p, image_url: preset.url }))}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            padding: '4px 10px',
+                            borderRadius: 20,
+                            border: form.image_url === preset.url ? '2px solid #6366f1' : '1px solid var(--d-border)',
+                            background: form.image_url === preset.url ? '#eef2ff' : 'var(--d-bg)',
+                            color: form.image_url === preset.url ? '#4338ca' : 'var(--d-t1)',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <img src={preset.url} alt="" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className={styles.fRow}>
                     {/* Main Image */}
                     <div className={styles.fGroup}>
                       <label className={styles.fLabel}>Main Product Image (Front) *</label>
-                      <div className={styles.uploadZone}>
-                        {form.image_url ? (<div style={{ position: 'relative' }}>
-                            <img src={form.image_url} alt="" style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 8 }}/>
-                            <button onClick={() => setForm(p => ({ ...p, image_url: '' }))} style={{ position: 'absolute', top: 6, right: 6, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 22, height: 22, cursor: 'pointer' }}>✕</button>
-                          </div>) : (<ImagePlus size={28} color="var(--d-t4)"/>)}
+                      <input
+                        type="file"
+                        ref={mainFileInputRef}
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={(e) => {
+                          if (e.target.files?.[0]) handleImageFile(e.target.files[0], 'main');
+                        }}
+                      />
+                      <div
+                        className={styles.uploadZone}
+                        onClick={() => !form.image_url && mainFileInputRef.current?.click()}
+                        onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (e.dataTransfer.files?.[0]) handleImageFile(e.dataTransfer.files[0], 'main');
+                        }}
+                        style={{ cursor: form.image_url ? 'default' : 'pointer' }}
+                      >
+                        {form.image_url ? (<div style={{ position: 'relative', width: '100%' }}>
+                            <img src={form.image_url} alt="" style={{ width: '100%', height: 150, objectFit: 'cover', borderRadius: 8 }}/>
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setForm(p => ({ ...p, image_url: '' })); }}
+                              style={{ position: 'absolute', top: 6, right: 6, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >✕</button>
+                          </div>) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '1rem 0' }}>
+                              <ImagePlus size={32} color="#6366f1"/>
+                              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--d-t1)' }}>Click to browse or drag & drop photo</div>
+                              <p style={{ fontSize: '0.72rem', color: 'var(--d-t4)', margin: 0 }}>PNG, JPG, WEBP from your device</p>
+                            </div>
+                          )}
                       </div>
                       <input className={styles.fInput} style={{ marginTop: 6 }} placeholder="Or paste main image URL..." value={form.image_url} onChange={e => setForm(p => ({ ...p, image_url: e.target.value }))}/>
                     </div>
@@ -594,11 +738,40 @@ export default function ProductsPage() {
                     {/* Back Image */}
                     <div className={styles.fGroup}>
                       <label className={styles.fLabel}>Back View Image (Optional)</label>
-                      <div className={styles.uploadZone}>
-                        {form.back_image_url ? (<div style={{ position: 'relative' }}>
-                            <img src={form.back_image_url} alt="" style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 8 }}/>
-                            <button onClick={() => setForm(p => ({ ...p, back_image_url: '' }))} style={{ position: 'absolute', top: 6, right: 6, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 22, height: 22, cursor: 'pointer' }}>✕</button>
-                          </div>) : (<ImagePlus size={28} color="var(--d-t4)"/>)}
+                      <input
+                        type="file"
+                        ref={backFileInputRef}
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={(e) => {
+                          if (e.target.files?.[0]) handleImageFile(e.target.files[0], 'back');
+                        }}
+                      />
+                      <div
+                        className={styles.uploadZone}
+                        onClick={() => !form.back_image_url && backFileInputRef.current?.click()}
+                        onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (e.dataTransfer.files?.[0]) handleImageFile(e.dataTransfer.files[0], 'back');
+                        }}
+                        style={{ cursor: form.back_image_url ? 'default' : 'pointer' }}
+                      >
+                        {form.back_image_url ? (<div style={{ position: 'relative', width: '100%' }}>
+                            <img src={form.back_image_url} alt="" style={{ width: '100%', height: 150, objectFit: 'cover', borderRadius: 8 }}/>
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setForm(p => ({ ...p, back_image_url: '' })); }}
+                              style={{ position: 'absolute', top: 6, right: 6, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >✕</button>
+                          </div>) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '1rem 0' }}>
+                              <ImagePlus size={32} color="var(--d-t4)"/>
+                              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--d-t1)' }}>Click to upload back view</div>
+                              <p style={{ fontSize: '0.72rem', color: 'var(--d-t4)', margin: 0 }}>Optional secondary angle</p>
+                            </div>
+                          )}
                       </div>
                       <input className={styles.fInput} style={{ marginTop: 6 }} placeholder="Or paste back view image URL..." value={form.back_image_url} onChange={e => setForm(p => ({ ...p, back_image_url: e.target.value }))}/>
                     </div>
@@ -607,15 +780,39 @@ export default function ProductsPage() {
                   {/* Additional Images */}
                   <div className={styles.fGroup}>
                     <label className={styles.fLabel}>Additional / Detail Images Gallery</label>
+                    <input
+                      type="file"
+                      ref={galleryFileInputRef}
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      multiple
+                      onChange={(e) => {
+                        if (e.target.files) {
+                          Array.from(e.target.files).forEach(f => handleImageFile(f, 'gallery'));
+                        }
+                      }}
+                    />
                     <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                      <input className={styles.fInput} placeholder="Paste detail shot URL..." value={detailImgInput} onChange={e => setDetailImgInput(e.target.value)}/>
-                      <button className={styles.btnGhost} onClick={addDetailImage}>Add Image</button>
+                      <button
+                        type="button"
+                        className={styles.btnGhost}
+                        onClick={() => galleryFileInputRef.current?.click()}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                      >
+                        <ImagePlus size={14}/> Upload Files
+                      </button>
+                      <input className={styles.fInput} placeholder="Or paste detail shot URL..." value={detailImgInput} onChange={e => setDetailImgInput(e.target.value)}/>
+                      <button type="button" className={styles.btnGhost} onClick={addDetailImage}>Add URL</button>
                     </div>
 
                     <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                       {form.additional_images.map((img, idx) => (<div key={idx} style={{ position: 'relative', width: 80, height: 80, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--d-border)' }}>
                           <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
-                          <button onClick={() => removeDetailImage(idx)} style={{ position: 'absolute', top: 2, right: 2, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 18, height: 18, fontSize: '0.65rem', cursor: 'pointer' }}>✕</button>
+                          <button
+                            type="button"
+                            onClick={() => removeDetailImage(idx)}
+                            style={{ position: 'absolute', top: 2, right: 2, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 18, height: 18, fontSize: '0.65rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          >✕</button>
                         </div>))}
                     </div>
                   </div>
@@ -800,7 +997,7 @@ export default function ProductsPage() {
 
               <div style={{ display: 'flex', gap: '0.65rem' }}>
                 <button className={styles.btnGhost} onClick={() => submitProduct('draft')}>Save as Draft</button>
-                {step < 6 ? (<button className={styles.btnPrimary} onClick={() => setStep(step + 1)}>Next Step <ArrowRight size={14}/></button>) : (<button className={styles.btnPrimary} style={{ background: '#16a34a' }} onClick={() => submitProduct('live')}>
+                {step < 6 ? (<button className={styles.btnPrimary} onClick={handleNextStep}>Next Step <ArrowRight size={14}/></button>) : (<button className={styles.btnPrimary} style={{ background: '#16a34a' }} onClick={() => submitProduct('live')}>
                     Publish Live to Store & Catalog 🚀
                   </button>)}
               </div>
