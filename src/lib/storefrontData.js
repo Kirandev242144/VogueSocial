@@ -1,169 +1,7 @@
 // Storefront Data Store & DNS Engine for VogueSocial
 // Handles subdomains (*.voguesocial.com), Custom Domains & DNS Mapping, and Modern E-Shop Catalog
 
-export const STORE_PRODUCTS = [
-  {
-    id: 'prod-modern-1',
-    name: 'Structured Double-Breasted Trench Coat',
-    category: 'Outerwear',
-    price: 520,
-    sale_price: 460,
-    currency: 'USD',
-    image_url: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=800&q=80',
-    additional_images: [
-      'https://images.unsplash.com/photo-1544441893-675973e31985?w=800&q=80',
-      'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=800&q=80'
-    ],
-    description: 'Precision-cut from weather-resistant Italian cotton gabardine. Features epaulets, storm flap, horn buttons, and a belted waist for a modern cinematic silhouette.',
-    colors: ['Camel', 'Obsidian Black', 'Stone Grey'],
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    in_stock: true,
-    stock_count: 24,
-    badge: 'Trending · Try-On Ready',
-    rating: 4.9,
-    reviews_count: 88,
-  },
-  {
-    id: 'prod-modern-2',
-    name: 'Silk Charmeuse Bias-Cut Slip Dress',
-    category: 'Dresses',
-    price: 340,
-    sale_price: 290,
-    currency: 'USD',
-    image_url: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80',
-    additional_images: [
-      'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80'
-    ],
-    description: '100% 19-momme Mulberry silk cut on the bias to drape naturally around contours. Finished with delicate French seams and adjustable micro-spaghetti straps.',
-    colors: ['Champagne', 'Midnight Navy', 'Emerald'],
-    sizes: ['XS', 'S', 'M', 'L'],
-    in_stock: true,
-    stock_count: 18,
-    badge: 'Best Seller',
-    rating: 5.0,
-    reviews_count: 142,
-  },
-  {
-    id: 'prod-modern-3',
-    name: 'Minimalist Relaxed Cashmere Knit',
-    category: 'Knitwear',
-    price: 290,
-    sale_price: null,
-    currency: 'USD',
-    image_url: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&q=80',
-    additional_images: [
-      'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&q=80'
-    ],
-    description: 'Pure Grade-A Mongolian cashmere spun into a 12-gauge jersey knit. Cloud-like softness with ribbed trim and dropped shoulders for effortless day-to-evening dressing.',
-    colors: ['Oatmeal', 'Heather Grey', 'Cream White'],
-    sizes: ['S', 'M', 'L', 'XL'],
-    in_stock: true,
-    stock_count: 32,
-    badge: 'Essential',
-    rating: 4.8,
-    reviews_count: 74,
-  },
-  {
-    id: 'prod-modern-4',
-    name: 'Italian Wool Pleated Wide-Leg Trouser',
-    category: 'Tailored Suiting',
-    price: 260,
-    sale_price: null,
-    currency: 'USD',
-    image_url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&q=80',
-    additional_images: [
-      'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&q=80'
-    ],
-    description: 'Tailored from virgin worsted wool woven in Biella, Italy. High-rise double front pleats flow down into an elongated wide-leg hem with sharp creases.',
-    colors: ['Charcoal Grey', 'Deep Navy', 'Muted Olive'],
-    sizes: ['28', '30', '32', '34', '36'],
-    in_stock: true,
-    stock_count: 15,
-    badge: 'Editor Pick',
-    rating: 4.9,
-    reviews_count: 61,
-  },
-  {
-    id: 'prod-modern-5',
-    name: 'Sculpted Nappa Leather Biker Jacket',
-    category: 'Outerwear',
-    price: 780,
-    sale_price: 690,
-    currency: 'USD',
-    image_url: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80',
-    additional_images: [
-      'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80'
-    ],
-    description: 'Full-grain lambskin nappa with custom brushed silver hardware. Clean asymmetrical zip fastening and satin interior lining with internal card pocket.',
-    colors: ['Jet Black', 'Vintage Cognac'],
-    sizes: ['XS', 'S', 'M', 'L'],
-    in_stock: true,
-    stock_count: 8,
-    badge: 'Limited Run',
-    rating: 5.0,
-    reviews_count: 39,
-  },
-  {
-    id: 'prod-modern-6',
-    name: 'Oversized Peaked-Lapel Virgin Wool Blazer',
-    category: 'Tailored Suiting',
-    price: 440,
-    sale_price: null,
-    currency: 'USD',
-    image_url: 'https://images.unsplash.com/photo-1584273143981-41c073dfe8f8?w=800&q=80',
-    additional_images: [
-      'https://images.unsplash.com/photo-1584273143981-41c073dfe8f8?w=800&q=80'
-    ],
-    description: 'Architectural boyfriend tailoring with pronounced shoulder pads, peaked satin lapels, and horn buttons. Perfect for layering over slip dresses or denim.',
-    colors: ['Pure Black', 'Camel Houndstooth'],
-    sizes: ['XS', 'S', 'M', 'L'],
-    in_stock: true,
-    stock_count: 19,
-    badge: 'New Season',
-    rating: 4.9,
-    reviews_count: 53,
-  },
-  {
-    id: 'prod-modern-7',
-    name: 'Ribbed Seamless Contour Bodysuit',
-    category: 'Tops',
-    price: 120,
-    sale_price: 95,
-    currency: 'USD',
-    image_url: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&q=80',
-    additional_images: [
-      'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&q=80'
-    ],
-    description: 'Micro-ribbed compression knit that sculpts without pinching. Breathable moisture-wicking blend with thong back and snap closure.',
-    colors: ['Ivory', 'Espresso', 'Black'],
-    sizes: ['XS', 'S', 'M', 'L'],
-    in_stock: true,
-    stock_count: 45,
-    badge: 'Try-On Ready',
-    rating: 4.7,
-    reviews_count: 110,
-  },
-  {
-    id: 'prod-modern-8',
-    name: 'Pleated High-Waisted A-Line Midi Skirt',
-    category: 'Dresses',
-    price: 220,
-    sale_price: null,
-    currency: 'USD',
-    image_url: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800&q=80',
-    additional_images: [
-      'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800&q=80'
-    ],
-    description: 'Knife-pleated Japanese crepe that holds sharp geometric definition with movement. Elasticized grosgrain waistband with hidden side zipper.',
-    colors: ['Champagne Pearl', 'Midnight Slate'],
-    sizes: ['XS', 'S', 'M', 'L'],
-    in_stock: true,
-    stock_count: 22,
-    badge: 'Popular',
-    rating: 4.8,
-    reviews_count: 45,
-  }
-];
+export const STORE_PRODUCTS = [];
 
 export const DEFAULT_MERCHANT_STORE = {
   status: 'live',
@@ -221,11 +59,12 @@ export const DEFAULT_MERCHANT_STORE = {
   }
 };
 
-// Retrieve store by handle from localStorage or default
+// Retrieve store by handle from localStorage (strictly database/storage driven, no mock fallbacks)
 export function getStoreByHandle(handle) {
-  if (typeof window === 'undefined') return { store: DEFAULT_MERCHANT_STORE, products: STORE_PRODUCTS };
+  if (typeof window === 'undefined') return { store: null, products: [] };
 
   const cleanHandle = (handle || '').toLowerCase().trim();
+  if (!cleanHandle) return { store: null, products: [] };
 
   // Check specific handle in localStorage
   const specificKey = `vogue_website_${cleanHandle}`;
@@ -233,33 +72,37 @@ export function getStoreByHandle(handle) {
   if (specificData) {
     try {
       const parsed = JSON.parse(specificData);
-      return { store: parsed, products: STORE_PRODUCTS };
+      return { store: parsed, products: [] };
     } catch (e) {
       console.error('Failed to parse specific store data', e);
     }
   }
 
-  // Check generic merchant website in localStorage
+  // Check generic merchant website in localStorage ONLY if handle matches
   const merchantData = localStorage.getItem('vogue_merchant_website');
   if (merchantData) {
     try {
       const parsed = JSON.parse(merchantData);
-      if (parsed.store_handle === cleanHandle || !cleanHandle || cleanHandle === 'studiolabel') {
-        return { store: parsed, products: STORE_PRODUCTS };
+      if (parsed.store_handle === cleanHandle || parsed.subdomain === cleanHandle) {
+        return { store: parsed, products: [] };
       }
     } catch (e) {
       console.error('Failed to parse merchant store data', e);
     }
   }
 
-  // Return default store matching or fallback
+  // If this is specifically studiolabel (default merchant in local dev), return default settings
+  if (cleanHandle === 'studiolabel') {
+    return {
+      store: DEFAULT_MERCHANT_STORE,
+      products: []
+    };
+  }
+
+  // For any other unknown/unregistered handle, return null so 404 is properly rendered
   return {
-    store: {
-      ...DEFAULT_MERCHANT_STORE,
-      store_handle: cleanHandle || DEFAULT_MERCHANT_STORE.store_handle,
-      subdomain: cleanHandle || DEFAULT_MERCHANT_STORE.subdomain,
-    },
-    products: STORE_PRODUCTS
+    store: null,
+    products: []
   };
 }
 

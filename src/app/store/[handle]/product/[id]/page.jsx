@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import styles from '../../store.module.css';
 import TryOnModal from '@/components/TryOnModal';
-import { getStoreByHandle, STORE_PRODUCTS } from '@/lib/storefrontData';
+import { getStoreByHandle } from '@/lib/storefrontData';
 
 const COLOR_HEX_MAP = {
   'obsidian black': '#111827',
@@ -203,14 +203,19 @@ export default function ProductPage({ handle: propHandle } = {}) {
               storeData = data.store;
               productList = data.products || [];
             }
+          } else if (res.status === 404) {
+            setStore(null);
+            setProduct(null);
+            setLoading(false);
+            return;
           }
         } catch (e) {
-          console.warn('Backend storefront fetch failed, falling back to local data', e);
+          console.warn('Backend storefront fetch failed:', e);
         }
 
         if (!storeData) {
           const local = getStoreByHandle(handle);
-          if (local && local.store) {
+          if (local && local.store && (local.store.store_handle === handle?.toLowerCase() || local.store.subdomain === handle?.toLowerCase())) {
             storeData = local.store;
             productList = local.products || [];
           }

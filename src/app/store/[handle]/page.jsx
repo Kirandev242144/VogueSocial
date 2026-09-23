@@ -7,7 +7,7 @@ import {
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import styles from './store.module.css';
 import TryOnModal from '@/components/TryOnModal';
-import { getStoreByHandle, STORE_PRODUCTS } from '@/lib/storefrontData';
+import { getStoreByHandle } from '@/lib/storefrontData';
 
 const COLOR_HEX_MAP = {
   'obsidian black': '#111827',
@@ -104,14 +104,20 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
             loadedStore = data.store;
             loadedProducts = data.products || [];
           }
+        } else if (res.status === 404) {
+          // Storefront explicitly unlisted/nonexistent in database
+          setStore(null);
+          setProducts([]);
+          setLoading(false);
+          return;
         }
       } catch (err) {
-        // Fall back to local store
+        console.warn('Backend storefront fetch failed:', err);
       }
 
       if (!loadedStore) {
         const local = getStoreByHandle(handle);
-        if (local && local.store) {
+        if (local && local.store && (local.store.store_handle === handle?.toLowerCase() || local.store.subdomain === handle?.toLowerCase())) {
           loadedStore = local.store;
           loadedProducts = local.products || [];
         }
