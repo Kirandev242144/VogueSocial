@@ -27,6 +27,7 @@ import AdminVendorsPage from './app/admin/vendors/page';
 import AdminDisputesPage from './app/admin/disputes/page';
 
 import MerchantOnboarding from './app/onboarding/merchant/page';
+import MerchantLoginPage from './app/merchant/login/page';
 import Onboarding from './app/onboarding/page';
 import UserProfilePage from './app/profile/page';
 import ShopPage from './app/shop/page';
@@ -86,6 +87,10 @@ export default function App() {
           {/* Onboarding */}
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/onboarding/merchant" element={<MerchantOnboarding />} />
+
+          {/* Dedicated Merchant Auth */}
+          <Route path="/merchant/login" element={<MerchantLoginPage initialTab="signin" />} />
+          <Route path="/merchant/signup" element={<MerchantLoginPage initialTab="signup" />} />
 
           {/* Merchant Dashboard Routes Wrapped with Persistent Sidebar & Navbar Layout */}
           <Route element={<MerchantLayout />}>

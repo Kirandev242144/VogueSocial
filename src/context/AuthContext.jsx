@@ -88,22 +88,20 @@ export function AuthProvider({ children }) {
         setUser(parsed);
         setStatus('authenticated');
       } catch (e) {
-        // Fallback default: Shopper User Sarah
-        setUser(SYSTEM_ACCOUNTS[0]);
-        setStatus('authenticated');
+        setUser(null);
+        setStatus('unauthenticated');
       }
     } else {
-      // Default to Shopper Sarah for instant try-on exploration
-      setUser(SYSTEM_ACCOUNTS[0]);
-      setStatus('authenticated');
-      localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(SYSTEM_ACCOUNTS[0]));
+      // Default to guest / unauthenticated
+      setUser(null);
+      setStatus('unauthenticated');
     }
   }, []);
 
   /**
    * Real Sign Up for User (or Merchant)
    */
-  const signUp = async ({ name, email, password, role = 'user', preferred_size = 'M', gender = 'Women', storeName }) => {
+  const signUp = async ({ name, email, password, role = 'user', preferred_size = 'M', gender = 'Women', storeName, storeHandle }) => {
     if (!email || !email.includes('@')) {
       throw new Error('Please provide a valid email address.');
     }
@@ -127,7 +125,8 @@ export function AuthProvider({ children }) {
           email: cleanEmail,
           password: password,
           role: role,
-          storeName: storeName || (role === 'merchant' ? `${name.trim()} Store` : undefined)
+          storeName: storeName || (role === 'merchant' ? `${name.trim()} Atelier` : undefined),
+          storeHandle: storeHandle || (role === 'merchant' ? (storeName || name).trim().toLowerCase().replace(/[^a-z0-9-]/g, '') : undefined)
         })
       });
 
@@ -139,7 +138,7 @@ export function AuthProvider({ children }) {
         backendUser = data.user;
       }
     } catch (err) {
-      if (err.message && err.message.toLowerCase().includes('already exists')) {
+      if (err.message && (err.message.toLowerCase().includes('already') || err.message.toLowerCase().includes('handle') || err.message.toLowerCase().includes('email'))) {
         throw err;
       }
       console.warn('Backend signup request failed or offline, falling back to local registry:', err.message);
@@ -152,8 +151,8 @@ export function AuthProvider({ children }) {
       email: backendUser?.email || cleanEmail,
       password: password,
       role: backendUser?.role || role,
-      storeName: backendUser?.storeName || (role === 'merchant' ? `${name.trim()} Store` : undefined),
-      storeHandle: backendUser?.storeHandle || (role === 'merchant' ? name.trim().toLowerCase().replace(/[^a-z0-9]/g, '') : undefined),
+      storeName: backendUser?.storeName || (role === 'merchant' ? (storeName || `${name.trim()} Atelier`) : undefined),
+      storeHandle: backendUser?.storeHandle || (role === 'merchant' ? (storeHandle || (storeName || name).trim().toLowerCase().replace(/[^a-z0-9-]/g, '')) : undefined),
       image: role === 'merchant'
         ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&q=80'
         : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&q=80',

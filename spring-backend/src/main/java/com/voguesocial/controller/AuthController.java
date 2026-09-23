@@ -18,6 +18,9 @@ public class AuthController {
     @Autowired
     private ProfileRepository profileRepository;
 
+    @Autowired
+    private com.voguesocial.repository.WebsiteSettingsRepository websiteSettingsRepository;
+
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody Map<String, Object> req) {
         String email = (String) req.get("email");
@@ -62,14 +65,32 @@ public class AuthController {
         profile.setRole(role);
 
         if ("merchant".equalsIgnoreCase(role)) {
-            profile.setStoreName(storeName != null ? storeName.trim() : (name != null ? name.trim() + " Store" : "Vogue Boutique"));
+            String cleanStoreName = (storeName != null && !storeName.trim().isEmpty())
+                    ? storeName.trim()
+                    : (name != null ? name.trim() + " Atelier" : "Vogue Boutique");
+            profile.setStoreName(cleanStoreName);
+
+            String candidateHandle = null;
             if (storeHandle != null && !storeHandle.trim().isEmpty()) {
-                profile.setStoreHandle(storeHandle.trim().toLowerCase().replaceAll("[^a-z0-9]", ""));
-            } else if (storeName != null) {
-                profile.setStoreHandle(storeName.trim().toLowerCase().replaceAll("[^a-z0-9]", ""));
+                candidateHandle = storeHandle.trim().toLowerCase().replaceAll("[^a-z0-9-]", "");
             } else {
-                profile.setStoreHandle("store" + profile.getId().substring(4, 10));
+                candidateHandle = cleanStoreName.toLowerCase().replaceAll("[^a-z0-9]", "");
             }
+            if (candidateHandle.isEmpty()) {
+                candidateHandle = "store" + profile.getId().substring(4, 10);
+            }
+
+            // Check if store handle is already in use
+            Optional<Profile> existingHandleProfile = profileRepository.findByStoreHandleIgnoreCase(candidateHandle);
+            Optional<com.voguesocial.model.WebsiteSettings> existingHandleSettings = websiteSettingsRepository.findByStoreHandleIgnoreCase(candidateHandle);
+            if (existingHandleProfile.isPresent() || existingHandleSettings.isPresent()) {
+                Map<String, Object> err = new HashMap<>();
+                err.put("success", false);
+                err.put("error", "The store handle '@" + candidateHandle + "' is already registered by another boutique. Please choose a different handle.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(err);
+            }
+
+            profile.setStoreHandle(candidateHandle);
         }
 
         profile.setCreatedAt(LocalDateTime.now());
@@ -77,6 +98,24 @@ public class AuthController {
         profile.setTryonCreditsUsed(0);
 
         Profile saved = profileRepository.save(profile);
+
+        // Automatically provision WebsiteSettings in MySQL for new merchant
+        if ("merchant".equalsIgnoreCase(saved.getRole())) {
+            com.voguesocial.model.WebsiteSettings ws = new com.voguesocial.model.WebsiteSettings();
+            ws.setVendorId(saved.getId());
+            ws.setStoreHandle(saved.getStoreHandle());
+            ws.setStoreName(saved.getStoreName());
+            ws.setStatus("live");
+            ws.setTemplate("minimal");
+            ws.setAccentColor("#02231c");
+            ws.setCustomDomain("shop." + saved.getStoreHandle() + ".com");
+            ws.setDomainStatus("ssl_active");
+            ws.setTagline("Modern Tailoring & AI Virtual Fitting Studio");
+            ws.setDescription("Welcome to " + saved.getStoreName() + ". Explore our architectural tailoring, seasonal capsule collections, and zero-latency in-browser virtual try-on.");
+            ws.setHeroImage("https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=80");
+            ws.setCreatedAt(LocalDateTime.now());
+            websiteSettingsRepository.save(ws);
+        }
 
         Map<String, Object> userData = new HashMap<>();
         userData.put("id", saved.getId());
@@ -199,5 +238,25 @@ public class AuthController {
         userData.put("storeHandle", saved.getStoreHandle());
         userData.put("logoUrl", saved.getLogoUrl());
         return ResponseEntity.ok(Map.of("success", true, "user", userData));
+    }
+
+    @GetMapping("/check-handle")
+    public ResponseEntity<?> checkHandleAvailability(@RequestParam(required = false) String handle) {
+        if (handle == null || handle.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "error", "Handle is required"));
+        }
+        String clean = handle.trim().toLowerCase().replaceAll("[^a-z0-9-]", "");
+        if (clean.length() < 3) {
+            return ResponseEntity.ok(Map.of("success", true, "available", false, "reason", "Handle must be at least 3 characters"));
+        }
+        boolean takenByProfile = profileRepository.findByStoreHandleIgnoreCase(clean).isPresent();
+        boolean takenBySettings = websiteSettingsRepository.findByStoreHandleIgnoreCase(clean).isPresent();
+        boolean available = !takenByProfile && !takenBySettings;
+
+        Map<String, Object> res = new HashMap<>();
+        res.put("success", true);
+        res.put("handle", clean);
+        res.put("available", available);
+        return ResponseEntity.ok(res);
     }
 }

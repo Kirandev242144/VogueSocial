@@ -44,15 +44,22 @@ public class MerchantWebsiteController {
         if (settings == null) {
             settings = websiteSettingsRepository.findById(targetVendorId)
                     .orElseGet(() -> {
+                        Optional<Profile> pOpt = profileRepository.findById(targetVendorId);
                         WebsiteSettings defaults = new WebsiteSettings();
                         defaults.setVendorId(targetVendorId);
-                        defaults.setStoreHandle("studiolabel");
-                        defaults.setStoreName("Studio Label Paris");
+                        if (pOpt.isPresent()) {
+                            Profile p = pOpt.get();
+                            defaults.setStoreHandle(p.getStoreHandle() != null ? p.getStoreHandle() : "store" + targetVendorId.substring(0, 6));
+                            defaults.setStoreName(p.getStoreName() != null ? p.getStoreName() : p.getFullName() + " Atelier");
+                        } else {
+                            defaults.setStoreHandle("studiolabel");
+                            defaults.setStoreName("Studio Label Paris");
+                        }
                         defaults.setTagline("Modern Tailoring & AI Virtual Fitting Studio");
                         defaults.setStatus("live");
-                        defaults.setTemplate("modern");
-                        defaults.setAccentColor("#2563eb");
-                        defaults.setCustomDomain("shop.studiolabelparis.com");
+                        defaults.setTemplate("minimal");
+                        defaults.setAccentColor("#02231c");
+                        defaults.setCustomDomain("shop." + defaults.getStoreHandle() + ".com");
                         defaults.setDomainStatus("ssl_active");
                         defaults.setDescription("Founded in Paris, Studio Label harmonizes architectural silhouettes with everyday luxury. Every garment in our collection is precision-crafted from European textiles and optimized for zero-latency in-browser virtual try-on.");
                         defaults.setHeroImage("https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=80");

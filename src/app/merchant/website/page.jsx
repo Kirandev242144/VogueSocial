@@ -14,6 +14,7 @@ import {
   saveMerchantStore,
   verifyDomainDNS
 } from '@/lib/storefrontData';
+import { useAuth } from '@/context/AuthContext';
 
 /* ── 5 Curated Storefront Templates ── */
 const TEMPLATES = [
@@ -110,11 +111,15 @@ export default function WebsitePage() {
   const [checkingDomain, setCheckingDomain] = useState(false);
   const [dnsCheckStep, setDnsCheckStep] = useState(0);
 
+  const { user } = useAuth();
+  const effectiveHandle = user?.storeHandle || 'studiolabel';
+  const effectiveVendorId = user?.id || 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c';
+
   // Load initial settings from backend with local fallback
   useEffect(() => {
     async function loadWebsiteSettings() {
       try {
-        const res = await fetch('/api/merchant/website?handle=studiolabel');
+        const res = await fetch(`/api/merchant/website?vendorId=${encodeURIComponent(effectiveVendorId)}&handle=${encodeURIComponent(effectiveHandle)}`);
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.website) {
@@ -129,16 +134,6 @@ export default function WebsitePage() {
             if (w.accentColor) setAccentColor(w.accentColor);
             if (w.heroImage) setHeroImage(w.heroImage);
             if (w.logoUrl) setLogoUrl(w.logoUrl);
-            saveMerchantStore({
-              ...DEFAULT_MERCHANT_STORE,
-              ...w,
-              store_handle: w.storeHandle || 'studiolabel',
-              subdomain: w.storeHandle || 'studiolabel',
-              store_name: w.storeName || 'Studio Label Paris',
-              custom_domain: w.customDomain || 'shop.studiolabelparis.com',
-              accent_color: w.accentColor || '#2563eb',
-              template: w.template || 'modern'
-            });
             return;
           }
         }
@@ -147,29 +142,30 @@ export default function WebsitePage() {
       }
 
       // Fallback to localStorage or defaults
-      const local = getStoreByHandle('studiolabel');
+      const local = getStoreByHandle(effectiveHandle);
       if (local && local.store) {
         setSettings(local.store);
-        setSubdomain(local.store.store_handle || 'studiolabel');
-        setCustomDomain(local.store.custom_domain || 'shop.studiolabelparis.com');
-        setSelectedTemplate(local.store.template || 'modern');
-        setStoreName(local.store.store_name || 'Studio Label Paris');
+        setSubdomain(local.store.store_handle || effectiveHandle);
+        setCustomDomain(local.store.custom_domain || `shop.${effectiveHandle}.com`);
+        setSelectedTemplate(local.store.template || 'minimal');
+        setStoreName(local.store.store_name || user?.storeName || 'Atelier Boutique');
         setTagline(local.store.tagline || 'Modern Tailoring & AI Virtual Fitting Studio');
         setDescription(local.store.description || '');
-        setAccentColor(local.store.accent_color || '#2563eb');
+        setAccentColor(local.store.accent_color || '#02231c');
         setHeroImage(local.store.hero_image || 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=80');
         setLogoUrl(local.store.logo_url || '');
       }
     }
 
     loadWebsiteSettings();
-  }, []);
+  }, [effectiveVendorId, effectiveHandle]);
 
   // Save Settings to Backend API and persist locally
   const handleSaveSettings = async (overrides = {}) => {
     setSaving(true);
     const cleanSubdomain = (overrides.subdomain || subdomain).trim().toLowerCase();
     const payload = {
+      vendorId: effectiveVendorId,
       store_name: overrides.storeName || storeName,
       store_handle: cleanSubdomain,
       subdomain: cleanSubdomain,

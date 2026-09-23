@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import styles from '../merchant.module.css';
 import { ExternalLink, Plus, Sparkles } from 'lucide-react';
 import TryOnModal from '@/components/TryOnModal';
+import { useAuth } from '@/context/AuthContext';
 import {
   MerchantKPIs,
   MerchantSalesChart,
@@ -15,10 +16,21 @@ import {
 } from '@/components/merchant';
 
 export default function MerchantDashboard() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [timeframe, setTimeframe] = useState('30D');
   const [testModalOpen, setTestModalOpen] = useState(false);
   const [selectedProductForModal, setSelectedProductForModal] = useState(null);
+
+  const currentStoreName = user?.storeName || 'Studio Label Paris';
+  const currentStoreHandle = user?.storeHandle || 'studiolabel';
+  const initials = currentStoreName
+    .split(' ')
+    .filter(Boolean)
+    .map(w => w[0])
+    .join('')
+    .substring(0, 2)
+    .toUpperCase() || 'VS';
 
   const handleTestTryOn = (garment) => {
     setSelectedProductForModal({
@@ -35,11 +47,11 @@ export default function MerchantDashboard() {
       {/* ── 1. DASHBOARD HEADER & STORE BANNER ── */}
       <div className={styles.dashHeader}>
         <div className={styles.storeBrandWrap}>
-          <div className={styles.storeAvatar}>SL</div>
+          <div className={styles.storeAvatar}>{initials}</div>
           <div className={styles.storeMeta}>
             <div className={styles.storeNameRow}>
-              <h1 className={styles.storeTitle}>Studio Label Paris</h1>
-              <Link to="/store/studiolabel" target="_blank" className={styles.liveStoreBadge}>
+              <h1 className={styles.storeTitle}>{currentStoreName}</h1>
+              <Link to={`/store/${currentStoreHandle}`} target="_blank" className={styles.liveStoreBadge}>
                 <span className={styles.liveStoreDot} />
                 <span>STORE ONLINE</span>
                 <ExternalLink size={12} />

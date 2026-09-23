@@ -24,6 +24,9 @@ const AuthModal = ({ isOpen, onClose, initialTab = 'signin' }) => {
   const [signUpPassword, setSignUpPassword] = useState('');
   const [signUpRole, setSignUpRole] = useState('user'); // 'user' | 'merchant'
   const [signUpSize, setSignUpSize] = useState('M');
+  const [signUpStoreName, setSignUpStoreName] = useState('');
+  const [signUpStoreHandle, setSignUpStoreHandle] = useState('');
+  const [handleManuallyEdited, setHandleManuallyEdited] = useState(false);
 
   if (!isOpen) return null;
 
@@ -76,7 +79,9 @@ const AuthModal = ({ isOpen, onClose, initialTab = 'signin' }) => {
         email: signUpEmail,
         password: signUpPassword,
         role: signUpRole,
-        preferred_size: signUpSize
+        preferred_size: signUpSize,
+        storeName: signUpRole === 'merchant' ? signUpStoreName : undefined,
+        storeHandle: signUpRole === 'merchant' ? signUpStoreHandle : undefined
       });
 
       if (res?.success) {
@@ -273,6 +278,23 @@ const AuthModal = ({ isOpen, onClose, initialTab = 'signin' }) => {
                   <span>Facebook</span>
                 </button>
               </div>
+
+              <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => { onClose(); navigate('/merchant/login'); }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: '0.78rem',
+                    color: '#78716C',
+                    cursor: 'pointer',
+                    textDecoration: 'underline'
+                  }}
+                >
+                  Are you a Brand Merchant? Go to Atelier Portal →
+                </button>
+              </div>
             </form>
           )}
 
@@ -359,6 +381,49 @@ const AuthModal = ({ isOpen, onClose, initialTab = 'signin' }) => {
                     ))}
                   </div>
                 </div>
+              )}
+
+              {/* Store & Subdomain Details for Merchant */}
+              {signUpRole === 'merchant' && (
+                <>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>Brand / Store Name</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Atelier Noir"
+                      className={styles.inputField}
+                      value={signUpStoreName}
+                      onChange={(e) => {
+                        setSignUpStoreName(e.target.value);
+                        if (!handleManuallyEdited) {
+                          setSignUpStoreHandle(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''));
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>Store Handle / Subdomain</label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type="text"
+                        required
+                        placeholder="ateliernoir"
+                        className={styles.inputField}
+                        value={signUpStoreHandle}
+                        onChange={(e) => {
+                          setHandleManuallyEdited(true);
+                          setSignUpStoreHandle(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''));
+                        }}
+                        style={{ fontFamily: 'monospace' }}
+                      />
+                    </div>
+                    <div style={{ fontSize: '0.74rem', color: '#78716C', marginTop: '0.35rem' }}>
+                      Subdomain: <strong>https://{signUpStoreHandle || 'yourbrand'}.voguesocial.com</strong>
+                    </div>
+                  </div>
+                </>
               )}
 
               <button

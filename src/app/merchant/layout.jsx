@@ -16,7 +16,7 @@ function MerchantShell({ children }) {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      navigate('/onboarding/merchant');
+      navigate('/merchant/login');
     }
   }, [status, navigate]);
 
@@ -76,10 +76,10 @@ function MerchantShell({ children }) {
             <button
               type="button"
               className={styles.btnRestrictedSecondary}
-              onClick={() => navigate('/onboarding/merchant')}
+              onClick={() => navigate('/merchant/login')}
             >
               <Store size={16} />
-              <span>Apply to Become a Brand Seller</span>
+              <span>Merchant Sign In & Brand Registration</span>
             </button>
           </div>
 
