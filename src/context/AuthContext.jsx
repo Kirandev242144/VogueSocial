@@ -2,56 +2,15 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
-// Pre-registered system users for the 3 roles: User (Shopper), Merchant, Admin
-export const SYSTEM_ACCOUNTS = [
-  {
-    id: 'usr_sarah_01',
-    name: 'Sarah Lin',
-    email: 'sarah@voguesocial.com',
-    password: 'password123',
-    role: 'user',
-    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&q=80',
-    phone: '+1 (555) 234-5678',
-    city: 'New York, NY',
-    memberSince: 'March 2025',
-    measurements: {
-      height: '172 cm',
-      weight: '58 kg',
-      bust: '86 cm',
-      waist: '66 cm',
-      hips: '92 cm',
-      preferred_size: 'S',
-      fit_preference: 'Regular'
-    },
-    tryonPhotos: [
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80',
-      'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&q=80'
-    ]
-  },
-  {
-    id: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c',
-    name: 'Tom Jenkins',
-    email: 'tom@gmail.com',
-    password: 'password123',
-    role: 'merchant',
-    storeName: 'Studio Label Paris',
-    storeHandle: 'studiolabel',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&q=80',
-    memberSince: 'January 2025'
-  },
-  {
-    id: 'adm_alex_01',
-    name: 'Alexander Vance',
-    email: 'admin@voguesocial.com',
-    password: 'admin123',
-    role: 'admin',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&q=80',
-    memberSince: 'December 2024'
-  }
-];
+import { authService } from '../services/authService';
+import { SEED_USERS } from '../constants/seedUsers';
+import { STORAGE_KEYS } from '../constants/storageKeys';
 
-const LOCAL_STORAGE_SESSION_KEY = 'vogue_auth_user';
-const LOCAL_STORAGE_REGISTRY_KEY = 'vogue_registered_users';
+// Pre-registered system users for the 3 roles: User (Shopper), Merchant, Admin
+export const SYSTEM_ACCOUNTS = SEED_USERS;
+
+const LOCAL_STORAGE_SESSION_KEY = STORAGE_KEYS.AUTH_USER;
+const LOCAL_STORAGE_REGISTRY_KEY = STORAGE_KEYS.REGISTERED_USERS;
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -102,83 +61,15 @@ export function AuthProvider({ children }) {
    * Real Sign Up for User (or Merchant)
    */
   const signUp = async ({ name, email, password, role = 'user', preferred_size = 'M', gender = 'Women', storeName, storeHandle }) => {
-    if (!email || !email.includes('@')) {
-      throw new Error('Please provide a valid email address.');
-    }
-    if (!password || password.length < 6) {
-      throw new Error('Password must be at least 6 characters long.');
-    }
-    if (!name || name.trim().length === 0) {
-      throw new Error('Please provide your full name.');
+    const res = await authService.signUp({ name, email, password, role, preferred_size, gender, storeName, storeHandle });
+    if (!res.success) {
+      throw new Error(res.error || 'Failed to create account.');
     }
 
-    const cleanEmail = email.trim().toLowerCase();
-
-    // 1. Attempt Spring Boot backend signup
-    let backendUser = null;
-    try {
-      const res = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name.trim(),
-          email: cleanEmail,
-          password: password,
-          role: role,
-          storeName: storeName || (role === 'merchant' ? `${name.trim()} Atelier` : undefined),
-          storeHandle: storeHandle || (role === 'merchant' ? (storeName || name).trim().toLowerCase().replace(/[^a-z0-9-]/g, '') : undefined)
-        })
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to create account.');
-      }
-      if (data.success && data.user) {
-        backendUser = data.user;
-      }
-    } catch (err) {
-      if (err.message && (err.message.toLowerCase().includes('already') || err.message.toLowerCase().includes('handle') || err.message.toLowerCase().includes('email'))) {
-        throw err;
-      }
-      console.warn('Backend signup request failed or offline, falling back to local registry:', err.message);
-    }
-
-    // 2. Prepare user object
-    const newUser = {
-      id: backendUser?.id || `usr_${Date.now()}`,
-      name: backendUser?.name || name.trim(),
-      email: backendUser?.email || cleanEmail,
-      password: password,
-      role: backendUser?.role || role,
-      storeName: backendUser?.storeName || (role === 'merchant' ? (storeName || `${name.trim()} Atelier`) : undefined),
-      storeHandle: backendUser?.storeHandle || (role === 'merchant' ? (storeHandle || (storeName || name).trim().toLowerCase().replace(/[^a-z0-9-]/g, '')) : undefined),
-      image: role === 'merchant'
-        ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&q=80'
-        : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&q=80',
-      memberSince: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-      measurements: {
-        height: '170 cm',
-        weight: '60 kg',
-        bust: '88 cm',
-        waist: '68 cm',
-        hips: '94 cm',
-        preferred_size: preferred_size || 'M',
-        fit_preference: 'Regular'
-      },
-      tryonPhotos: []
-    };
-
-    const updatedList = [...registeredUsers.filter(u => u.email.toLowerCase() !== cleanEmail), newUser];
-    setRegisteredUsers(updatedList);
-    localStorage.setItem(LOCAL_STORAGE_REGISTRY_KEY, JSON.stringify(updatedList));
-
-    // Sign in immediately
-    setUser(newUser);
+    setUser(res.user);
     setStatus('authenticated');
-    localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(newUser));
-
-    return { success: true, user: newUser };
+    setRegisteredUsers(prev => [...prev.filter(u => u.email.toLowerCase() !== res.user.email.toLowerCase()), res.user]);
+    return res;
   };
 
   /**
@@ -194,63 +85,14 @@ export function AuthProvider({ children }) {
       throw new Error('Please enter both email and password.');
     }
 
-    const cleanEmail = email.trim().toLowerCase();
-
-    // 1. Try Spring Boot backend sign in
-    try {
-      const res = await fetch('/api/auth/signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cleanEmail, password: password })
-      });
-
-      const data = await res.json();
-      if (res.ok && data.success && data.user) {
-        const bu = data.user;
-        const loggedUser = {
-          id: bu.id,
-          name: bu.name || 'Shopper',
-          email: bu.email,
-          role: bu.role || 'user',
-          storeName: bu.storeName,
-          storeHandle: bu.storeHandle,
-          image: bu.role === 'merchant'
-            ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&q=80'
-            : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&q=80',
-          memberSince: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-        };
-
-        setUser(loggedUser);
-        setStatus('authenticated');
-        localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(loggedUser));
-        return { success: true, user: loggedUser };
-      } else if (!res.ok) {
-        throw new Error(data.error || 'Authentication failed');
-      }
-    } catch (err) {
-      if (err.message && (err.message.includes('password') || err.message.includes('credentials') || err.message.includes('found'))) {
-        throw err;
-      }
-      console.warn('Backend signin failed, checking local registry:', err.message);
+    const res = await authService.signIn({ email, password });
+    if (!res.success) {
+      throw new Error(res.error || 'Authentication failed. Please check your credentials.');
     }
 
-    // 2. Local fallback verification
-    const matched = registeredUsers.find(u => u.email.toLowerCase() === cleanEmail);
-
-    if (!matched) {
-      throw new Error('No account found with this email. Please check your email or sign up.');
-    }
-
-    if (matched.password && matched.password !== password) {
-      throw new Error('Incorrect password. Please try again.');
-    }
-
-    // Set session
-    setUser(matched);
+    setUser(res.user);
     setStatus('authenticated');
-    localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(matched));
-
-    return { success: true, user: matched };
+    return res;
   };
 
   /**

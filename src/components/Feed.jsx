@@ -6,6 +6,7 @@ import { Heart, MessageCircle, Share2, Shirt, Play } from 'lucide-react';
 import styles from './Feed.module.css';
 import { ALL_POSTS } from '@/lib/data';
 import { useAuth } from '@/context/AuthContext';
+import { feedService, productService } from '@/services';
 
 const Feed = ({ searchQuery = '' }) => {
     const { user } = useAuth();
@@ -14,18 +15,15 @@ const Feed = ({ searchQuery = '' }) => {
     // Simple state to track following status by post ID for demo purposes
     const [following, setFollowing] = useState({});
 
-    // Fetch dynamic likes & comment counts from MySQL on load
+    // Fetch dynamic likes & comment counts from service
     useEffect(() => {
         const fetchStats = async () => {
             try {
                 const userId = user?.id || 'usr_sarah_01';
-                const res = await fetch(`/api/posts/stats?userId=${encodeURIComponent(userId)}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setStats(data || {});
-                }
+                const data = await feedService.getStats(userId);
+                setStats(data || {});
             } catch (err) {
-                console.error("Failed to load engagement stats from MySQL:", err);
+                console.error("Failed to load engagement stats:", err);
             }
         };
         fetchStats();
@@ -59,13 +57,8 @@ const Feed = ({ searchQuery = '' }) => {
         }));
 
         try {
-            const res = await fetch(`/api/posts/${postId}/likes`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: user?.id || 'usr_sarah_01' })
-            });
-            if (res.ok) {
-                const data = await res.json();
+            const data = await feedService.toggleLike(postId, user?.id || 'usr_sarah_01');
+            if (data) {
                 setStats(prev => ({
                     ...prev,
                     [pid]: {
@@ -76,25 +69,22 @@ const Feed = ({ searchQuery = '' }) => {
                 }));
             }
         } catch (err) {
-            console.error("Failed to toggle like on MySQL:", err);
+            console.error("Failed to toggle like:", err);
         }
     };
 
     const [dbProducts, setDbProducts] = useState([]);
 
-    // Fetch dynamic merchant products from MySQL on load
+    // Fetch dynamic products on load
     useEffect(() => {
         const fetchDbProducts = async () => {
             try {
-                const res = await fetch('/api/products');
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.success && Array.isArray(data.products)) {
-                        setDbProducts(data.products);
-                    }
+                const data = await productService.getPublicProducts();
+                if (data && data.success && Array.isArray(data.products)) {
+                    setDbProducts(data.products);
                 }
             } catch (err) {
-                console.warn("Could not load dynamic products from backend:", err);
+                console.warn("Could not load dynamic products:", err);
             }
         };
         fetchDbProducts();

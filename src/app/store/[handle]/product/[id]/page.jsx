@@ -25,6 +25,7 @@ import {
 import styles from '../../store.module.css';
 import TryOnModal from '@/components/TryOnModal';
 import { getStoreByHandle } from '@/lib/storefrontData';
+import { storeService } from '@/services/storeService';
 
 const COLOR_HEX_MAP = {
   'obsidian black': '#111827',
@@ -192,36 +193,10 @@ export default function ProductPage({ handle: propHandle } = {}) {
     async function fetchData() {
       try {
         setLoading(true);
-        let storeData = null;
-        let productList = [];
-
-        try {
-          const res = await fetch(`/api/store/${handle}`);
-          if (res.ok) {
-            const data = await res.json();
-            if (data.success && data.store) {
-              storeData = data.store;
-              productList = data.products || [];
-            }
-          } else if (res.status === 404) {
-            setStore(null);
-            setProduct(null);
-            setLoading(false);
-            return;
-          }
-        } catch (e) {
-          console.warn('Backend storefront fetch failed:', e);
-        }
-
-        if (!storeData) {
-          const local = getStoreByHandle(handle);
-          if (local && local.store && (local.store.store_handle === handle?.toLowerCase() || local.store.subdomain === handle?.toLowerCase())) {
-            storeData = local.store;
-            productList = local.products || [];
-          }
-        }
-
-        if (storeData) {
+        const data = await storeService.getStore(handle);
+        if (data && data.success && data.store) {
+          const storeData = data.store;
+          const productList = data.products || [];
           setStore(storeData);
           
           const found = productList.find(

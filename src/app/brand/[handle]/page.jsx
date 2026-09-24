@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { MapPin, Link as LinkIcon, ArrowLeft, Shirt, MessageSquare, ShoppingBag, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { ALL_POSTS } from '@/lib/data';
+import { storeService } from '@/services';
 import styles from './brand.module.css';
 import Navbar from '@/components/Navbar';
 export default function BrandProfilePage() {
@@ -23,18 +24,36 @@ export default function BrandProfilePage() {
     const loadBrandAndProducts = async () => {
         setLoading(true);
         try {
-            // 1. Fetch brand profile from Supabase
-            const { data: dbProfile, error: dbError } = await supabase
+            // 1. Resolve store from storeService (handles offline mock & api)
+            const storeRes = await storeService.getStore(handle);
+            if (storeRes && storeRes.store) {
+                const s = storeRes.store;
+                setBrand({
+                    id: s.store_id || handle,
+                    name: s.store_name,
+                    handle: s.store_handle || handle,
+                    category: 'Luxury Fashion',
+                    bio: s.description || s.tagline || 'Curated premium fashion collection.',
+                    location: 'Paris, France',
+                    website: `https://${handle}.voguesocial.com`,
+                    avatar: s.logo_url || '/Shop_images/1/basic2-500x750.jpeg',
+                    followers: 1250,
+                    following: 340,
+                    isMock: false
+                });
+                setProducts(storeRes.products || []);
+                return;
+            }
+
+            // 2. Fallback to Supabase
+            const { data: dbProfile } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('store_handle', handle.toLowerCase().trim())
                 .single();
-            // 2. Fetch products for this brand
-            const prodRes = await fetch(`/api/merchant/products?handle=${handle}`);
-            const prodData = await prodRes.json();
-            let dbProducts = prodData.success ? prodData.products : [];
+
             if (dbProfile) {
-                // Success! Set DB profile and products
+                // Success! Set DB profile
                 setBrand({
                     id: dbProfile.id,
                     name: dbProfile.store_name || dbProfile.full_name || 'Designer Boutique',
@@ -48,9 +67,8 @@ export default function BrandProfilePage() {
                     following: 340,
                     isMock: false
                 });
-                setProducts(dbProducts || []);
-            }
-            else {
+                setProducts([]);
+            } else {
                 // Fallback to mock data matching feed authors
                 console.log("Brand not in Supabase yet. Loading fallback mock profile...");
                 // Find a post by an author whose name matches the handle slug

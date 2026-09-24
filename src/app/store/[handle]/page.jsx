@@ -8,6 +8,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import styles from './store.module.css';
 import TryOnModal from '@/components/TryOnModal';
 import { getStoreByHandle } from '@/lib/storefrontData';
+import { storeService } from '@/services/storeService';
 
 const COLOR_HEX_MAP = {
   'obsidian black': '#111827',
@@ -93,39 +94,22 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
   useEffect(() => {
     async function loadStorefront() {
       setLoading(true);
-      let loadedStore = null;
-      let loadedProducts = [];
-
       try {
-        const res = await fetch(`/api/store/${handle}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && data.store) {
-            loadedStore = data.store;
-            loadedProducts = data.products || [];
-          }
-        } else if (res.status === 404) {
-          // Storefront explicitly unlisted/nonexistent in database
+        const data = await storeService.getStore(handle);
+        if (data && data.success && data.store) {
+          setStore(data.store);
+          setProducts(data.products || []);
+        } else {
           setStore(null);
           setProducts([]);
-          setLoading(false);
-          return;
         }
       } catch (err) {
-        console.warn('Backend storefront fetch failed:', err);
+        console.warn('Storefront load error:', err);
+        setStore(null);
+        setProducts([]);
+      } finally {
+        setLoading(false);
       }
-
-      if (!loadedStore) {
-        const local = getStoreByHandle(handle);
-        if (local && local.store && (local.store.store_handle === handle?.toLowerCase() || local.store.subdomain === handle?.toLowerCase())) {
-          loadedStore = local.store;
-          loadedProducts = local.products || [];
-        }
-      }
-
-      setStore(loadedStore);
-      setProducts(loadedProducts);
-      setLoading(false);
     }
 
     loadStorefront();

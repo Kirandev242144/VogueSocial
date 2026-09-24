@@ -5,6 +5,7 @@ import styles from '../merchant.module.css';
 import { Package, Plus, Edit2, Trash2, Search, ImagePlus, RefreshCw, Facebook, CheckCircle2, ArrowRight, ArrowLeft, UploadCloud, Star, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { FacebookShopSync } from '@/components/merchant';
 import { useAuth } from '@/context/AuthContext';
+import { productService } from '@/services/productService';
 
 const CATEGORIES = ['Tops', 'Bottoms', 'Dresses & Jumpsuits', 'Casual', 'Formal', 'Ethnic', 'Streetwear', 'Luxury', 'Athleisure'];
 const TARGET_AUDIENCES = ['Women', 'Men', 'Unisex', 'Kids'];
@@ -120,28 +121,25 @@ export default function ProductsPage() {
         setLoading(true);
         try {
             const vendorId = getEffectiveVendorId();
-            const res = await fetch(`/api/merchant/products?vendorId=${encodeURIComponent(vendorId)}`);
-            if (res.ok) {
-                const data = await res.json();
-                if (data.success && Array.isArray(data.products)) {
-                    const normalized = data.products.map(p => ({
-                        ...p,
-                        image_url: p.imageUrl || p.image_url || '',
-                        back_image_url: p.backImageUrl || p.back_image_url || '',
-                        sale_price: p.salePrice || p.sale_price || null,
-                        target_audience: p.targetAudience || p.target_audience || 'Women',
-                        desc: p.description || p.desc || '',
-                        stock: p.stock !== undefined ? p.stock : 25,
-                        status: p.status || 'live'
-                    }));
-                    setProducts(normalized);
-                    return;
-                }
+            const data = await productService.getMerchantProducts(vendorId);
+            if (data && data.success && Array.isArray(data.products)) {
+                const normalized = data.products.map(p => ({
+                    ...p,
+                    image_url: p.imageUrl || p.image_url || '',
+                    back_image_url: p.backImageUrl || p.back_image_url || '',
+                    sale_price: p.salePrice || p.sale_price || null,
+                    target_audience: p.targetAudience || p.target_audience || 'Women',
+                    desc: p.description || p.desc || '',
+                    stock: p.stock !== undefined ? p.stock : 25,
+                    status: p.status || 'live'
+                }));
+                setProducts(normalized);
+                return;
             }
             setProducts([]);
         }
         catch (err) {
-            console.error("Error loading merchant products from backend:", err);
+            console.error("Error loading merchant products:", err);
             setProducts([]);
         }
         finally {
@@ -433,12 +431,10 @@ export default function ProductsPage() {
             })
         };
         try {
-            const res = await fetch('/api/merchant/products', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await res.json();
+            const data = editingId
+                ? await productService.updateProduct(editingId, payload)
+                : await productService.createProduct(payload);
+
             if (data.success) {
                 await loadProducts();
                 setShowWizard(false);
@@ -451,15 +447,14 @@ export default function ProductsPage() {
             }
         }
         catch (err) {
-            console.error("Network error while saving product:", err);
-            showToast("Network error while saving product.", 'error');
+            console.error("Error while saving product:", err);
+            showToast("Error while saving product.", 'error');
         }
     };
     const deleteProduct = async (id) => {
-        if (window.confirm('Delete this product permanently from database?')) {
+        if (window.confirm('Delete this product permanently from catalog?')) {
             try {
-                const res = await fetch(`/api/merchant/products?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
-                const data = await res.json();
+                const data = await productService.deleteProduct(id);
                 if (data.success) {
                     await loadProducts();
                     showToast('Product deleted successfully.', 'info');

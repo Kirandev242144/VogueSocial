@@ -7,6 +7,7 @@ import ShopProductGrid from '@/components/shop/ShopProductGrid';
 import AiStylistPanel from '@/components/shop/AiStylistPanel';
 import styles from './page.module.css';
 import { SHOP_PRODUCTS } from '@/lib/shopData';
+import { productService } from '@/services';
 
 export default function ShopPage() {
   const [selectedCharacter, setSelectedCharacter] = useState('you');
@@ -21,19 +22,16 @@ export default function ShopPage() {
   // In-chat Try-On Request State (No popup modal!)
   const [tryOnRequest, setTryOnRequest] = useState(null);
 
-  // Fetch dynamic merchant products from MySQL on load
+  // Fetch dynamic products on load
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const res = await fetch('/api/products');
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && Array.isArray(data.products)) {
-            setDbProducts(data.products);
-          }
+        const data = await productService.getPublicProducts();
+        if (data && data.success && Array.isArray(data.products)) {
+          setDbProducts(data.products);
         }
       } catch (err) {
-        console.warn('Could not load dynamic shop products from backend:', err);
+        console.warn('Could not load dynamic shop products:', err);
       }
     };
     loadProducts();

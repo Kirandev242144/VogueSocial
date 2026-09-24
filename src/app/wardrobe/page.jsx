@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Navbar from '@/components/Navbar';
 import TryOnModal from '@/components/TryOnModal';
 import { useAuth } from '@/context/AuthContext';
+import { wardrobeService } from '@/services/wardrobeService';
 
 // Modular Wardrobe Components
 import WardrobeHeader from '@/components/wardrobe/WardrobeHeader';
@@ -70,21 +71,15 @@ export default function WardrobePage() {
   }, []);
   const [selectedDateStr, setSelectedDateStr] = useState(calendarDates[0]?.dateStr || '');
 
-  // 1. Fetch Wardrobe Data from Spring Boot Backend
+  // 1. Fetch Wardrobe Data from wardrobeService
   const fetchWardrobeData = async () => {
     setIsLoading(true);
     try {
-      const [resItems, resOutfits, resSchedule, resTrips] = await Promise.all([
-        fetch(`http://localhost:8085/api/wardrobe/items?userId=${userId}`),
-        fetch(`http://localhost:8085/api/wardrobe/outfits?userId=${userId}`),
-        fetch(`http://localhost:8085/api/wardrobe/schedule?userId=${userId}`),
-        fetch(`http://localhost:8085/api/wardrobe/trips?userId=${userId}`)
-      ]);
-
-      if (resItems.ok) setItems(await resItems.json());
-      if (resOutfits.ok) setOutfits(await resOutfits.json());
-      if (resSchedule.ok) setSchedules(await resSchedule.json());
-      if (resTrips.ok) setTrips(await resTrips.json());
+      const data = await wardrobeService.getWardrobe(userId);
+      setItems(data.items || []);
+      setOutfits(data.outfits || []);
+      setSchedules(data.schedule || []);
+      setTrips(data.trips || []);
     } catch (err) {
       console.error('Error fetching wardrobe data:', err);
     } finally {
@@ -103,7 +98,7 @@ export default function WardrobePage() {
       prev.map(item => (item.id === itemId ? { ...item, wearCount: (item.wearCount || 0) + 1 } : item))
     );
     try {
-      await fetch(`http://localhost:8085/api/wardrobe/items/${itemId}/wear`, { method: 'POST' });
+      await wardrobeService.wearItem(itemId);
     } catch (err) {
       console.error('Error incrementing wear count:', err);
     }
@@ -115,13 +110,13 @@ export default function WardrobePage() {
     if (!window.confirm(`Are you sure you want to remove "${itemName}" from your wardrobe?`)) return;
     setItems(prev => prev.filter(i => i.id !== itemId));
     try {
-      await fetch(`http://localhost:8085/api/wardrobe/items/${itemId}`, { method: 'DELETE' });
+      await wardrobeService.deleteItem(itemId);
     } catch (err) {
       console.error('Error deleting item:', err);
     }
   };
 
-  // 4. Save New Garment to MySQL
+  // 4. Save New Garment
   const handleSaveGarment = async (garmentData) => {
     const newItem = {
       userId,
@@ -130,13 +125,8 @@ export default function WardrobePage() {
     };
 
     try {
-      const res = await fetch('http://localhost:8085/api/wardrobe/items', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newItem)
-      });
-      if (res.ok) {
-        const saved = await res.json();
+      const saved = await wardrobeService.addItem(newItem);
+      if (saved) {
         setItems(prev => [saved, ...prev]);
         setIsAddModalOpen(false);
       }
@@ -153,13 +143,8 @@ export default function WardrobePage() {
     };
 
     try {
-      const res = await fetch('http://localhost:8085/api/wardrobe/outfits', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(outfitPayload)
-      });
-      if (res.ok) {
-        const saved = await res.json();
+      const saved = await wardrobeService.addOutfit(outfitPayload);
+      if (saved) {
         setOutfits(prev => [saved, ...prev]);
       }
     } catch (err) {
@@ -172,7 +157,7 @@ export default function WardrobePage() {
     if (!window.confirm(`Delete outfit "${outfit.name}"?`)) return;
     setOutfits(prev => prev.filter(o => o.id !== outfit.id));
     try {
-      await fetch(`http://localhost:8085/api/wardrobe/outfits/${outfit.id}`, { method: 'DELETE' });
+      await wardrobeService.deleteOutfit(outfit.id);
     } catch (err) {
       console.error('Error deleting outfit:', err);
     }
@@ -187,13 +172,8 @@ export default function WardrobePage() {
       outfitName: outfit.name
     };
     try {
-      const res = await fetch('http://localhost:8085/api/wardrobe/schedule', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(scheduleReq)
-      });
-      if (res.ok) {
-        const saved = await res.json();
+      const saved = await wardrobeService.saveSchedule(scheduleReq);
+      if (saved) {
         setSchedules(prev => [...prev.filter(s => s.dateStr !== selectedDateStr), saved]);
       }
     } catch (err) {
@@ -204,9 +184,7 @@ export default function WardrobePage() {
   // 8. Unschedule Date
   const handleUnscheduleDate = async (dateStr) => {
     try {
-      await fetch(`http://localhost:8085/api/wardrobe/schedule?userId=${userId}&dateStr=${dateStr}`, {
-        method: 'DELETE'
-      });
+      await wardrobeService.deleteSchedule(userId, dateStr);
       setSchedules(prev => prev.filter(s => s.dateStr !== dateStr));
     } catch (err) {
       console.error('Error unscheduling:', err);
@@ -236,13 +214,8 @@ export default function WardrobePage() {
     };
 
     try {
-      const res = await fetch('http://localhost:8085/api/wardrobe/trips', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newTrip)
-      });
-      if (res.ok) {
-        const saved = await res.json();
+      const saved = await wardrobeService.saveTrip(newTrip);
+      if (saved) {
         setTrips(prev => [saved, ...prev]);
       }
     } catch (err) {
@@ -254,7 +227,7 @@ export default function WardrobePage() {
     if (!window.confirm(`Delete trip to "${destination}"?`)) return;
     setTrips(prev => prev.filter(t => t.id !== tripId));
     try {
-      await fetch(`http://localhost:8085/api/wardrobe/trips/${tripId}`, { method: 'DELETE' });
+      await wardrobeService.deleteTrip(tripId);
     } catch (err) {
       console.error('Error deleting trip:', err);
     }
@@ -272,13 +245,8 @@ export default function WardrobePage() {
 
     setTrips(prev => prev.map(t => (t.id === trip.id ? updated : t)));
     try {
-      const res = await fetch('http://localhost:8085/api/wardrobe/trips', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated)
-      });
-      if (res.ok) {
-        const saved = await res.json();
+      const saved = await wardrobeService.saveTrip(updated);
+      if (saved) {
         setTrips(prev => prev.map(t => (t.id === saved.id ? saved : t)));
       }
     } catch (err) {
@@ -298,13 +266,8 @@ export default function WardrobePage() {
 
     setTrips(prev => prev.map(t => (t.id === trip.id ? updated : t)));
     try {
-      const res = await fetch('http://localhost:8085/api/wardrobe/trips', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated)
-      });
-      if (res.ok) {
-        const saved = await res.json();
+      const saved = await wardrobeService.saveTrip(updated);
+      if (saved) {
         setTrips(prev => prev.map(t => (t.id === saved.id ? saved : t)));
       }
     } catch (err) {
@@ -324,13 +287,8 @@ export default function WardrobePage() {
 
     setTrips(prev => prev.map(t => (t.id === trip.id ? updated : t)));
     try {
-      const res = await fetch('http://localhost:8085/api/wardrobe/trips', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated)
-      });
-      if (res.ok) {
-        const saved = await res.json();
+      const saved = await wardrobeService.saveTrip(updated);
+      if (saved) {
         setTrips(prev => prev.map(t => (t.id === saved.id ? saved : t)));
       }
     } catch (err) {
@@ -342,13 +300,8 @@ export default function WardrobePage() {
     const updated = { ...trip, packedGarmentIds: JSON.stringify(garmentIds) };
     setTrips(prev => prev.map(t => (t.id === trip.id ? updated : t)));
     try {
-      const res = await fetch('http://localhost:8085/api/wardrobe/trips', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated)
-      });
-      if (res.ok) {
-        const saved = await res.json();
+      const saved = await wardrobeService.saveTrip(updated);
+      if (saved) {
         setTrips(prev => prev.map(t => (t.id === saved.id ? saved : t)));
       }
     } catch (err) {

@@ -7,6 +7,7 @@ import TryOnModal from '@/components/TryOnModal';
 import { ALL_POSTS } from '@/lib/data';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { productService, feedService } from '@/services';
 import styles from './page.module.css';
 
 export default function ProductPage() {
@@ -59,9 +60,8 @@ export default function ProductPage() {
             return;
         }
 
-        // 2. Fetch dynamic merchant product from MySQL
-        fetch(`/api/products/${params.id}`)
-            .then(res => res.ok ? res.json() : null)
+        // 2. Fetch dynamic product from service
+        productService.getProductById(params.id)
             .then(data => {
                 if (data && data.success && data.product) {
                     const prod = data.product;
@@ -167,8 +167,7 @@ export default function ProductPage() {
         const userId = user?.id || 'usr_sarah_01';
 
         // 1. Fetch Comments
-        fetch(`/api/posts/${postId}/comments`)
-            .then(res => res.ok ? res.json() : [])
+        feedService.getComments(postId)
             .then(data => {
                 if (Array.isArray(data) && data.length > 0) {
                     setComments(data);
@@ -186,8 +185,7 @@ export default function ProductPage() {
             .catch(err => console.error("Error fetching comments:", err));
 
         // 2. Fetch Likes
-        fetch(`/api/posts/${postId}/likes?userId=${encodeURIComponent(userId)}`)
-            .then(res => res.ok ? res.json() : null)
+        feedService.getLikes(postId, userId)
             .then(data => {
                 if (data) {
                     setLikesCount(data.likeCount);
@@ -197,33 +195,21 @@ export default function ProductPage() {
             .catch(err => console.error("Error fetching likes:", err));
     }, [params.id, user?.id]);
 
-    // Add dynamic comment to MySQL
+    // Add dynamic comment
     const handleAddComment = async () => {
         if (!newComment.trim() || isCommentSubmitting || !post) return;
         setIsCommentSubmitting(true);
 
         const commentText = newComment.trim();
         const userName = user?.name || 'Sarah Lin';
-        const userAvatar = user?.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&q=80';
+        const currentUserId = user?.id || 'usr_sarah_01';
 
         try {
-            const res = await fetch(`/api/posts/${post.id}/comments`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    text: commentText,
-                    userName,
-                    userAvatar
-                })
-            });
-
-            if (res.ok) {
-                const savedComment = await res.json();
+            const savedComment = await feedService.addComment(post.id, currentUserId, userName, commentText);
+            if (savedComment) {
                 setComments(prev => [savedComment, ...prev]);
                 setCommentCount(prev => prev + 1);
                 setNewComment("");
-            } else {
-                alert("Failed to submit comment. Please ensure MySQL backend is running.");
             }
         } catch (e) {
             console.error("Error posting comment:", e);
@@ -232,7 +218,7 @@ export default function ProductPage() {
         }
     };
 
-    // Toggle dynamic like in MySQL
+    // Toggle dynamic like
     const handleToggleLike = async () => {
         if (!post || isLikeLoading) return;
         setIsLikeLoading(true);
@@ -245,22 +231,10 @@ export default function ProductPage() {
         setLikesCount(prevLiked ? Math.max(0, prevCount - 1) : prevCount + 1);
 
         try {
-            const res = await fetch(`/api/posts/${post.id}/likes`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId: user?.id || 'usr_sarah_01'
-                })
-            });
-
-            if (res.ok) {
-                const data = await res.json();
+            const data = await feedService.toggleLike(post.id, user?.id || 'usr_sarah_01');
+            if (data) {
                 setLikesCount(data.likeCount);
                 setIsLiked(data.isLiked);
-            } else {
-                // Revert on failure
-                setIsLiked(prevLiked);
-                setLikesCount(prevCount);
             }
         } catch (e) {
             console.error("Error toggling like:", e);
@@ -274,57 +248,38 @@ export default function ProductPage() {
     const handleCheckout = async () => {
         setCheckoutLoading(true);
         // Simulate card authorization delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 1200));
         try {
             const activeGarment = selectedBuyGarment || post?.taggedProducts?.[0] || post;
             const title = activeGarment?.name || activeGarment?.productName || activeGarment?.triedItem || 'Fashion Item';
             const price = activeGarment?.price || post?.price || "$75.00";
             const vendor = activeGarment?.brand || post?.author || "Vogue Partner";
 
-            const response = await fetch('/api/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+            // Save to local storage mock database for immediate cross-tab sync
+            const newOrder = {
+                id: `ord_${Date.now()}`,
+                product_name: title,
+                amount: typeof price === 'number' ? price : parseFloat(String(price).replace(/[^0-9.]/g, '')) || 75.00,
+                status: 'paid',
+                escrow_status: 'held',
+                created_at: new Date().toISOString(),
+                customer: { full_name: user?.name || 'Sarah Lin', email: user?.email || 'sarah@vogue.demo' },
+                vendor: {
+                    store_name: vendor,
+                    store_handle: vendor.toLowerCase().replace(/[^a-z0-9]/g, '')
                 },
-                body: JSON.stringify({
-                    productName: title,
-                    priceString: price,
-                    author: vendor,
-                    shippingAddress: {
-                        address: address,
-                        city: city,
-                        country: country
-                    }
-                })
-            });
-            const data = await response.json();
-            if (data.success) {
-                // Save to local storage mock database for immediate cross-tab sync
-                const newOrder = {
-                    id: data.order.id,
-                    amount: data.order.amount || parseFloat(price.replace(/[^0-9.]/g, '')),
-                    status: data.order.status || 'pending',
-                    escrow_status: data.order.escrow_status || 'held',
-                    created_at: data.order.created_at || new Date().toISOString(),
-                    customer: { full_name: user?.name || 'You (Buyer)', email: user?.email || 'buyer@mail.com' },
-                    vendor: {
-                        store_name: vendor,
-                        store_handle: vendor.toLowerCase().replace(/[^a-z0-9]/g, '')
-                    }
-                };
-                const existing = localStorage.getItem('vogue_social_orders');
-                const ordersList = existing ? JSON.parse(existing) : [];
-                ordersList.push(newOrder);
-                localStorage.setItem('vogue_social_orders', JSON.stringify(ordersList));
-                setOrderResult(data.order);
-                setIsCheckoutSuccess(true);
-                setIsCheckoutOpen(false);
-            } else {
-                alert("Payment failed: " + (data.error || "Please try again."));
-            }
+                shippingAddress: { address, city, country }
+            };
+            const existing = localStorage.getItem('vogue_social_orders');
+            const ordersList = existing ? JSON.parse(existing) : [];
+            ordersList.unshift(newOrder);
+            localStorage.setItem('vogue_social_orders', JSON.stringify(ordersList));
+            setOrderResult(newOrder);
+            setIsCheckoutSuccess(true);
+            setIsCheckoutOpen(false);
         } catch (e) {
-            console.error(e);
-            alert("Error connecting to payment gateway.");
+            console.error("Checkout simulation error:", e);
+            alert("Error processing checkout. Please try again.");
         } finally {
             setCheckoutLoading(false);
         }

@@ -15,6 +15,7 @@ import {
   verifyDomainDNS
 } from '@/lib/storefrontData';
 import { useAuth } from '@/context/AuthContext';
+import { storeService } from '@/services/storeService';
 
 /* ── 5 Curated Storefront Templates ── */
 const TEMPLATES = [
@@ -119,41 +120,23 @@ export default function WebsitePage() {
   useEffect(() => {
     async function loadWebsiteSettings() {
       try {
-        const res = await fetch(`/api/merchant/website?vendorId=${encodeURIComponent(effectiveVendorId)}&handle=${encodeURIComponent(effectiveHandle)}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && data.website) {
-            const w = data.website;
-            setSettings(prev => ({ ...prev, ...w }));
-            if (w.storeHandle) setSubdomain(w.storeHandle);
-            if (w.customDomain) setCustomDomain(w.customDomain);
-            if (w.template) setSelectedTemplate(w.template);
-            if (w.storeName) setStoreName(w.storeName);
-            if (w.tagline) setTagline(w.tagline);
-            if (w.description) setDescription(w.description);
-            if (w.accentColor) setAccentColor(w.accentColor);
-            if (w.heroImage) setHeroImage(w.heroImage);
-            if (w.logoUrl) setLogoUrl(w.logoUrl);
-            return;
-          }
+        const data = await storeService.getStoreWebsite(effectiveVendorId, effectiveHandle);
+        if (data && data.success && data.website) {
+          const w = data.website;
+          setSettings(prev => ({ ...prev, ...w }));
+          if (w.storeHandle || w.store_handle) setSubdomain(w.storeHandle || w.store_handle);
+          if (w.customDomain || w.custom_domain) setCustomDomain(w.customDomain || w.custom_domain);
+          if (w.template) setSelectedTemplate(w.template);
+          if (w.storeName || w.store_name) setStoreName(w.storeName || w.store_name);
+          if (w.tagline) setTagline(w.tagline);
+          if (w.description) setDescription(w.description);
+          if (w.accentColor || w.accent_color) setAccentColor(w.accentColor || w.accent_color);
+          if (w.heroImage || w.hero_image) setHeroImage(w.heroImage || w.hero_image);
+          if (w.logoUrl || w.logo_url) setLogoUrl(w.logoUrl || w.logo_url);
+          return;
         }
       } catch (err) {
-        console.warn('Backend website API offline, loading from local cache');
-      }
-
-      // Fallback to localStorage or defaults
-      const local = getStoreByHandle(effectiveHandle);
-      if (local && local.store) {
-        setSettings(local.store);
-        setSubdomain(local.store.store_handle || effectiveHandle);
-        setCustomDomain(local.store.custom_domain || `shop.${effectiveHandle}.com`);
-        setSelectedTemplate(local.store.template || 'minimal');
-        setStoreName(local.store.store_name || user?.storeName || 'Atelier Boutique');
-        setTagline(local.store.tagline || 'Modern Tailoring & AI Virtual Fitting Studio');
-        setDescription(local.store.description || '');
-        setAccentColor(local.store.accent_color || '#02231c');
-        setHeroImage(local.store.hero_image || 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=80');
-        setLogoUrl(local.store.logo_url || '');
+        console.warn('Error loading website settings:', err);
       }
     }
 
@@ -181,33 +164,14 @@ export default function WebsitePage() {
     };
 
     try {
-      const res = await fetch('/api/merchant/website', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.website) {
-          setSettings(prev => ({ ...prev, ...data.website }));
-        }
+      const data = await storeService.saveWebsiteSettings(payload);
+      if (data && data.website) {
+        setSettings(prev => ({ ...prev, ...data.website }));
       }
     } catch (err) {
-      console.warn('Backend API save error, saved to local cache', err);
+      console.warn('Error saving website settings:', err);
     }
 
-    // Save to local cache & refresh preview iframe
-    const saved = saveMerchantStore({
-      ...settings,
-      ...payload,
-      store_handle: cleanSubdomain,
-      subdomain: cleanSubdomain,
-      store_name: payload.store_name,
-      custom_domain: payload.custom_domain,
-      accent_color: payload.accent_color,
-      template: payload.template
-    });
-    setSettings(saved);
     setPreviewKey(Date.now());
     setSaving(false);
     setSaveToast(true);
