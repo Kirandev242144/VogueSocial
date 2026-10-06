@@ -38,6 +38,7 @@ export default function ProductGallery({
                         alt={post.author || "User Try-On"}
                         fill
                         className="product-media-contain"
+                        style={{ objectFit: 'contain' }}
                     />
 
                     {/* Big Double-Tap Heart Animation */}
@@ -95,6 +96,7 @@ export default function ProductGallery({
                                 alt={`Angle view ${i + 1}`}
                                 fill
                                 className="product-media-cover"
+                                style={{ objectFit: 'cover' }}
                             />
                         </div>
                     ) : null))}
@@ -123,6 +125,7 @@ export default function ProductGallery({
                                 alt={post.productName || "Product View"}
                                 fill
                                 className="product-media-contain"
+                                style={{ objectFit: 'contain' }}
                             />
                         ) : null
                     )}
