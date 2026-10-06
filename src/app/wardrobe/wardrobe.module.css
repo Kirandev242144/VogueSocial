@@ -1,0 +1,26 @@
+/* Wardrobe Module Styles - Page Container */
+
+.wardrobeWrapper {
+  min-height: 100vh;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #0F172A;
+}
+
+.mainContent {
+  flex: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 20px 16px 60px;
+  }
+}
