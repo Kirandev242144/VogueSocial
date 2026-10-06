@@ -1,0 +1,167 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+}
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+
+.productImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover .productImg {
+  transform: scale(1.04);
+}
+
+.overlayHover {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.25);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.card:hover .overlayHover {
+  opacity: 1;
+}
+
+.quickTryOnBtn {
+  background: #ffffff;
+  color: #0f172a;
+  border: none;
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s, background 0.15s;
+}
+
+.quickTryOnBtn:hover {
+  background: #f8fafc;
+  transform: scale(1.05);
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 1.4rem;
+}
+
+.titlePriceCol {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow: hidden;
+  flex: 1;
+}
+
+.productTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.price {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.colorDotsRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.colorDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #1e293b;
+}
+
+.colorDot[data-color='#1e40af'] { background: #1e40af; }
+.colorDot[data-color='#ffffff'] { background: #ffffff; }
+.colorDot[data-color='#1e293b'] { background: #1e293b; }
+.colorDot[data-color='#000000'] { background: #000000; }
+.colorDot[data-color='#dc2626'] { background: #dc2626; }
+.colorDot[data-color='#b91c1c'] { background: #b91c1c; }
+.colorDot[data-color='#0f172a'] { background: #0f172a; }
+.colorDot[data-color='#334155'] { background: #334155; }
+.colorDot[data-color='#475569'] { background: #475569; }
+.colorDot[data-color='#f8fafc'] { background: #f8fafc; }
+.colorDot[data-color='#cbd5e1'] { background: #cbd5e1; }
+.colorDot[data-color='#e5e7eb'] { background: #e5e7eb; }
+.colorDot[data-color='#d97706'] { background: #d97706; }
+.colorDot[data-color='#ea580c'] { background: #ea580c; }
+.colorDot[data-color='#fed7aa'] { background: #fed7aa; }
+.colorDot[data-color='#93c5fd'] { background: #93c5fd; }
+.colorDot[data-color='#3b82f6'] { background: #3b82f6; }
+.colorDot[data-color='#fce7f3'] { background: #fce7f3; }
+.colorDot[data-color='#ec4899'] { background: #ec4899; }
+.colorDot[data-color='#f59e0b'] { background: #f59e0b; }
+.colorDot[data-color='#10b981'] { background: #10b981; }
+.colorDot[data-color='#15803d'] { background: #15803d; }
+.colorDot[data-color='#86efac'] { background: #86efac; }
+.colorDot[data-color='#f5f5f4'] { background: #f5f5f4; }
+.colorDot[data-color='#e7e5e4'] { background: #e7e5e4; }
+.colorDot[data-color='#eab308'] { background: #eab308; }
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.15rem;
+}
+
+.starsGroup {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.starIcon {
+  flex-shrink: 0;
+}
+
+.reviewsText {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
