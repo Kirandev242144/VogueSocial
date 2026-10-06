@@ -1,0 +1,38 @@
+/* Feed Empty State */
+.empty-feed {
+  text-align: center;
+  padding: 4rem 0;
+  color: #666666;
+}
+
+.empty-feed h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary, #0f172a);
+}
+
+.empty-feed p {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #64748b);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.explore-btn {
+  margin-top: 1.25rem;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  padding: 0.55rem 1.3rem;
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.explore-btn:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}

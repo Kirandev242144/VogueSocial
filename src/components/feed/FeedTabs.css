@@ -1,0 +1,30 @@
+/* Feed Navigation Tabs */
+.feed-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.feed-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #64748b);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding-bottom: 0.2rem;
+  position: relative;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.feed-tab:hover {
+  color: var(--text-primary, #0f172a);
+}
+
+.feed-tab.active {
+  color: var(--text-primary, #0f172a);
+  border-bottom: 2px solid var(--text-primary, #0f172a);
+}

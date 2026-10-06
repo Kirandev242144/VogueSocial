@@ -1,0 +1,136 @@
+/* Checkout Escrow Success Modal Styles */
+.product-escrow-success-body {
+  padding: 2rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.product-escrow-shield-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #f0fdf4;
+  border: 2px solid #bbf7d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+}
+
+.product-escrow-success-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.product-escrow-success-text {
+  font-size: 0.92rem;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.product-escrow-info-card {
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+  box-sizing: border-box;
+}
+
+.product-escrow-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.product-escrow-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.product-escrow-val-bold {
+  font-weight: 700;
+  color: #0f172a;
+  font-family: monospace;
+}
+
+.product-escrow-val-muted {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.product-escrow-val {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.product-escrow-status-tag {
+  background: #fef3c7;
+  color: #b45309;
+  font-weight: 800;
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 99px;
+  letter-spacing: 0.04em;
+}
+
+.product-escrow-disclaimer {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  margin: 0;
+  font-style: italic;
+}
+
+.product-escrow-actions-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+}
+
+.product-escrow-dispute-btn {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
+  padding: 0.75rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.product-escrow-dispute-btn:hover {
+  background: #ffe4e6;
+  border-color: #fda4af;
+}
+
+.product-escrow-continue-btn {
+  background: #0f172a;
+  border: none;
+  color: #ffffff;
+  padding: 0.85rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.product-escrow-continue-btn:hover {
+  background: #1e293b;
+}

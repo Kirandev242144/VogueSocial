@@ -1,0 +1,88 @@
+/* Product Floating Actions (Instagram-Style Side Rail) */
+.product-floating-rail {
+  position: absolute;
+  right: 20px;
+  bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.product-action-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.product-action-circle-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.14), 0 2px 6px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.18s ease, box-shadow 0.2s ease;
+  color: #0f172a;
+}
+
+.product-action-circle-btn:hover {
+  transform: scale(1.1) translateY(-2px);
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+}
+
+.product-action-circle-btn:active {
+  transform: scale(0.93);
+}
+
+.product-action-circle-btn.liked {
+  color: #ef4444;
+}
+
+.product-action-circle-btn.saved {
+  color: #8b5cf6;
+}
+
+.product-heart-pulse {
+  animation: productHeartBeat 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes productHeartBeat {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.product-action-pill-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 2px 9px;
+  border-radius: 99px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.01em;
+  user-select: none;
+  min-width: 28px;
+  text-align: center;
+}

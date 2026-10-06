@@ -1,0 +1,15 @@
+/* Feed Responsive Grid Layout */
+.feed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  column-gap: 2rem;
+  row-gap: 3.5rem;
+  padding-bottom: 5rem;
+}
+
+@media (max-width: 768px) {
+  .feed-grid {
+    grid-template-columns: 1fr;
+    row-gap: 2.5rem;
+  }
+}
