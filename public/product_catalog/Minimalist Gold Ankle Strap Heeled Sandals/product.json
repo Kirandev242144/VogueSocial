@@ -1,0 +1,26 @@
+{
+  "id": "shp-9",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Minimalist Gold Ankle Strap Heeled Sandals",
+  "category": "shoes",
+  "subcategory": "heels",
+  "target_audience": "Women",
+  "sku": "SHO-SAN-009",
+  "description": "Clean delicate lines elevate any dress without overpowering.",
+  "price": 120,
+  "currency": "USD",
+  "image_url": "/product_catalog/Minimalist%20Gold%20Ankle%20Strap%20Heeled%20Sandals/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Minimalist Gold Ankle Strap Heeled Sandals\\image.jpg",
+  "stock": 19,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L"
+  ],
+  "colors": [
+    "#d97706",
+    "#0f172a"
+  ],
+  "created_at": "2026-09-19T08:15:33.267Z"
+}

@@ -1,0 +1,63 @@
+/* Social OAuth & Divider */
+.social-auth-section {
+  margin-top: 0.5rem;
+}
+
+.social-auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.25rem 0;
+  color: #a1a1aa;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.social-auth-divider::before,
+.social-auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e4e4e7;
+}
+
+.social-auth-divider span {
+  padding: 0 0.85rem;
+}
+
+.social-auth-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.social-auth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.7rem;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #27272a;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.social-auth-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.social-auth-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.social-auth-icon {
+  width: 18px;
+  height: 18px;
+}

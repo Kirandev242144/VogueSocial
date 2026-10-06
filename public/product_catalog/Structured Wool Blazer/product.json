@@ -1,0 +1,26 @@
+{
+  "id": "feed-1",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Structured Wool Blazer",
+  "category": "outerwear",
+  "subcategory": "blazers",
+  "target_audience": "Women",
+  "sku": "OUT-BLZ-014",
+  "description": "Structured double-breasted wool blazer with tailored structure.",
+  "price": 280,
+  "currency": "USD",
+  "image_url": "/product_catalog/Structured%20Wool%20Blazer/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Structured Wool Blazer\\image.jpg",
+  "stock": 15,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L"
+  ],
+  "colors": [
+    "#1e293b",
+    "#64748b"
+  ],
+  "created_at": "2026-09-19T08:15:33.713Z"
+}

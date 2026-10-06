@@ -1,0 +1,26 @@
+{
+  "id": "feed-6",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "No Human Is Illegal T-Shirt",
+  "category": "tops",
+  "subcategory": "graphic-tees",
+  "target_audience": "Unisex",
+  "sku": "TOP-GRP-019",
+  "description": "Statement cotton t-shirt with heart barbed wire graphic. 100% of proceeds go to humanitarian aid.",
+  "price": 35,
+  "currency": "USD",
+  "image_url": "/product_catalog/No%20Human%20Is%20Illegal%20T-Shirt/image.png",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\No Human Is Illegal T-Shirt\\image.png",
+  "stock": 60,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL"
+  ],
+  "colors": [
+    "#000000"
+  ],
+  "created_at": "2026-09-19T08:15:33.724Z"
+}

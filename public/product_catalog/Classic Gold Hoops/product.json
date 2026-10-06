@@ -1,0 +1,23 @@
+{
+  "id": "feed-5",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Classic Gold Hoops",
+  "category": "accessories",
+  "subcategory": "jewelry",
+  "target_audience": "Women",
+  "sku": "ACC-JW-018",
+  "description": "Polished chunky gold-plated hoops with secure latch.",
+  "price": 120,
+  "currency": "USD",
+  "image_url": "/product_catalog/Classic%20Gold%20Hoops/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Classic Gold Hoops\\image.jpg",
+  "stock": 25,
+  "status": "live",
+  "sizes": [
+    "One Size"
+  ],
+  "colors": [
+    "#d4af37"
+  ],
+  "created_at": "2026-09-19T08:15:33.722Z"
+}

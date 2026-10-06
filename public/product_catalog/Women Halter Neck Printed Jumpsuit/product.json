@@ -1,0 +1,25 @@
+{
+  "id": "feed-15",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Women Halter Neck Printed Jumpsuit",
+  "category": "one-pieces",
+  "subcategory": "jumpsuits",
+  "target_audience": "Women",
+  "sku": "ONE-JMP-028",
+  "description": "Elegant halter neck jumpsuit featuring a vibrant print and comfortable fit.",
+  "price": 65,
+  "currency": "USD",
+  "image_url": "/product_catalog/Women%20Halter%20Neck%20Printed%20Jumpsuit/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Women Halter Neck Printed Jumpsuit\\image.jpg",
+  "stock": 22,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L"
+  ],
+  "colors": [
+    "#f43f5e"
+  ],
+  "created_at": "2026-09-19T08:15:33.740Z"
+}

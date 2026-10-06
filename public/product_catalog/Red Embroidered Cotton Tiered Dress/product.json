@@ -1,0 +1,27 @@
+{
+  "id": "shp-4",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Red Embroidered Cotton Tiered Dress",
+  "category": "dresses",
+  "subcategory": "tiered-dress",
+  "target_audience": "Women",
+  "sku": "DRS-RED-004",
+  "description": "Warm ruby tone with artisan embroidery for effortless vibrancy.",
+  "price": 69.99,
+  "currency": "USD",
+  "image_url": "/product_catalog/Red%20Embroidered%20Cotton%20Tiered%20Dress/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Red Embroidered Cotton Tiered Dress\\image.jpg",
+  "stock": 20,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL"
+  ],
+  "colors": [
+    "#dc2626",
+    "#b91c1c"
+  ],
+  "created_at": "2026-09-19T08:15:32.606Z"
+}

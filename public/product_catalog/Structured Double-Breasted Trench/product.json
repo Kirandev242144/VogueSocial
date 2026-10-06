@@ -1,0 +1,26 @@
+{
+  "id": "top-1",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Structured Double-Breasted Trench",
+  "category": "outerwear",
+  "subcategory": "trench-coats",
+  "target_audience": "Women",
+  "sku": "OUT-TRN-031",
+  "description": "Water-repellent gabardine classic tailored trench coat with horn buttons.",
+  "price": 520,
+  "currency": "USD",
+  "image_url": "/product_catalog/Structured%20Double-Breasted%20Trench/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Structured Double-Breasted Trench\\image.jpg",
+  "stock": 12,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L"
+  ],
+  "colors": [
+    "#d4b996",
+    "#1c1917"
+  ],
+  "created_at": "2026-09-19T08:15:33.810Z"
+}

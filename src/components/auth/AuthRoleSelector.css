@@ -1,0 +1,43 @@
+/* Role Selector Pills */
+.role-selector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.role-choice-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  background: #fafafa;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.role-choice-card:hover {
+  border-color: #a1a1aa;
+}
+
+.role-choice-card.active {
+  border-color: #09090b;
+  background: #18181b;
+  color: #ffffff;
+}
+
+.role-choice-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.role-choice-desc {
+  font-size: 0.72rem;
+  color: #71717a;
+}
+
+.role-choice-card.active .role-choice-desc {
+  color: #d4d4d8;
+}

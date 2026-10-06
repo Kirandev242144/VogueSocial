@@ -1,0 +1,25 @@
+{
+  "id": "feed-17",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Chemistry Floral Print Midi Dress",
+  "category": "one-pieces",
+  "subcategory": "midi-dress",
+  "target_audience": "Women",
+  "sku": "ONE-FLR-030",
+  "description": "A beautiful floral print midi dress from Chemistry with premium fabric.",
+  "price": 89,
+  "currency": "USD",
+  "image_url": "/product_catalog/Chemistry%20Floral%20Print%20Midi%20Dress/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Chemistry Floral Print Midi Dress\\image.jpg",
+  "stock": 19,
+  "status": "live",
+  "sizes": [
+    "S",
+    "M",
+    "L"
+  ],
+  "colors": [
+    "#1e293b"
+  ],
+  "created_at": "2026-09-19T08:15:33.746Z"
+}

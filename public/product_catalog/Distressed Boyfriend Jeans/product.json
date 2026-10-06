@@ -1,0 +1,26 @@
+{
+  "id": "feed-13",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Distressed Boyfriend Jeans",
+  "category": "bottoms",
+  "subcategory": "denim",
+  "target_audience": "Women",
+  "sku": "BTM-DNM-026",
+  "description": "Relaxed vintage wash denim with hand-distressed detailing.",
+  "price": 160,
+  "currency": "USD",
+  "image_url": "/product_catalog/Distressed%20Boyfriend%20Jeans/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Distressed Boyfriend Jeans\\image.jpg",
+  "stock": 15,
+  "status": "live",
+  "sizes": [
+    "26",
+    "28",
+    "30",
+    "32"
+  ],
+  "colors": [
+    "#60a5fa"
+  ],
+  "created_at": "2026-09-19T08:15:33.736Z"
+}

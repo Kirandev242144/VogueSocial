@@ -1,0 +1,26 @@
+{
+  "id": "feed-12",
+  "vendor_id": "ec9e5c47-4d4a-4998-b4b3-16d228f9615c",
+  "name": "Cargo Pocket Trousers",
+  "category": "bottoms",
+  "subcategory": "cargo",
+  "target_audience": "Men",
+  "sku": "BTM-CRG-025",
+  "description": "Multi-pocket utility cargo trousers with tapered cuff.",
+  "price": 110,
+  "currency": "USD",
+  "image_url": "/product_catalog/Cargo%20Pocket%20Trousers/image.jpg",
+  "local_file_path": "E:\\antigravity\\landing page\\virtual-try-on\\product_catalog\\Cargo Pocket Trousers\\image.jpg",
+  "stock": 20,
+  "status": "live",
+  "sizes": [
+    "30",
+    "32",
+    "34",
+    "36"
+  ],
+  "colors": [
+    "#3f3f46"
+  ],
+  "created_at": "2026-09-19T08:15:33.735Z"
+}
