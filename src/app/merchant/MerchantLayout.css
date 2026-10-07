@@ -1,0 +1,269 @@
+/* ================================================
+   VOGUESOCIAL MERCHANT DASHBOARD - LAYOUT & SHELL
+   Pure Vanilla CSS Architecture
+   ================================================ */
+
+/* ── BRAND TOKENS (Light Theme Default) ── */
+.merchant-shell {
+  display: flex;
+  min-height: 100vh;
+  font-family: var(--font-inter), var(--font-body), system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-dm-sans), system-ui, sans-serif;
+
+  /* Primary Editorial Colors */
+  --vs-green:       #1e293b;
+  --vs-green-2:     #334155;
+  --vs-green-3:     #0f172a;
+  --vs-lime:        #475569;
+  --vs-lime-dim:    #334155;
+  --vs-lime-soft:   rgba(15, 23, 42, 0.04);
+
+  /* Surfaces & Borders */
+  --d-bg:           #f8fafc;
+  --d-sidebar:      #ffffff;
+  --d-panel:        #ffffff;
+  --d-card:         #ffffff;
+  --d-border:       #e2e8f0;
+  --d-border2:      #f1f5f9;
+  --d-hover:        #f8fafc;
+  --d-input:        #ffffff;
+
+  /* Typography Colors */
+  --d-t1:           #0f172a;
+  --d-t2:           #334155;
+  --d-t3:           #64748b;
+  --d-t4:           #94a3b8;
+  --d-t5:           #f1f5f9;
+
+  /* Header & Shadows */
+  --d-topbar:       rgba(255, 255, 255, 0.96);
+  --d-shadow:       0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+  --d-shadow-lg:    0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+  --d-chart:        #1e293b;
+  --d-chart-fill:   rgba(30, 41, 59, 0.06);
+
+  /* Semantic Accent Tokens */
+  --color-amber:    #d97706;
+  --color-emerald:  #059669;
+  --color-rose:     #e11d48;
+  --color-cyan:     #0284c7;
+
+  background: var(--d-bg);
+  color: var(--d-t1);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ── REFINED LOW-CONTRAST DARK THEME ── */
+.merchant-shell.merchant-shell-dark {
+  --d-bg:           #090d16;
+  --d-sidebar:      #0d131f;
+  --d-panel:        #0d131f;
+  --d-card:         #111827;
+  --d-border:       rgba(255, 255, 255, 0.08);
+  --d-border2:      rgba(255, 255, 255, 0.04);
+  --d-hover:        rgba(255, 255, 255, 0.04);
+  --d-input:        rgba(255, 255, 255, 0.04);
+  --d-t1:           #f8fafc;
+  --d-t2:           #cbd5e1;
+  --d-t3:           #94a3b8;
+  --d-t4:           #64748b;
+  --d-t5:           rgba(255, 255, 255, 0.05);
+  --d-topbar:       rgba(9, 13, 22, 0.92);
+  --d-shadow:       0 2px 8px rgba(0, 0, 0, 0.3);
+  --d-shadow-lg:    0 8px 24px rgba(0, 0, 0, 0.4);
+  --d-chart:        #94a3b8;
+  --d-chart-fill:   rgba(148, 163, 184, 0.1);
+  background: var(--d-bg);
+}
+
+/* ── MAIN CONTENT WORKSPACE ── */
+.merchant-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ── LOADING SCREEN ── */
+.merchant-loading-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+}
+
+.merchant-loading-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.merchant-loading-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulseIcon 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseIcon {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.85; }
+}
+
+.merchant-loading-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* ── RESTRICTED ACCESS SCREEN ── */
+.merchant-restricted-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #f8fafc;
+}
+
+.merchant-restricted-card {
+  max-width: 480px;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.merchant-restricted-icon-wrap {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.merchant-restricted-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #ef4444;
+  background: #fef2f2;
+  padding: 0.35rem 0.85rem;
+  border-radius: 99px;
+  margin-bottom: 1rem;
+}
+
+.merchant-restricted-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.merchant-restricted-subtitle {
+  margin: 0 0 1.75rem 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.merchant-restricted-user-email {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.merchant-restricted-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.btn-restricted-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.85rem;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-restricted-primary:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}
+
+.btn-restricted-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.8rem;
+  background: #f8fafc;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-restricted-secondary:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.merchant-restricted-switch-role-row {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.btn-switch-role-mini {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.btn-switch-role-mini:hover {
+  color: #1d4ed8;
+}

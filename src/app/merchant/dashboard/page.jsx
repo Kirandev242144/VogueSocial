@@ -1,11 +1,10 @@
 "use client";
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import styles from '../merchant.module.css';
-import { ExternalLink, Plus, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import TryOnModal from '@/components/TryOnModal';
 import { useAuth } from '@/context/AuthContext';
 import {
+  MerchantHeaderBanner,
   MerchantKPIs,
   MerchantSalesChart,
   MerchantModelBreakdown,
@@ -14,6 +13,7 @@ import {
   MerchantStatusRibbon,
   TOP_GARMENTS
 } from '@/components/merchant';
+import './MerchantDashboard.css';
 
 export default function MerchantDashboard() {
   const { user } = useAuth();
@@ -43,62 +43,29 @@ export default function MerchantDashboard() {
   };
 
   return (
-    <div className={styles.pageContent}>
+    <div className="merchant-page-content">
       {/* ── 1. DASHBOARD HEADER & STORE BANNER ── */}
-      <div className={styles.dashHeader}>
-        <div className={styles.storeBrandWrap}>
-          <div className={styles.storeAvatar}>{initials}</div>
-          <div className={styles.storeMeta}>
-            <div className={styles.storeNameRow}>
-              <h1 className={styles.storeTitle}>{currentStoreName}</h1>
-              <Link to={`/store/${currentStoreHandle}`} target="_blank" className={styles.liveStoreBadge}>
-                <span className={styles.liveStoreDot} />
-                <span>STORE ONLINE</span>
-                <ExternalLink size={12} />
-              </Link>
-            </div>
-            <span className={styles.storeSubtitle}>
-              Luxury Ready-to-Wear · OmniTry AI Virtual Fitting Engine v2.4 Active
-            </span>
-          </div>
-        </div>
-
-        <div className={styles.dashActions}>
-          <div className={styles.timeframeGroup}>
-            {['7D', '30D', '90D', 'YTD'].map((t) => (
-              <button
-                key={t}
-                className={`${styles.timeframeBtn} ${timeframe === t ? styles.timeframeBtnActive : ''}`}
-                onClick={() => setTimeframe(t)}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-
-          <button className={styles.btnSecondary} onClick={() => handleTestTryOn(TOP_GARMENTS[0])}>
-            <Sparkles size={14} />
-            <span>Test Try-On Studio</span>
-          </button>
-
-          <button className={styles.btnPrimary} onClick={() => navigate('/merchant/products')}>
-            <Plus size={15} />
-            <span>Add Garment</span>
-          </button>
-        </div>
-      </div>
+      <MerchantHeaderBanner
+        currentStoreName={currentStoreName}
+        currentStoreHandle={currentStoreHandle}
+        initials={initials}
+        timeframe={timeframe}
+        setTimeframe={setTimeframe}
+        onTestTryOn={() => handleTestTryOn(TOP_GARMENTS[0])}
+        onAddGarment={() => navigate('/merchant/products')}
+      />
 
       {/* ── 2. KPI METRICS (4 CARDS) ── */}
       <MerchantKPIs />
 
       {/* ── 3. MIDDLE SECTION (ANALYTICS CHART & PRESETS BREAKDOWN) ── */}
-      <div className={`${styles.gridRow} ${styles.grid21}`}>
+      <div className="merchant-grid-row merchant-grid-2-1">
         <MerchantSalesChart />
         <MerchantModelBreakdown />
       </div>
 
       {/* ── 4. BOTTOM SECTION (TOP GARMENTS & LIVE STREAM) ── */}
-      <div className={`${styles.gridRow} ${styles.grid45}`}>
+      <div className="merchant-grid-row merchant-grid-4-5">
         <MerchantTopGarments onPreviewGarment={handleTestTryOn} />
         <MerchantLiveStream />
       </div>

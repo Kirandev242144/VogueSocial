@@ -1,0 +1,462 @@
+/* ================================================
+   MERCHANT SIDEBAR - Pure Vanilla CSS
+   ================================================ */
+
+.merchant-sidebar {
+  width: 252px;
+  min-height: 100vh;
+  background: var(--d-sidebar);
+  border-right: 1px solid var(--d-border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+  z-index: 50;
+  box-shadow: none;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.merchant-sidebar-top {
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--d-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.merchant-logo-mark {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.merchant-logo-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.merchant-logo-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
+.merchant-shell-dark .merchant-logo-icon {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.merchant-logo-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--d-t1);
+  letter-spacing: -0.02em;
+  font-family: var(--font-heading);
+}
+
+.merchant-sidebar-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.merchant-sidebar-toggle:hover {
+  background: #f1f5f9;
+  color: var(--d-t1);
+}
+
+.merchant-shell-dark .merchant-sidebar-toggle:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Navigation Links */
+.merchant-sidebar-nav {
+  padding: 0.85rem 0.75rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.merchant-sidebar-nav::-webkit-scrollbar {
+  width: 3px;
+}
+
+.merchant-sidebar-nav::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 99px;
+}
+
+.merchant-nav-section {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #94a3b8;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.85rem 0.65rem 0.3rem;
+}
+
+.merchant-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.84rem;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+}
+
+.merchant-shell-dark .merchant-nav-item {
+  color: #94a3b8;
+}
+
+.merchant-nav-item:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.merchant-shell-dark .merchant-nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f8fafc;
+}
+
+.merchant-nav-item-active {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.merchant-shell-dark .merchant-nav-item-active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+}
+
+.merchant-nav-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #0f172a;
+  margin-left: auto;
+}
+
+.merchant-shell-dark .merchant-nav-dot {
+  background: #f8fafc;
+}
+
+.merchant-nav-badge {
+  font-size: 0.62rem;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 1px 6px;
+  border-radius: 99px;
+  border: 1px solid #e2e8f0;
+  margin-left: auto;
+}
+
+.merchant-shell-dark .merchant-nav-badge {
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.merchant-chevron-auto {
+  margin-left: auto;
+  color: #94a3b8;
+}
+
+/* Collapsible Submenu */
+.merchant-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-left: 2rem;
+  margin-top: 1px;
+  position: relative;
+}
+
+.merchant-submenu::before {
+  content: '';
+  position: absolute;
+  left: 1.35rem;
+  top: 4px;
+  bottom: 8px;
+  width: 1px;
+  background: #e2e8f0;
+}
+
+.merchant-shell-dark .merchant-submenu::before {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.merchant-sub-item {
+  font-size: 0.79rem;
+  font-weight: 500;
+  color: #64748b;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.merchant-shell-dark .merchant-sub-item {
+  color: #94a3b8;
+}
+
+.merchant-sub-item:hover {
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.merchant-shell-dark .merchant-sub-item:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.merchant-sub-item-active {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.merchant-shell-dark .merchant-sub-item-active {
+  color: #f8fafc;
+}
+
+/* Sidebar Footer */
+.merchant-sidebar-footer {
+  padding: 0.85rem;
+  border-top: 1px solid var(--d-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.merchant-theme-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.2rem 0.25rem;
+}
+
+.merchant-theme-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.merchant-shell-dark .merchant-theme-label {
+  color: #94a3b8;
+}
+
+.merchant-toggle-switch {
+  width: 32px;
+  height: 18px;
+  border-radius: 99px;
+  background: #e2e8f0;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.merchant-shell-dark .merchant-toggle-switch {
+  background: #334155;
+}
+
+.merchant-toggle-active {
+  background: #0f172a;
+}
+
+.merchant-shell-dark .merchant-toggle-active {
+  background: #f8fafc;
+}
+
+.merchant-toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: transform 0.2s ease;
+}
+
+.merchant-shell-dark .merchant-toggle-knob {
+  background: #0f172a;
+}
+
+.merchant-toggle-active .merchant-toggle-knob {
+  transform: translateX(14px);
+}
+
+/* Upgrade Card */
+.merchant-upgrade-card {
+  background: #f8fafc;
+  border: 1px solid var(--d-border);
+  border-radius: 10px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.merchant-shell-dark .merchant-upgrade-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.merchant-upgrade-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.77rem;
+  font-weight: 600;
+  color: var(--d-t1);
+}
+
+.merchant-upgrade-badge {
+  font-size: 0.62rem;
+  font-weight: 600;
+  background: #e2e8f0;
+  color: #334155;
+  padding: 1px 6px;
+  border-radius: 99px;
+}
+
+.merchant-shell-dark .merchant-upgrade-badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+.merchant-upgrade-text {
+  font-size: 0.72rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.merchant-shell-dark .merchant-upgrade-text {
+  color: #94a3b8;
+}
+
+.merchant-upgrade-btn {
+  margin-top: 0.2rem;
+  width: 100%;
+  padding: 0.45rem;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.merchant-shell-dark .merchant-upgrade-btn {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.merchant-upgrade-btn:hover {
+  background: #1e293b;
+}
+
+/* User Row */
+.merchant-user-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.4rem 0.25rem 0.2rem;
+}
+
+.merchant-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.merchant-user-avatar-fallback {
+  background: #0f172a;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.merchant-shell-dark .merchant-user-avatar-fallback {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.merchant-user-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.merchant-user-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--d-t1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.merchant-user-role {
+  font-size: 0.68rem;
+  color: #94a3b8;
+}
+
+.merchant-sign-out-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.merchant-sign-out-btn:hover {
+  background: #f1f5f9;
+  color: #ef4444;
+}
+
+.merchant-shell-dark .merchant-sign-out-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}

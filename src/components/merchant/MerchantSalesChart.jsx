@@ -1,11 +1,11 @@
 "use client";
 import React, { useState } from 'react';
-import styles from '@/app/merchant/merchant.module.css';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import { Activity } from 'lucide-react';
 import { useMerchantTheme } from '@/app/merchant/ThemeContext';
+import './MerchantSalesChart.css';
 
 const REVENUE_DATA = [
   { month: 'Jan', tryonRevenue: 48000, standardRevenue: 28000, sessions: 7400 },
@@ -24,17 +24,17 @@ const CustomRevenueTooltip = ({ active, payload, label }) => {
     const standardVal = payload.find((p) => p.dataKey === 'standardRevenue')?.value || 0;
     const total = tryonVal + standardVal;
     return (
-      <div className={styles.customTooltipBox}>
-        <div className={styles.tooltipLabel}>{label} Performance</div>
-        <div className={styles.tooltipItem}>
-          <span className={styles.tooltipDotTryon}>• Try-On Influenced:</span>
+      <div className="merchant-chart-tooltip">
+        <div className="merchant-tooltip-label">{label} Performance</div>
+        <div className="merchant-tooltip-item">
+          <span className="merchant-tooltip-tryon">• Try-On Influenced:</span>
           <span>${tryonVal.toLocaleString()}</span>
         </div>
-        <div className={styles.tooltipItem}>
-          <span className={styles.tooltipDotStandard}>• Standard Orders:</span>
+        <div className="merchant-tooltip-item">
+          <span className="merchant-tooltip-standard">• Standard Orders:</span>
           <span>${standardVal.toLocaleString()}</span>
         </div>
-        <div className={styles.tooltipItem}>
+        <div className="merchant-tooltip-item">
           <span>Total GMV:</span>
           <span>${total.toLocaleString()}</span>
         </div>
@@ -50,21 +50,23 @@ export default function MerchantSalesChart() {
   const [metricView, setMetricView] = useState('revenue');
 
   return (
-    <div className={styles.panel}>
-      <div className={styles.panelHeader}>
-        <div className={styles.panelTitle}>
+    <div className="merchant-sales-chart-panel">
+      <div className="merchant-sales-chart-header">
+        <div className="merchant-sales-chart-title">
           <Activity size={17} />
           <span>Try-On Sales & Volume Trajectory</span>
         </div>
-        <div className={styles.chartTabsWrap}>
+        <div className="merchant-chart-tabs">
           <button
-            className={`${styles.chartTabItem} ${metricView === 'revenue' ? styles.chartTabItemActive : ''}`}
+            type="button"
+            className={`merchant-chart-tab ${metricView === 'revenue' ? 'merchant-chart-tab-active' : ''}`}
             onClick={() => setMetricView('revenue')}
           >
             Revenue ($)
           </button>
           <button
-            className={`${styles.chartTabItem} ${metricView === 'sessions' ? styles.chartTabItemActive : ''}`}
+            type="button"
+            className={`merchant-chart-tab ${metricView === 'sessions' ? 'merchant-chart-tab-active' : ''}`}
             onClick={() => setMetricView('sessions')}
           >
             Try-On Volume (#)
@@ -72,16 +74,16 @@ export default function MerchantSalesChart() {
         </div>
       </div>
 
-      <div className={styles.chartLegendRow}>
+      <div className="merchant-chart-legend">
         <span>
-          <span className={styles.legendDot} /> Try-On Influenced Orders
+          <span className="merchant-legend-dot merchant-legend-dot-primary" /> Try-On Influenced Orders
         </span>
         <span>
-          <span className={styles.legendDot} /> Standard Store Orders
+          <span className="merchant-legend-dot merchant-legend-dot-secondary" /> Standard Store Orders
         </span>
       </div>
 
-      <div className={styles.chartContainerBox}>
+      <div className="merchant-chart-box">
         <ResponsiveContainer width="100%" height={270}>
           <BarChart data={REVENUE_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <CartesianGrid

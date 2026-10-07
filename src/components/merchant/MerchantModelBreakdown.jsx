@@ -1,10 +1,10 @@
 "use client";
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from '@/app/merchant/merchant.module.css';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Layers } from 'lucide-react';
 import { useMerchantTheme } from '@/app/merchant/ThemeContext';
+import './MerchantModelBreakdown.css';
 
 const MODEL_DEMOGRAPHICS = [
   { name: 'Women Presets', value: 48, count: '23,180', color: '#1e293b', darkColor: '#e2e8f0' },
@@ -18,18 +18,22 @@ export default function MerchantModelBreakdown() {
   const isDark = theme === 'dark';
 
   return (
-    <div className={styles.panel}>
-      <div className={styles.panelHeader}>
-        <div className={styles.panelTitle}>
+    <div className="merchant-model-breakdown-panel">
+      <div className="merchant-model-breakdown-header">
+        <div className="merchant-model-breakdown-title">
           <Layers size={17} />
           <span>Model Presets & Fit</span>
         </div>
-        <button className={styles.panelAction} onClick={() => navigate('/merchant/analytics')}>
+        <button
+          type="button"
+          className="merchant-panel-action"
+          onClick={() => navigate('/merchant/analytics')}
+        >
           Insights
         </button>
       </div>
 
-      <div className={styles.donutWrapper}>
+      <div className="merchant-donut-wrapper">
         <ResponsiveContainer width={170} height={170}>
           <PieChart>
             <Pie
@@ -52,40 +56,40 @@ export default function MerchantModelBreakdown() {
           </PieChart>
         </ResponsiveContainer>
 
-        <div className={styles.donutCenterLabel}>
-          <div className={styles.donutCenterHeading}>Total Fits</div>
-          <div className={styles.donutCenterValue}>48.2k</div>
+        <div className="merchant-donut-center">
+          <div className="merchant-donut-heading">Total Fits</div>
+          <div className="merchant-donut-value">48.2k</div>
         </div>
       </div>
 
-      <div className={styles.modelUsageList}>
-        <div className={styles.modelUsageRow}>
-          <div className={styles.modelUsageHeader}>
+      <div className="merchant-model-usage-list">
+        <div className="merchant-model-usage-row">
+          <div className="merchant-model-usage-header">
             <span>Female Preset Models</span>
             <span>48% (23.1k)</span>
           </div>
-          <div className={styles.modelUsageBarTrack}>
-            <div className={`${styles.modelUsageBarFill} ${styles.barFillWomen} ${styles.widthPct48}`} />
+          <div className="merchant-model-usage-track">
+            <div className="merchant-model-usage-fill merchant-fill-women" style={{ width: '48%' }} />
           </div>
         </div>
 
-        <div className={styles.modelUsageRow}>
-          <div className={styles.modelUsageHeader}>
+        <div className="merchant-model-usage-row">
+          <div className="merchant-model-usage-header">
             <span>Male Preset Models</span>
             <span>28% (13.5k)</span>
           </div>
-          <div className={styles.modelUsageBarTrack}>
-            <div className={`${styles.modelUsageBarFill} ${styles.barFillMen} ${styles.widthPct28}`} />
+          <div className="merchant-model-usage-track">
+            <div className="merchant-model-usage-fill merchant-fill-men" style={{ width: '28%' }} />
           </div>
         </div>
 
-        <div className={styles.modelUsageRow}>
-          <div className={styles.modelUsageHeader}>
+        <div className="merchant-model-usage-row">
+          <div className="merchant-model-usage-header">
             <span>Custom Shopper Uploads</span>
             <span>24% (11.6k)</span>
           </div>
-          <div className={styles.modelUsageBarTrack}>
-            <div className={`${styles.modelUsageBarFill} ${styles.barFillCustom} ${styles.widthPct24}`} />
+          <div className="merchant-model-usage-track">
+            <div className="merchant-model-usage-fill merchant-fill-custom" style={{ width: '24%' }} />
           </div>
         </div>
       </div>

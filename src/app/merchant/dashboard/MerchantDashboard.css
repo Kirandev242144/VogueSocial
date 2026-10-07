@@ -1,0 +1,37 @@
+/* ================================================
+   MERCHANT DASHBOARD - Pure Vanilla CSS
+   ================================================ */
+
+.merchant-page-content {
+  padding: 1.75rem 2rem;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.merchant-grid-row {
+  display: grid;
+  gap: 1.1rem;
+  margin-top: 1.25rem;
+}
+
+.merchant-grid-2-1 {
+  grid-template-columns: 2fr 1fr;
+}
+
+.merchant-grid-4-5 {
+  grid-template-columns: 1.5fr 1fr;
+}
+
+@media (max-width: 1150px) {
+  .merchant-grid-2-1,
+  .merchant-grid-4-5 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .merchant-page-content {
+    padding: 1rem;
+  }
+}

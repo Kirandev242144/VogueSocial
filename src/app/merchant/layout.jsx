@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import styles from './merchant.module.css';
+import './MerchantLayout.css';
 import { Store, ShieldAlert, ShoppingBag, Home, Sparkles } from 'lucide-react';
 import { MerchantThemeProvider, useMerchantTheme } from './ThemeContext';
 import MerchantSidebar from '@/components/merchant/MerchantSidebar';
@@ -22,12 +22,12 @@ function MerchantShell({ children }) {
 
   if (status === 'loading') {
     return (
-      <div className={styles.loadingContainer}>
-        <div className={styles.loadingCenter}>
-          <div className={styles.loadingIconWrap}>
+      <div className="merchant-loading-container">
+        <div className="merchant-loading-center">
+          <div className="merchant-loading-icon-wrap">
             <Store size={22} color="#cbf382" />
           </div>
-          <p className={styles.loadingText}>Loading VogueSocial portal...</p>
+          <p className="merchant-loading-text">Loading VogueSocial portal...</p>
         </div>
       </div>
     );
@@ -36,28 +36,28 @@ function MerchantShell({ children }) {
   // ACCESS GUARD: End users / Shoppers cannot access the Merchant portal
   if (status === 'authenticated' && !isMerchant && !isAdmin) {
     return (
-      <div className={styles.restrictedContainer}>
-        <div className={styles.restrictedCard}>
-          <div className={styles.restrictedIconWrap}>
+      <div className="merchant-restricted-container">
+        <div className="merchant-restricted-card">
+          <div className="merchant-restricted-icon-wrap">
             <ShieldAlert size={32} color="#ef4444" />
           </div>
 
-          <div className={styles.restrictedBadge}>
+          <div className="merchant-restricted-badge">
             Access Restricted · Shoppers Only
           </div>
 
-          <h2 className={styles.restrictedTitle}>Merchant Portal Restricted</h2>
+          <h2 className="merchant-restricted-title">Merchant Portal Restricted</h2>
 
-          <p className={styles.restrictedSubtitle}>
+          <p className="merchant-restricted-subtitle">
             You are currently signed in as a Shopper (
-            <span className={styles.restrictedUserEmail}>{user?.email || 'shopper account'}</span>
+            <span className="merchant-restricted-user-email">{user?.email || 'shopper account'}</span>
             ). The Merchant Dashboard, catalog inventory, and payouts are exclusively reserved for verified brand boutiques and designers.
           </p>
 
-          <div className={styles.restrictedActions}>
+          <div className="merchant-restricted-actions">
             <button
               type="button"
-              className={styles.btnRestrictedPrimary}
+              className="btn-restricted-primary"
               onClick={() => navigate('/shop')}
             >
               <ShoppingBag size={16} />
@@ -66,7 +66,7 @@ function MerchantShell({ children }) {
 
             <button
               type="button"
-              className={styles.btnRestrictedSecondary}
+              className="btn-restricted-secondary"
               onClick={() => navigate('/')}
             >
               <Home size={16} />
@@ -75,7 +75,7 @@ function MerchantShell({ children }) {
 
             <button
               type="button"
-              className={styles.btnRestrictedSecondary}
+              className="btn-restricted-secondary"
               onClick={() => navigate('/merchant/login')}
             >
               <Store size={16} />
@@ -83,11 +83,11 @@ function MerchantShell({ children }) {
             </button>
           </div>
 
-          <div className={styles.restrictedSwitchRoleRow}>
+          <div className="merchant-restricted-switch-role-row">
             <span>Testing roles?</span>
             <button
               type="button"
-              className={styles.btnSwitchRoleMini}
+              className="btn-switch-role-mini"
               onClick={() => {
                 switchUserRole('merchant');
                 navigate('/merchant/dashboard');
@@ -102,12 +102,12 @@ function MerchantShell({ children }) {
   }
 
   return (
-    <div className={`${styles.shell} ${isDark ? styles.shellDark : ''}`}>
+    <div className={`merchant-shell ${isDark ? 'merchant-shell-dark' : ''}`}>
       {/* Left Sidebar */}
       <MerchantSidebar />
 
       {/* Main Container */}
-      <main className={styles.main}>
+      <main className="merchant-main">
         {/* Topbar Header */}
         <MerchantNavbar />
 

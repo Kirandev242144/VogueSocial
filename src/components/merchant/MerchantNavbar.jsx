@@ -1,54 +1,54 @@
 "use client";
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
-import styles from '@/app/merchant/merchant.module.css';
+import './MerchantNavbar.css';
 import { Search, Bell } from 'lucide-react';
 
 export default function MerchantNavbar({ title = 'Dashboard' }) {
   const { session } = useAuth();
 
   return (
-    <div className={styles.topbar}>
+    <header className="merchant-topbar">
       <div>
-        <div className={styles.pageTitle}>{title}</div>
+        <h1 className="merchant-topbar-title">{title}</h1>
       </div>
 
-      <div className={styles.topbarRight}>
+      <div className="merchant-topbar-right">
         {/* Team Avatars */}
-        <div className={styles.avatarStack}>
+        <div className="merchant-avatar-stack">
           <img
             src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&q=80"
             alt="Team member"
-            className={styles.stackAvatar}
+            className="merchant-stack-avatar"
           />
           <img
             src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=80"
             alt="Team member"
-            className={styles.stackAvatar}
+            className="merchant-stack-avatar"
           />
-          <div className={styles.stackMore}>+2</div>
+          <div className="merchant-stack-more">+2</div>
         </div>
 
         {/* Notifications Bell */}
-        <button className={styles.iconNoticeBtn} title="Notifications">
+        <button className="merchant-icon-notice-btn" title="Notifications" type="button">
           <Bell size={17} />
-          <span className={styles.noticeBadge}>24</span>
+          <span className="merchant-notice-badge">24</span>
         </button>
 
         {/* Search Bar */}
-        <div className={styles.searchBar}>
+        <div className="merchant-search-bar">
           <Search size={15} color="var(--d-t4)" />
-          <input placeholder="Search products, orders..." />
-          <span className={styles.cmdBadge}>⌘K</span>
+          <input placeholder="Search products, orders..." aria-label="Search products and orders" />
+          <span className="merchant-cmd-badge">⌘K</span>
         </div>
 
         {/* Profile Avatar */}
         <img
           src={session?.user?.image || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&q=80"}
           alt="Profile"
-          className={styles.topbarProfileImg}
+          className="merchant-topbar-profile-img"
         />
       </div>
-    </div>
+    </header>
   );
 }

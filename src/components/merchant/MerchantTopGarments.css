@@ -1,0 +1,198 @@
+/* ================================================
+   MERCHANT TOP GARMENTS - Pure Vanilla CSS
+   ================================================ */
+
+.merchant-top-garments-panel {
+  background: var(--d-panel);
+  border: 1px solid var(--d-border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--d-shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.merchant-top-garments-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--d-border2);
+}
+
+.merchant-top-garments-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--d-t1);
+  font-family: var(--font-heading, inherit);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.merchant-panel-action {
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.merchant-panel-action:hover {
+  color: var(--d-t1);
+}
+
+.merchant-table-scroll {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.merchant-garments-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.merchant-garments-table thead th {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--d-t3);
+  padding: 0.75rem 1.25rem;
+  text-align: left;
+  border-bottom: 1px solid var(--d-border);
+  background: var(--d-hover);
+  white-space: nowrap;
+}
+
+.merchant-garments-table tbody tr {
+  border-bottom: 1px solid var(--d-border2);
+  transition: background-color 0.12s ease;
+}
+
+.merchant-garments-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.merchant-garments-table tbody tr:hover {
+  background: var(--d-hover);
+}
+
+.merchant-garments-table tbody td {
+  padding: 0.85rem 1.25rem;
+  font-size: 0.82rem;
+  color: var(--d-t2);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.merchant-garment-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.merchant-garment-thumb {
+  width: 40px;
+  height: 50px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #f8fafc;
+  border: 1px solid var(--d-border);
+  flex-shrink: 0;
+}
+
+.merchant-garment-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.merchant-garment-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--d-t1);
+  line-height: 1.2;
+}
+
+.merchant-garment-category {
+  font-size: 0.7rem;
+  color: var(--d-t3);
+}
+
+/* Badges */
+.merchant-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.merchant-badge-live {
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.merchant-shell-dark .merchant-badge-live {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.merchant-badge-shipped {
+  background: #f8fafc;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+.merchant-shell-dark .merchant-badge-shipped {
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.merchant-badge-pending {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.merchant-shell-dark .merchant-badge-pending {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+.merchant-table-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid var(--d-border);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.merchant-shell-dark .merchant-table-action-btn {
+  background: #111827;
+  color: #cbd5e1;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.merchant-table-action-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.merchant-shell-dark .merchant-table-action-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+}

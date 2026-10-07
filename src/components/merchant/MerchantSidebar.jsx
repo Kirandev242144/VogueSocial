@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import styles from '@/app/merchant/merchant.module.css';
+import './MerchantSidebar.css';
 import {
   LayoutDashboard, ShoppingBag, Package, BarChart2,
   Settings, Store, LogOut, Sun, Moon, ChevronDown,
@@ -44,27 +44,27 @@ export default function MerchantSidebar() {
   const [ordersOpen, setOrdersOpen] = useState(true);
 
   return (
-    <aside className={styles.sidebar}>
-      <div className={styles.sidebarTop}>
+    <aside className="merchant-sidebar">
+      <div className="merchant-sidebar-top">
         {/* Logo */}
-        <div className={styles.logoMark}>
-          <div className={styles.logoLeft}>
-            <div className={styles.logoIcon}>
+        <div className="merchant-logo-mark">
+          <div className="merchant-logo-left">
+            <div className="merchant-logo-icon">
               <Store size={18} color="#ffffff" />
             </div>
-            <span className={styles.logoText}>VogueSocial</span>
+            <span className="merchant-logo-text">VogueSocial</span>
           </div>
-          <button className={styles.sidebarToggle} title="Collapse sidebar">
+          <button className="merchant-sidebar-toggle" title="Collapse sidebar" type="button">
             <Sliders size={16} />
           </button>
         </div>
       </div>
 
       {/* Navigation Links */}
-      <nav className={styles.sidebarNav}>
+      <nav className="merchant-sidebar-nav">
         {NAV.map((item, i) => {
           if ('section' in item) {
-            return <div key={i} className={styles.navSection}>{item.section}</div>;
+            return <div key={i} className="merchant-nav-section">{item.section}</div>;
           }
           const Icon = item.icon;
           const active = pathname === item.href;
@@ -72,7 +72,8 @@ export default function MerchantSidebar() {
           return (
             <div key={item.label}>
               <button
-                className={`${styles.navItem} ${active ? styles.navItemActive : ''}`}
+                type="button"
+                className={`merchant-nav-item ${active ? 'merchant-nav-item-active' : ''}`}
                 onClick={() => {
                   if (hasSub) setOrdersOpen(!ordersOpen);
                   else navigate(item.href);
@@ -81,23 +82,24 @@ export default function MerchantSidebar() {
                 <Icon size={17} />
                 <span>{item.label}</span>
                 {hasSub ? (
-                  ordersOpen ? <ChevronDown size={14} className={styles.chevronAuto} /> : <ChevronRight size={14} className={styles.chevronAuto} />
+                  ordersOpen ? <ChevronDown size={14} className="merchant-chevron-auto" /> : <ChevronRight size={14} className="merchant-chevron-auto" />
                 ) : item.badge ? (
-                  <span className={styles.navBadge}>{item.badge}</span>
+                  <span className="merchant-nav-badge">{item.badge}</span>
                 ) : (
-                  active && <span className={styles.navDot} />
+                  active && <span className="merchant-nav-dot" />
                 )}
               </button>
 
               {/* Collapsible Submenu */}
               {hasSub && ordersOpen && (
-                <div className={styles.submenu}>
+                <div className="merchant-submenu">
                   {item.sub.map((sub) => {
                     const subActive = pathname === sub.href;
                     return (
                       <button
                         key={sub.label}
-                        className={`${styles.subItem} ${subActive ? styles.subItemActive : ''}`}
+                        type="button"
+                        className={`merchant-sub-item ${subActive ? 'merchant-sub-item-active' : ''}`}
                         onClick={() => navigate(sub.href)}
                       >
                         {sub.label}
@@ -112,49 +114,50 @@ export default function MerchantSidebar() {
       </nav>
 
       {/* Sidebar Footer */}
-      <div className={styles.sidebarFooter}>
+      <div className="merchant-sidebar-footer">
         {/* Dark Mode Switch */}
-        <div className={styles.themeSwitchRow}>
-          <span className={styles.themeLabel}>
+        <div className="merchant-theme-switch-row">
+          <span className="merchant-theme-label">
             {isDark ? <Moon size={15} /> : <Sun size={15} />}
             <span>Dark Mode</span>
           </span>
           <button
-            className={`${styles.toggleSwitch} ${isDark ? styles.toggleActive : ''}`}
+            type="button"
+            className={`merchant-toggle-switch ${isDark ? 'merchant-toggle-active' : ''}`}
             onClick={toggle}
             title="Toggle dark/light mode"
           >
-            <div className={styles.toggleKnob} />
+            <div className="merchant-toggle-knob" />
           </button>
         </div>
 
         {/* Upgrade Promo Card */}
-        <div className={styles.upgradeCard}>
-          <div className={styles.upgradeHeader}>
+        <div className="merchant-upgrade-card">
+          <div className="merchant-upgrade-header">
             <Sparkles size={14} />
             <span>Upgrade to</span>
-            <span className={styles.upgradeBadge}>Premium</span>
+            <span className="merchant-upgrade-badge">Premium</span>
           </div>
-          <div className={styles.upgradeText}>
+          <div className="merchant-upgrade-text">
             Your Premium Account will expire in <strong>18 days</strong>.
           </div>
-          <button className={styles.upgradeBtn} onClick={() => navigate('/merchant/api-usage')}>
+          <button className="merchant-upgrade-btn" onClick={() => navigate('/merchant/api-usage')} type="button">
             Upgrade Now
           </button>
         </div>
 
         {/* User Profile */}
-        <div className={styles.userRow}>
+        <div className="merchant-user-row">
           {session?.user?.image ? (
-            <img src={session.user.image} alt="" className={styles.userAvatar} />
+            <img src={session.user.image} alt="" className="merchant-user-avatar" />
           ) : (
-            <div className={`${styles.userAvatar} ${styles.userAvatarFallback}`}>M</div>
+            <div className="merchant-user-avatar merchant-user-avatar-fallback">M</div>
           )}
-          <div className={styles.userMeta}>
-            <div className={styles.userName}>{session?.user?.name || 'Merchant'}</div>
-            <div className={styles.userRole}>Store Owner</div>
+          <div className="merchant-user-meta">
+            <div className="merchant-user-name">{session?.user?.name || 'Merchant'}</div>
+            <div className="merchant-user-role">Store Owner</div>
           </div>
-          <button className={styles.signOutBtn} onClick={() => signOut()} title="Sign out">
+          <button className="merchant-sign-out-btn" onClick={() => signOut()} title="Sign out" type="button">
             <LogOut size={15} />
           </button>
         </div>

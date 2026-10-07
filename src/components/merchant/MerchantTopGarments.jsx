@@ -1,8 +1,8 @@
 "use client";
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from '@/app/merchant/merchant.module.css';
 import { Shirt, Sparkles } from 'lucide-react';
+import './MerchantTopGarments.css';
 
 export const TOP_GARMENTS = [
   {
@@ -14,7 +14,7 @@ export const TOP_GARMENTS = [
     conversionRate: '42.6%',
     revenue: '$148,200',
     stock: 'In Stock',
-    stockClass: styles.badgeLive,
+    stockBadgeClass: 'merchant-badge-live',
     image: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=200&q=80'
   },
   {
@@ -26,7 +26,7 @@ export const TOP_GARMENTS = [
     conversionRate: '38.4%',
     revenue: '$86,360',
     stock: 'High Demand',
-    stockClass: styles.badgeShipped,
+    stockBadgeClass: 'merchant-badge-shipped',
     image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&q=80'
   },
   {
@@ -38,7 +38,7 @@ export const TOP_GARMENTS = [
     conversionRate: '35.1%',
     revenue: '$62,640',
     stock: 'In Stock',
-    stockClass: styles.badgeLive,
+    stockBadgeClass: 'merchant-badge-live',
     image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=200&q=80'
   },
   {
@@ -50,7 +50,7 @@ export const TOP_GARMENTS = [
     conversionRate: '33.8%',
     revenue: '$47,320',
     stock: 'Low Stock',
-    stockClass: styles.badgePending,
+    stockBadgeClass: 'merchant-badge-pending',
     image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=200&q=80'
   },
   {
@@ -62,7 +62,7 @@ export const TOP_GARMENTS = [
     conversionRate: '29.7%',
     revenue: '$49,920',
     stock: 'In Stock',
-    stockClass: styles.badgeLive,
+    stockBadgeClass: 'merchant-badge-live',
     image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=200&q=80'
   },
 ];
@@ -71,19 +71,23 @@ export default function MerchantTopGarments({ onPreviewGarment }) {
   const navigate = useNavigate();
 
   return (
-    <div className={styles.panel}>
-      <div className={styles.panelHeader}>
-        <div className={styles.panelTitle}>
+    <div className="merchant-top-garments-panel">
+      <div className="merchant-top-garments-header">
+        <div className="merchant-top-garments-title">
           <Shirt size={17} />
           <span>Top Garments in Virtual Fitting Room</span>
         </div>
-        <button className={styles.panelAction} onClick={() => navigate('/merchant/products')}>
+        <button
+          type="button"
+          className="merchant-panel-action"
+          onClick={() => navigate('/merchant/products')}
+        >
           Manage Garments
         </button>
       </div>
 
-      <div className={styles.tableScrollWrap}>
-        <table className={styles.table}>
+      <div className="merchant-table-scroll">
+        <table className="merchant-garments-table">
           <thead>
             <tr>
               <th>Garment</th>
@@ -99,11 +103,11 @@ export default function MerchantTopGarments({ onPreviewGarment }) {
             {TOP_GARMENTS.map((item) => (
               <tr key={item.id}>
                 <td>
-                  <div className={styles.garmentCell}>
-                    <img src={item.image} alt={item.name} className={styles.garmentThumb} />
-                    <div className={styles.garmentInfo}>
-                      <span className={styles.garmentName}>{item.name}</span>
-                      <span className={styles.garmentCategory}>{item.category}</span>
+                  <div className="merchant-garment-cell">
+                    <img src={item.image} alt={item.name} className="merchant-garment-thumb" />
+                    <div className="merchant-garment-info">
+                      <span className="merchant-garment-name">{item.name}</span>
+                      <span className="merchant-garment-category">{item.category}</span>
                     </div>
                   </div>
                 </td>
@@ -112,13 +116,14 @@ export default function MerchantTopGarments({ onPreviewGarment }) {
                 <td>{item.conversionRate}</td>
                 <td>{item.revenue}</td>
                 <td>
-                  <span className={`${styles.badge} ${item.stockClass}`}>
+                  <span className={`merchant-badge ${item.stockBadgeClass}`}>
                     {item.stock}
                   </span>
                 </td>
                 <td>
                   <button
-                    className={styles.tableActionBtn}
+                    type="button"
+                    className="merchant-table-action-btn"
                     onClick={() => onPreviewGarment && onPreviewGarment(item)}
                     title="Test virtual try-on on this garment"
                   >

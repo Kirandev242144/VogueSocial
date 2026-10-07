@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
-import styles from '@/app/merchant/merchant.module.css';
 import { Activity, ShoppingBag, CheckCircle2, Heart } from 'lucide-react';
+import './MerchantLiveStream.css';
 
 const LIVE_FITTING_STREAM = [
   {
@@ -10,7 +10,7 @@ const LIVE_FITTING_STREAM = [
     time: 'Just now',
     action: 'Tried Structured Double-Breasted Trench (Size M, Preset Female 01)',
     badge: 'Added to Cart',
-    badgeClass: styles.badgeCart,
+    badgeClass: 'merchant-badge-cart',
     icon: ShoppingBag
   },
   {
@@ -19,7 +19,7 @@ const LIVE_FITTING_STREAM = [
     time: '3m ago',
     action: 'Completed Try-On for Silk Charmeuse Dress with Custom Photo Upload',
     badge: 'Checked Out · $340',
-    badgeClass: styles.badgeCheckout,
+    badgeClass: 'merchant-badge-checkout',
     icon: CheckCircle2
   },
   {
@@ -28,7 +28,7 @@ const LIVE_FITTING_STREAM = [
     time: '7m ago',
     action: 'Tried Italian Wool Pleated Trouser (Size 32, Preset Male 01)',
     badge: 'Added to Cart',
-    badgeClass: styles.badgeCart,
+    badgeClass: 'merchant-badge-cart',
     icon: ShoppingBag
   },
   {
@@ -37,7 +37,7 @@ const LIVE_FITTING_STREAM = [
     time: '12m ago',
     action: 'Tried Sculpted Leather Biker Jacket (Size S, Preset Female 02)',
     badge: 'Saved to Wishlist',
-    badgeClass: styles.badgeWishlist,
+    badgeClass: 'merchant-badge-wishlist',
     icon: Heart
   },
   {
@@ -46,40 +46,40 @@ const LIVE_FITTING_STREAM = [
     time: '18m ago',
     action: 'Tried Minimalist Relaxed Cashmere Knit with Custom Photo Upload',
     badge: 'Checked Out · $290',
-    badgeClass: styles.badgeCheckout,
+    badgeClass: 'merchant-badge-checkout',
     icon: CheckCircle2
   },
 ];
 
 export default function MerchantLiveStream() {
   return (
-    <div className={styles.panel}>
-      <div className={styles.panelHeader}>
-        <div className={styles.panelTitle}>
+    <div className="merchant-live-stream-panel">
+      <div className="merchant-live-stream-header">
+        <div className="merchant-live-stream-title">
           <Activity size={17} />
           <span>Live Try-On Activity</span>
         </div>
-        <div className={styles.liveFeedHeader}>
-          <span className={styles.liveFeedPulse} />
+        <div className="merchant-live-feed-header">
+          <span className="merchant-live-feed-pulse" />
           <span>LIVE</span>
         </div>
       </div>
 
-      <div className={styles.activityListWrap}>
+      <div className="merchant-activity-list">
         {LIVE_FITTING_STREAM.map((ev) => {
           const Icon = ev.icon;
           return (
-            <div key={ev.id} className={styles.activityCard}>
-              <div className={styles.activityAvatar}>
+            <div key={ev.id} className="merchant-activity-card">
+              <div className="merchant-activity-avatar">
                 <Icon size={16} />
               </div>
-              <div className={styles.activityContent}>
-                <div className={styles.activityTopRow}>
-                  <span className={styles.activityShopper}>{ev.shopper}</span>
-                  <span className={styles.activityTime}>{ev.time}</span>
+              <div className="merchant-activity-content">
+                <div className="merchant-activity-top-row">
+                  <span className="merchant-activity-shopper">{ev.shopper}</span>
+                  <span className="merchant-activity-time">{ev.time}</span>
                 </div>
-                <div className={styles.activityDesc}>{ev.action}</div>
-                <span className={`${styles.activityActionBadge} ${ev.badgeClass}`}>
+                <div className="merchant-activity-desc">{ev.action}</div>
+                <span className={`merchant-activity-badge ${ev.badgeClass}`}>
                   {ev.badge}
                 </span>
               </div>

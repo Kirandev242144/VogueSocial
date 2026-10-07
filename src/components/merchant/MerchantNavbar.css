@@ -1,0 +1,176 @@
+/* ================================================
+   MERCHANT NAVBAR - Pure Vanilla CSS
+   ================================================ */
+
+.merchant-topbar {
+  background: var(--d-topbar);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  border-bottom: 1px solid var(--d-border);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.merchant-topbar-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--d-t1);
+  letter-spacing: -0.02em;
+  font-family: var(--font-heading, inherit);
+}
+
+.merchant-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Avatar Stack */
+.merchant-avatar-stack {
+  display: flex;
+  align-items: center;
+}
+
+.merchant-stack-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--d-panel);
+  margin-left: -8px;
+  object-fit: cover;
+  transition: transform 0.15s ease;
+}
+
+.merchant-stack-avatar:first-child {
+  margin-left: 0;
+}
+
+.merchant-stack-avatar:hover {
+  transform: translateY(-2px);
+  z-index: 2;
+}
+
+.merchant-stack-more {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--d-panel);
+  margin-left: -8px;
+  background: var(--d-hover);
+  color: var(--vs-green);
+  font-size: 0.65rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Notifications Button */
+.merchant-icon-notice-btn {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--d-panel);
+  border: 1px solid var(--d-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--d-t3);
+  transition: all 0.15s ease;
+}
+
+.merchant-icon-notice-btn:hover {
+  background: var(--d-hover);
+  color: var(--vs-green);
+  border-color: rgba(203, 243, 130, 0.4);
+}
+
+.merchant-notice-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 99px;
+  border: 2px solid var(--d-panel);
+}
+
+/* Search Bar */
+.merchant-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--d-input);
+  border: 1px solid var(--d-border);
+  border-radius: 9px;
+  padding: 0.45rem 0.85rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.merchant-search-bar:focus-within {
+  border-color: var(--vs-green);
+  box-shadow: 0 0 0 2px rgba(203, 243, 130, 0.2);
+}
+
+.merchant-search-bar input {
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 0.82rem;
+  color: var(--d-t1);
+  width: 140px;
+}
+
+.merchant-search-bar input::placeholder {
+  color: var(--d-t4);
+}
+
+/* Command Badge */
+.merchant-cmd-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--d-t4);
+  background: var(--d-t5);
+  padding: 2px 6px;
+  border-radius: 5px;
+  border: 1px solid var(--d-border);
+}
+
+/* Profile Avatar */
+.merchant-topbar-profile-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
+  border: 1px solid var(--d-border);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.merchant-topbar-profile-img:hover {
+  transform: scale(1.05);
+  border-color: var(--vs-green);
+}
+
+@media (max-width: 768px) {
+  .merchant-topbar {
+    padding: 0.85rem 1rem;
+  }
+  .merchant-search-bar {
+    display: none;
+  }
+  .merchant-avatar-stack {
+    display: none;
+  }
+}
