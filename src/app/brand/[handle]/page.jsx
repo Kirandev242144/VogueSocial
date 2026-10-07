@@ -45,7 +45,15 @@ export default function BrandProfilePage() {
             }
 
             // Fallback to feed authors matching handle
-            const matchedPost = ALL_POSTS.find(p => p.author.toLowerCase().replace(/[^a-z0-9]/g, '') === handle.toLowerCase());
+            const cleanHandle = handle.toLowerCase();
+            const matchedPost = ALL_POSTS.find(p => {
+                const authorClean = p.author.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const postStoreHandle = (p.storeHandle || '').toLowerCase();
+                return authorClean === cleanHandle ||
+                       authorClean.includes(cleanHandle) ||
+                       cleanHandle.includes(authorClean) ||
+                       postStoreHandle === cleanHandle;
+            });
                 if (matchedPost) {
                     // Extract all products associated with this vendor's posts
                     const vendorPosts = ALL_POSTS.filter(p => p.author === matchedPost.author);
@@ -134,10 +142,20 @@ export default function BrandProfilePage() {
             </main>);
     }
     // Group products by category
-    const tops = products.filter(p => ['tops', 'Tops'].includes(p.category || ''));
-    const bottoms = products.filter(p => ['bottoms', 'Bottoms'].includes(p.category || ''));
-    const dresses = products.filter(p => ['one-pieces', 'One-pieces', 'dresses', 'Dresses'].includes(p.category || ''));
-    const others = products.filter(p => !['tops', 'Tops', 'bottoms', 'Bottoms', 'one-pieces', 'One-pieces', 'dresses', 'Dresses'].includes(p.category || ''));
+    const tops = products.filter(p => {
+        const cat = (p.category || '').toLowerCase();
+        return cat.includes('top') || cat.includes('jacket') || cat.includes('outer') || cat.includes('suit') || cat.includes('shirt') || cat.includes('blouse');
+    });
+    const bottoms = products.filter(p => {
+        const cat = (p.category || '').toLowerCase();
+        return cat.includes('bottom') || cat.includes('pant') || cat.includes('trouser') || cat.includes('skirt') || cat.includes('legging');
+    });
+    const dresses = products.filter(p => {
+        const cat = (p.category || '').toLowerCase();
+        return cat.includes('one-piece') || cat.includes('dress') || cat.includes('gown');
+    });
+    const others = products.filter(p => !tops.includes(p) && !bottoms.includes(p) && !dresses.includes(p));
+
     const renderCategorySection = (title, items) => {
         if (items.length === 0)
             return null;
@@ -158,12 +176,12 @@ export default function BrandProfilePage() {
                 </h3>
                 <div className={styles.catalogGrid}>
                     {items.map((p) => {
-                const isApparel = ['tops', 'bottoms', 'one-pieces', 'dresses'].includes(p.category?.toLowerCase() || '');
-                return (<Link to={p.isMock ? `/product/1` : `/product/${p.id}`} key={p.id} className={styles.productCard}>
+                const isApparel = ['tops', 'bottoms', 'one-pieces', 'dresses', 'outerwear'].includes(p.category?.toLowerCase() || '');
+                const productImg = p.imageUrl || p.image_url || p.image || '/Shop_images/1/basic2-500x750.jpeg';
+                const productId = p.id ? String(p.id).replace('mock_post_', '').replace('mock_', '') : '1';
+                return (<Link to={`/product/${productId}`} key={p.id} className={styles.productCard}>
                                 <div className={styles.imageWrapper}>
-                                    {p.image_url ? (<Image src={p.image_url} alt={p.name} fill className={styles.productImage}/>) : (<div style={{ display: 'flex', width: '100%', height: '100%', background: '#f1f5f9', alignItems: 'center', justifyContent: 'center' }}>
-                                            <ShoppingBag size={32} color="#94a3b8"/>
-                                        </div>)}
+                                    <Image src={productImg} alt={p.name} fill className={styles.productImage} style={{ objectFit: 'cover' }} />
 
                                     {isApparel && (<div className={styles.tryOnIndicator}>
                                             <Shirt size={12}/>
@@ -251,10 +269,10 @@ export default function BrandProfilePage() {
                                 <MessageSquare size={14} style={{ marginRight: 6, display: 'inline', verticalAlign: 'middle' }}/>
                                 Message
                             </button>
-                            {brand.website && (<a href={brand.website} target="_blank" rel="noreferrer" className={styles.secondaryAction} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-                                    <LinkIcon size={14} style={{ marginRight: 6 }}/>
-                                    Website
-                                </a>)}
+                            <Link to={`/store/${brand.handle || handle}`} className={styles.secondaryAction} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+                                <LinkIcon size={14} style={{ marginRight: 6 }}/>
+                                Storefront
+                            </Link>
                         </div>
                     </div>
                 </div>

@@ -50,7 +50,7 @@ export default function CommunityProductDetails({
                         <div className="community-wearing-tag-row">
                             <span className="community-wearing-label">wearing</span>
                             <Link
-                                to={`/store/${brandHandle}`}
+                                to={`/brand/${brandHandle}`}
                                 className="community-brand-pill-link"
                             >
                                 @{brandDisplay}

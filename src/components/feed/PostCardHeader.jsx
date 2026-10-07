@@ -24,10 +24,10 @@ export default function PostCardHeader({ post, isFollowing, onToggleFollow }) {
             <div className="wearing-attribution">
               <span className="wearing-label">wearing</span>
               <Link
-                to={`/store/${taggedBrandHandle}`}
+                to={`/brand/${taggedBrandHandle}`}
                 className="tagged-brand-link"
                 onClick={(e) => e.stopPropagation()}
-                title={`Visit ${taggedBrandName} Storefront`}
+                title={`Visit ${taggedBrandName} Profile`}
               >
                 @{taggedBrandDisplay}
               </Link>
@@ -49,7 +49,7 @@ export default function PostCardHeader({ post, isFollowing, onToggleFollow }) {
   // Merchant Brand Header
   return (
     <div className="post-card-header">
-      <Link to={`/store/${brandHandle}`} className="author-link">
+      <Link to={`/brand/${brandHandle}`} className="author-link" title={`Visit ${post.author} Profile`}>
         <div className="author-avatar">
           {post.avatar ? <Image src={post.avatar} alt={post.author} fill /> : null}
         </div>

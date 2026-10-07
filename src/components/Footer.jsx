@@ -29,8 +29,8 @@ export default function Footer() {
           </div>
           <div className="footer-column">
             <h4>Platform</h4>
-            <Link to="/store/studiolabel">Studio Label Paris</Link>
-            <Link to="/store/elenacouture">Elena Couture</Link>
+            <Link to="/brand/studiolabel">Studio Label Paris</Link>
+            <Link to="/brand/elenacouture">Elena Couture</Link>
             <Link to="/admin/products">Admin Console</Link>
           </div>
         </div>
