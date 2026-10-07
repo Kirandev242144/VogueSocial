@@ -91,21 +91,57 @@ export default function WebsitePage() {
 
   return (
     <div className="merchant-website-hub">
-      {/* ── 1. Top Header ── */}
+      {/* ── 1. Unified Boutique Storefront Header ── */}
       <div className="hub-header">
-        <div className="hub-header-title-wrap">
-          <div className="hub-header-icon">
-            <Globe size={18} />
+        <div className="hub-header-brand-wrap">
+          <div className="hub-avatar-initials">
+            {(settings.store_name || 'S').charAt(0).toUpperCase()}
           </div>
-          <div>
-            <h1 className="hub-header-title">Storefront & Website</h1>
-            <div className="hub-header-subtitle">
-              Manage your boutique storefront, customize your theme, and connect custom domains
+          <div className="hub-brand-info">
+            <div className="hub-brand-title-row">
+              <h1 className="hub-store-name">{settings.store_name || 'Studio Label Paris'}</h1>
+              <span className="hub-ssl-pill">
+                ● Live Storefront
+              </span>
+              <span className="hub-template-tag">
+                {(settings.template || 'modern').toUpperCase()} THEME
+              </span>
+            </div>
+
+            <div className="hub-urls-row">
+              <a
+                href={liveUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="hub-url-link"
+                title="Open live storefront"
+              >
+                <Globe size={12} /> {cleanHandle}.voguesocial.com
+              </a>
+
+              {settings.custom_domain && (
+                <span className="hub-custom-domain-pill">
+                  <Lock size={11} /> {settings.custom_domain} (SSL Active)
+                </span>
+              )}
             </div>
           </div>
         </div>
 
         <div className="hub-header-actions">
+          <button
+            type="button"
+            onClick={() => handleCopy(liveUrl, 'store-url')}
+            className="hub-btn-secondary"
+            title="Copy public storefront link"
+          >
+            {copiedKey === 'store-url' ? (
+              <><Check size={13} color="#16a34a" /> Copied</>
+            ) : (
+              <><Copy size={13} /> Copy Link</>
+            )}
+          </button>
+
           <a
             href={liveUrl}
             target="_blank"
@@ -122,7 +158,7 @@ export default function WebsitePage() {
             target="_blank"
             rel="noreferrer"
             className="hub-btn-primary"
-            title="Open Storefront Theme Studio in new tab"
+            title="Open Fullscreen Studio Customizer in new tab"
           >
             <Sparkles size={13} />
             <span>Customize Storefront ↗</span>
@@ -138,7 +174,7 @@ export default function WebsitePage() {
           onClick={() => setActiveTab('overview')}
         >
           <Eye size={15} />
-          <span>Store Overview & Live Frame</span>
+          <span>Live Studio & Frame</span>
         </button>
 
         <button
@@ -161,67 +197,10 @@ export default function WebsitePage() {
       </div>
 
       {/* ══════════════════════════════════════════════════════════════
-          TAB 1: STORE OVERVIEW & LIVE FRAME
+          TAB 1: LIVE STUDIO & FRAME (WIDE IMMERSIVE PREVIEW)
           ══════════════════════════════════════════════════════════════ */}
       {activeTab === 'overview' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {/* Summary Row */}
-          <div className="hub-panel">
-            <div className="hub-summary-row">
-              <div className="hub-store-brand">
-                <div className="hub-avatar-initials">
-                  {(settings.store_name || 'S').charAt(0).toUpperCase()}
-                </div>
-                <div className="hub-store-details">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <h3 className="hub-store-name">{settings.store_name}</h3>
-                    <span className="hub-ssl-pill">
-                      ● Live Storefront
-                    </span>
-                  </div>
-
-                  <div className="hub-urls-row">
-                    <a
-                      href={liveUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="hub-url-link"
-                    >
-                      <Globe size={12} /> {cleanHandle}.voguesocial.com
-                    </a>
-
-                    {settings.custom_domain && (
-                      <span className="hub-ssl-pill">
-                        <Lock size={11} /> {settings.custom_domain} (SSL Active)
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
-                <button
-                  type="button"
-                  onClick={() => handleCopy(liveUrl, 'store-url')}
-                  className="hub-btn-secondary"
-                >
-                  {copiedKey === 'store-url' ? <><Check size={13} color="#16a34a" /> Copied</> : <><Copy size={13} /> Copy Link</>}
-                </button>
-
-                <a
-                  href="/merchant/website/editor"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hub-btn-primary"
-                >
-                  <Sparkles size={13} />
-                  <span>Customize in Studio ↗</span>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Live Frame Box */}
+        <div className="hub-studio-wrapper">
           <div className="hub-preview-box">
             <div className="hub-preview-toolbar">
               {/* Viewport switch */}
@@ -231,7 +210,7 @@ export default function WebsitePage() {
                   className={`hub-viewport-btn ${viewport === 'desktop' ? 'hub-viewport-btn-active' : ''}`}
                   onClick={() => setViewport('desktop')}
                 >
-                  <Monitor size={14} /> Desktop (1200px)
+                  <Monitor size={14} /> Desktop (Full Width)
                 </button>
                 <button
                   type="button"
@@ -243,15 +222,9 @@ export default function WebsitePage() {
               </div>
 
               {/* Center URL Pill */}
-              <div style={{
-                fontSize: '0.75rem',
-                color: 'var(--d-t3, #64748b)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5
-              }}>
+              <div className="hub-preview-url-pill">
                 <Lock size={12} color="#16a34a" />
-                <span style={{ fontWeight: 600 }}>{cleanHandle}.voguesocial.com</span>
+                <span className="hub-preview-url-text">{cleanHandle}.voguesocial.com</span>
               </div>
 
               {/* Actions */}
@@ -259,8 +232,8 @@ export default function WebsitePage() {
                 <button
                   type="button"
                   onClick={() => setPreviewKey(Date.now())}
-                  className="hub-btn-secondary"
-                  style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
+                  className="hub-btn-secondary hub-btn-sm"
+                  title="Reload preview iframe"
                 >
                   <RefreshCw size={12} /> Refresh
                 </button>
@@ -269,29 +242,22 @@ export default function WebsitePage() {
                   href="/merchant/website/editor"
                   target="_blank"
                   rel="noreferrer"
-                  className="hub-btn-primary"
-                  style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem' }}
+                  className="hub-btn-primary hub-btn-sm"
+                  title="Open Fullscreen Studio Customizer in new tab"
                 >
                   <Sparkles size={12} />
-                  <span>Open Studio ↗</span>
+                  <span>Fullscreen Studio ↗</span>
                 </a>
               </div>
             </div>
 
             {/* Embedded Live Frame */}
-            <div className="hub-frame-container">
+            <div className={`hub-frame-container ${viewport === 'mobile' ? 'hub-frame-container-mobile' : 'hub-frame-container-desktop'}`}>
               <iframe
                 key={`preview-${previewKey}-${viewport}`}
                 src={storePreviewUrl}
                 title="Storefront Live Preview"
-                style={{
-                  width: viewport === 'mobile' ? 375 : '100%',
-                  height: 600,
-                  borderRadius: viewport === 'mobile' ? 24 : 8,
-                  border: viewport === 'mobile' ? '8px solid #0f172a' : '1px solid var(--d-border, #e2e8f0)',
-                  boxShadow: '0 8px 25px rgba(0, 0, 0, 0.08)',
-                  transition: 'width 0.3s ease'
-                }}
+                className={`hub-preview-iframe ${viewport === 'mobile' ? 'hub-preview-iframe-mobile' : 'hub-preview-iframe-desktop'}`}
               />
             </div>
           </div>
