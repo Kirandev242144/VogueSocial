@@ -1,0 +1,390 @@
+/* ==========================================================================
+   MERCHANT WEBSITE HUB - Pure Vanilla CSS
+   ========================================================================== */
+
+.merchant-website-hub {
+  padding: 1.75rem 2rem;
+  max-width: 1500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Top Header ── */
+.hub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.hub-header-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.hub-header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.merchant-shell-dark .hub-header-icon {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.hub-header-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--d-t1, #0f172a);
+  letter-spacing: -0.02em;
+  margin: 0;
+  font-family: var(--font-heading, inherit);
+}
+
+.hub-header-subtitle {
+  font-size: 0.8rem;
+  color: var(--d-t3, #64748b);
+  margin-top: 2px;
+}
+
+.hub-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ── Hero Studio Promo Card ── */
+.hub-studio-card {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-radius: 14px;
+  padding: 1.75rem 2rem;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.merchant-shell-dark .hub-studio-card {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hub-studio-card::after {
+  content: '';
+  position: absolute;
+  right: -50px;
+  bottom: -50px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hub-studio-content {
+  max-width: 650px;
+  position: relative;
+  z-index: 2;
+}
+
+.hub-studio-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #38bdf8;
+  margin-bottom: 0.75rem;
+}
+
+.hub-studio-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.25;
+}
+
+.hub-studio-desc {
+  font-size: 0.84rem;
+  color: #cbd5e1;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.hub-studio-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
+}
+
+.hub-btn-studio-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.75rem 1.4rem;
+  border-radius: 9px;
+  background: #38bdf8;
+  color: #0f172a;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.35);
+  transition: all 0.2s ease;
+}
+
+.hub-btn-studio-cta:hover {
+  background: #7dd3fc;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.45);
+}
+
+.hub-btn-studio-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hub-btn-studio-outline:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* ── Tabs Navigation ── */
+.hub-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--d-border, #e2e8f0);
+  padding-bottom: 0.5rem;
+}
+
+.hub-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0.55rem 1.1rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--d-t3, #64748b);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.hub-tab-btn-active {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.merchant-shell-dark .hub-tab-btn-active {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+/* ── Panels & Cards ── */
+.hub-panel {
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 1.4rem;
+  box-shadow: var(--d-shadow, none);
+}
+
+/* Store Quick Summary Row */
+.hub-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.hub-store-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hub-avatar-initials {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid var(--d-border, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.merchant-shell-dark .hub-avatar-initials {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+.hub-store-details {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.hub-store-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--d-t1, #0f172a);
+  margin: 0;
+}
+
+.hub-urls-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.78rem;
+  flex-wrap: wrap;
+}
+
+.hub-url-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hub-ssl-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #166534;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.merchant-shell-dark .hub-ssl-pill {
+  color: #4ade80;
+}
+
+/* ── Preview Frame Box ── */
+.hub-preview-box {
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 1rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.hub-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--d-border2, #f1f5f9);
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.hub-viewport-toggle {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: #f1f5f9;
+  padding: 2px;
+  border-radius: 8px;
+}
+
+.merchant-shell-dark .hub-viewport-toggle {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.hub-viewport-btn {
+  border: none;
+  background: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.hub-viewport-btn-active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.merchant-shell-dark .hub-viewport-btn-active {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+.hub-frame-container {
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid var(--d-border2, #f1f5f9);
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem;
+  min-height: 580px;
+}
+
+.merchant-shell-dark .hub-frame-container {
+  background: #0b1120;
+}
+
+@media (max-width: 768px) {
+  .merchant-website-hub {
+    padding: 1rem;
+  }
+  .hub-studio-card {
+    padding: 1.25rem;
+  }
+}

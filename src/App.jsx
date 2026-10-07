@@ -12,6 +12,7 @@ import AdminLayout from './app/admin/layout';
 import Home from './app/page';
 import MerchantDashboard from './app/merchant/dashboard/page';
 import MerchantWebsite from './app/merchant/website/page';
+import MerchantWebsiteEditor from './app/merchant/website/editor/page';
 import MerchantProducts from './app/merchant/products/page';
 import MerchantOrders from './app/merchant/orders/page';
 import MerchantAnalytics from './app/merchant/analytics/page';
@@ -95,6 +96,9 @@ export default function App() {
           {/* Dedicated Merchant Auth */}
           <Route path="/merchant/login" element={<MerchantLoginPage initialTab="signin" />} />
           <Route path="/merchant/signup" element={<MerchantLoginPage initialTab="signup" />} />
+
+          {/* Standalone Fullscreen Storefront Visual Theme Editor (Opens in New Tab with Max Space) */}
+          <Route path="/merchant/website/editor" element={<MerchantWebsiteEditor />} />
 
           {/* Merchant Dashboard Routes Wrapped with Persistent Sidebar & Navbar Layout */}
           <Route element={<MerchantLayout />}>

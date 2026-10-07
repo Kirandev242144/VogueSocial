@@ -14,6 +14,7 @@ export default function StorefrontEditor({
   initialSettings = {},
   vendorId = 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c',
   handle = 'studiolabel',
+  isStandalone = false,
   onSaved
 }) {
   // Navigation & Inspector state
@@ -185,10 +186,20 @@ export default function StorefrontEditor({
   const storePreviewUrl = `/store/${cleanHandle}?embedded=true&t=${Date.now()}`;
 
   return (
-    <div className="storefront-editor-root">
+    <div className={`storefront-editor-root ${isStandalone ? 'editor-standalone' : ''}`}>
       {/* ── Top Bar ── */}
       <header className="editor-topbar">
         <div className="editor-topbar-left">
+          {isStandalone && (
+            <a
+              href="/merchant/website"
+              className="editor-btn-secondary"
+              style={{ marginRight: 6, fontSize: '0.74rem', textDecoration: 'none' }}
+              title="Return to Merchant Portal"
+            >
+              ← Portal Hub
+            </a>
+          )}
           <div className="editor-store-avatar">
             {(editorState.store_name || 'S').charAt(0).toUpperCase()}
           </div>
