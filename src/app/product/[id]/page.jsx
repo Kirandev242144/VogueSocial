@@ -15,6 +15,7 @@ import {
 import { ALL_POSTS } from '@/lib/data';
 import { productService, feedService } from '@/services';
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 import './ProductPage.css';
 
 const parseSafeCount = (val, fallback = 1240) => {
@@ -26,6 +27,7 @@ export default function ProductPage() {
     const params = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { addToCart, openCart } = useCart();
 
     // Core Data States
     const [post, setPost] = useState(null);
@@ -440,9 +442,27 @@ export default function ProductPage() {
                             onToggleLike={handleToggleLike}
                             following={following}
                             onToggleFollow={() => setFollowing(!following)}
-                            onAddToCart={() => alert("✓ Item added to cart!")}
-                            onBuyNow={() => {
-                                setSelectedBuyGarment(null);
+                            onAddToCart={(selectedSize, quantity) => {
+                                addToCart({
+                                    id: post.id,
+                                    name: post.productName,
+                                    brand: post.author,
+                                    price: post.price,
+                                    image: post.images?.[0] || post.image,
+                                    category: post.category || 'tops'
+                                }, selectedSize, quantity);
+                                setToastMessage(`Added ${post.productName} (${selectedSize}) to bag`);
+                                setTimeout(() => setToastMessage(null), 2500);
+                            }}
+                            onBuyNow={(selectedSize, quantity) => {
+                                setSelectedBuyGarment({
+                                    id: post.id,
+                                    name: post.productName,
+                                    brand: post.author,
+                                    price: post.price,
+                                    size: selectedSize,
+                                    quantity: quantity
+                                });
                                 setIsCheckoutOpen(true);
                             }}
                             onOpenTryOn={() => setIsTryOnOpen(true)}

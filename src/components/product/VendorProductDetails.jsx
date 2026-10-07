@@ -27,8 +27,15 @@ export default function VendorProductDetails({
 }) {
     const [selectedSize, setSelectedSize] = useState('M');
     const [quantity, setQuantity] = useState(1);
+    const [isAddedFeedback, setIsAddedFeedback] = useState(false);
 
     if (!post) return null;
+
+    const handleAddToCartClick = () => {
+        setIsAddedFeedback(true);
+        onAddToCart?.(selectedSize, quantity);
+        setTimeout(() => setIsAddedFeedback(false), 1800);
+    };
 
     const brandHandle = (post.author || 'vendor').toLowerCase().replace(/[^a-z0-9]/g, '');
     const sizes = ['XS', 'S', 'M', 'L', 'XL'];
@@ -160,10 +167,10 @@ export default function VendorProductDetails({
                     <div className="vendor-cta-group">
                         <button
                             type="button"
-                            className="vendor-add-to-cart-btn"
-                            onClick={() => onAddToCart?.(selectedSize, quantity)}
+                            className={`vendor-add-to-cart-btn ${isAddedFeedback ? 'added' : ''}`}
+                            onClick={handleAddToCartClick}
                         >
-                            Add to Cart
+                            {isAddedFeedback ? '✓ Added to Bag' : 'Add to Cart'}
                         </button>
                         <button
                             type="button"

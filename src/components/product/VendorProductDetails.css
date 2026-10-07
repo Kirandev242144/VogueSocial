@@ -312,6 +312,12 @@
   transform: translateY(-1px);
 }
 
+.vendor-add-to-cart-btn.added {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
 .vendor-buy-now-btn {
   background: #0f172a;
   border: 2px solid #0f172a;

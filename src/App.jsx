@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import { CartDrawer } from './components/cart';
 
 // Layouts
 import MerchantLayout from './app/merchant/layout';
@@ -67,8 +69,10 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+      <CartProvider>
+        <BrowserRouter>
+          <CartDrawer />
+          <Routes>
           {/* If accessed via merchant subdomain (e.g. studiolabel.localhost:3001 or studiolabel.voguesocial.com), route root to storefront */}
           {storeSubdomain ? (
             <>
@@ -121,6 +125,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
+    </CartProvider>
+  </AuthProvider>
   );
 }

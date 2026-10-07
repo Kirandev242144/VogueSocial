@@ -8,8 +8,10 @@ import AiStylistPanel from '@/components/shop/AiStylistPanel';
 import styles from './page.module.css';
 import { SHOP_PRODUCTS } from '@/lib/shopData';
 import { productService } from '@/services';
+import { useCart } from '@/context/CartContext';
 
 export default function ShopPage() {
+  const { addToCart } = useCart();
   const [selectedCharacter, setSelectedCharacter] = useState('you');
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
@@ -176,6 +178,7 @@ export default function ShopPage() {
         <AiStylistPanel
           tryOnRequest={tryOnRequest}
           selectedCharacter={selectedCharacter}
+          onAddToCart={addToCart}
         />
       </main>
     </div>

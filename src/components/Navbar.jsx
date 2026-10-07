@@ -7,12 +7,14 @@ import {
   Sparkles, User, Store, ShieldCheck, LogOut
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 import AuthModal from './AuthModal';
 import TopNavbar from './TopNavbar';
 import './Navbar.css';
 
 const Navbar = ({ onSearch }) => {
   const { user, signOut, switchUserRole, isMerchant, isAdmin, isAuthenticated } = useAuth();
+  const { totalCount, openCart } = useCart();
   const [localQuery, setLocalQuery] = useState('');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -104,9 +106,20 @@ const Navbar = ({ onSearch }) => {
               <Heart size={20} />
             </Link>
 
-            <button className="nav-icon-btn" title="Notifications">
+            <button className="nav-icon-btn" title="Notifications" aria-label="Notifications">
               <Bell size={20} />
-              <span className="cart-badge">2</span>
+              <span className="notification-badge">2</span>
+            </button>
+
+            <button
+              type="button"
+              className="nav-icon-btn nav-cart-btn"
+              onClick={openCart}
+              title="Shopping Bag"
+              aria-label="Shopping Bag"
+            >
+              <ShoppingBag size={20} />
+              {totalCount > 0 && <span className="cart-badge">{totalCount}</span>}
             </button>
 
             {user && isAuthenticated ? (
