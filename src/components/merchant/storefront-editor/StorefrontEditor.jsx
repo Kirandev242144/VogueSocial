@@ -60,6 +60,25 @@ export default function StorefrontEditor({
     logo_url: initialSettings.logo_url || initialSettings.logoUrl || ''
   }));
 
+  // Catalog products for authentic feed preview
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadProducts() {
+      try {
+        const data = await storeService.getStore(handle);
+        if (isMounted && data && data.success && Array.isArray(data.products) && data.products.length > 0) {
+          setProducts(data.products);
+        }
+      } catch (err) {
+        console.warn('Failed to load store products for editor preview:', err);
+      }
+    }
+    loadProducts();
+    return () => { isMounted = false; };
+  }, [handle]);
+
   // Sync state if initialSettings changes asynchronously
   useEffect(() => {
     if (initialSettings && Object.keys(initialSettings).length > 0) {
@@ -306,6 +325,7 @@ export default function StorefrontEditor({
         <StorefrontLiveCanvas
           editorState={editorState}
           viewport={viewport}
+          products={products}
         />
       </div>
 
