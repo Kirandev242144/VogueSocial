@@ -819,9 +819,15 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
       />
 
       {/* ── 1. MINIMALIST WHISPER ANNOUNCEMENT ── */}
-      {!isEmbedded && (
-        <div className="mag-topbar">
-          Complimentary Worldwide Courier On All Orders Over $150
+      {store.announcement_enabled !== false && (
+        <div
+          className="mag-topbar"
+          style={{
+            background: store.announcement_bg || '#111827',
+            color: '#F3F4F6'
+          }}
+        >
+          {store.announcement_text || 'Complimentary Worldwide Courier On All Orders Over $150'}
         </div>
       )}
 
@@ -881,16 +887,25 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
           alt={store.store_name}
           className="mag-hero-image"
         />
-        <div className="mag-hero-overlay" />
+        <div
+          className="mag-hero-overlay"
+          style={{
+            background: `linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,${store.hero_overlay_opacity ?? 0.65}) 100%)`
+          }}
+        />
 
         <div className="mag-hero-content">
-          <span className="mag-hero-kicker">N° 26 · Autumn / Winter Editorial</span>
-          <h1 className="mag-hero-headline">{store.store_name}</h1>
+          <span className="mag-hero-kicker">
+            {store.hero_kicker || 'N° 26 · Autumn / Winter Editorial'}
+          </span>
+          <h1 className="mag-hero-headline">
+            {store.hero_headline || store.store_name}
+          </h1>
           <p className="mag-hero-tagline">
-            {store.tagline || 'Modern Silhouettes & Timeless Proportions'}
+            {store.hero_tagline || store.tagline || 'Modern Silhouettes & Timeless Proportions'}
           </p>
-          <a href="#collection" className="mag-hero-btn">
-            Discover Collection <ArrowRight size={14} />
+          <a href={store.hero_btn_link || '#collection'} className="mag-hero-btn">
+            {store.hero_btn_text || 'Discover Collection'} <ArrowRight size={14} />
           </a>
         </div>
       </section>
