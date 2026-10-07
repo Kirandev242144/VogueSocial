@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import {
-  Search, ShoppingBag, Sparkles, ArrowRight, Heart, Edit3, ExternalLink
+  Search, ShoppingBag, Sparkles, ArrowRight, Heart, ExternalLink
 } from 'lucide-react';
 
 const SAMPLE_STORE_PRODUCTS = [
@@ -45,11 +45,7 @@ const SAMPLE_STORE_PRODUCTS = [
 
 export default function StorefrontLiveCanvas({
   editorState,
-  viewport,
-  onSelectSection,
-  focusedSection,
-  previewMode = 'canvas',
-  storePreviewUrl
+  viewport
 }) {
   const [activeCat, setActiveCat] = useState('All');
 
@@ -80,21 +76,6 @@ export default function StorefrontLiveCanvas({
   if (viewport === 'tablet') viewportClass = 'canvas-viewport-tablet';
   if (viewport === 'mobile') viewportClass = 'canvas-viewport-mobile';
 
-  if (previewMode === 'iframe') {
-    return (
-      <div className="editor-canvas-wrap">
-        <div className={`editor-canvas-container ${viewportClass}`} style={{ minHeight: 650 }}>
-          {viewport === 'mobile' && <div className="canvas-mobile-notch" />}
-          <iframe
-            src={storePreviewUrl}
-            title="Storefront Live Iframe"
-            style={{ width: '100%', height: 680, border: 'none' }}
-          />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="editor-canvas-wrap">
       <div
@@ -110,8 +91,6 @@ export default function StorefrontLiveCanvas({
         {/* ── 1. ANNOUNCEMENT BAR ── */}
         {editorState.announcement_enabled && (
           <div
-            className={`section-edit-wrapper ${focusedSection === 'announcement' ? 'section-edit-wrapper-active' : ''}`}
-            onClick={() => onSelectSection('announcement')}
             style={{
               background: editorState.announcement_bg || '#111827',
               color: '#F3F4F6',
@@ -120,21 +99,15 @@ export default function StorefrontLiveCanvas({
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
               textAlign: 'center',
-              padding: '0.5rem 1rem',
-              cursor: 'pointer'
+              padding: '0.5rem 1rem'
             }}
           >
-            <button type="button" className="section-edit-trigger">
-              <Edit3 size={11} /> Edit Banner
-            </button>
             <span>{editorState.announcement_text || 'COMPLIMENTARY WORLDWIDE EXPRESS SHIPPING OVER $200'}</span>
           </div>
         )}
 
         {/* ── 2. HEADER & NAVIGATION ── */}
         <header
-          className={`section-edit-wrapper ${focusedSection === 'header' ? 'section-edit-wrapper-active' : ''}`}
-          onClick={() => onSelectSection('header')}
           style={{
             position: 'sticky',
             top: 0,
@@ -144,14 +117,9 @@ export default function StorefrontLiveCanvas({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: viewport === 'mobile' ? '0.85rem 1.25rem' : '1.15rem 2.5rem',
-            cursor: 'pointer'
+            padding: viewport === 'mobile' ? '0.85rem 1.25rem' : '1.15rem 2.5rem'
           }}
         >
-          <button type="button" className="section-edit-trigger">
-            <Edit3 size={11} /> Edit Header
-          </button>
-
           {/* Left Nav */}
           {viewport !== 'mobile' && (
             <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#57534E' }}>
@@ -198,8 +166,6 @@ export default function StorefrontLiveCanvas({
 
         {/* ── 3. HERO SHOWCASE ── */}
         <section
-          className={`section-edit-wrapper ${focusedSection === 'hero' ? 'section-edit-wrapper-active' : ''}`}
-          onClick={() => onSelectSection('hero')}
           style={{
             position: 'relative',
             height: viewport === 'mobile' ? '380px' : '480px',
@@ -208,14 +174,9 @@ export default function StorefrontLiveCanvas({
             background: '#1C1917',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer'
+            justifyContent: 'center'
           }}
         >
-          <button type="button" className="section-edit-trigger">
-            <Edit3 size={11} /> Edit Hero
-          </button>
-
           {/* Hero background image */}
           <img
             src={editorState.hero_image || 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=80'}
@@ -332,15 +293,7 @@ export default function StorefrontLiveCanvas({
         </div>
 
         {/* ── 5. PRODUCT CATALOG GRID ── */}
-        <section
-          className={`section-edit-wrapper ${focusedSection === 'catalog' ? 'section-edit-wrapper-active' : ''}`}
-          onClick={() => onSelectSection('catalog')}
-          style={{ padding: '1.5rem 2rem', cursor: 'pointer' }}
-        >
-          <button type="button" className="section-edit-trigger">
-            <Edit3 size={11} /> Edit Products
-          </button>
-
+        <section style={{ padding: '1.5rem 2rem' }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: viewport === 'mobile' ? 'repeat(2, 1fr)' : `repeat(${editorState.catalog_columns || 4}, 1fr)`,
@@ -409,20 +362,13 @@ export default function StorefrontLiveCanvas({
         {/* ── 6. BRAND STORY / ATELIER NARRATIVE ── */}
         {editorState.story_enabled && (
           <section
-            className={`section-edit-wrapper ${focusedSection === 'story' ? 'section-edit-wrapper-active' : ''}`}
-            onClick={() => onSelectSection('story')}
             style={{
               padding: viewport === 'mobile' ? '2rem 1.5rem' : '3.5rem 3rem',
               background: '#FFFFFF',
               borderTop: '1px solid #E7E5E4',
-              borderBottom: '1px solid #E7E5E4',
-              cursor: 'pointer'
+              borderBottom: '1px solid #E7E5E4'
             }}
           >
-            <button type="button" className="section-edit-trigger">
-              <Edit3 size={11} /> Edit Story
-            </button>
-
             <div style={{
               display: 'grid',
               gridTemplateColumns: viewport === 'mobile' ? '1fr' : '1fr 1fr',
@@ -471,19 +417,12 @@ export default function StorefrontLiveCanvas({
         {/* ── 7. VIP CLUB / NEWSLETTER ── */}
         {editorState.newsletter_enabled && (
           <section
-            className={`section-edit-wrapper ${focusedSection === 'newsletter' ? 'section-edit-wrapper-active' : ''}`}
-            onClick={() => onSelectSection('newsletter')}
             style={{
               padding: '2.5rem 2rem',
               textAlign: 'center',
-              background: '#F5F5F4',
-              cursor: 'pointer'
+              background: '#F5F5F4'
             }}
           >
-            <button type="button" className="section-edit-trigger">
-              <Edit3 size={11} /> Edit VIP Club
-            </button>
-
             <h4 style={{
               fontFamily: fontHeading,
               fontSize: '1.4rem',
@@ -523,20 +462,13 @@ export default function StorefrontLiveCanvas({
 
         {/* ── 8. FOOTER & CONCIERGE ── */}
         <footer
-          className={`section-edit-wrapper ${focusedSection === 'footer' ? 'section-edit-wrapper-active' : ''}`}
-          onClick={() => onSelectSection('footer')}
           style={{
             padding: '2rem 2.5rem',
             background: '#1C1917',
             color: '#A8A29E',
-            fontSize: '0.72rem',
-            cursor: 'pointer'
+            fontSize: '0.72rem'
           }}
         >
-          <button type="button" className="section-edit-trigger">
-            <Edit3 size={11} /> Edit Footer
-          </button>
-
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',

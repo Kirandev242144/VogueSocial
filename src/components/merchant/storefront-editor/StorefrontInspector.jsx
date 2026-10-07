@@ -125,7 +125,7 @@ export default function StorefrontInspector({
             TAB 1: SECTIONS & BLOCKS ACCORDION
             ==================================================================== */}
         {activeTab === 'sections' && (
-          <>
+          <div className="editor-sections-list">
             {/* 1. Announcement Bar */}
             <div className={`editor-accordion-card ${focusedSection === 'announcement' ? 'editor-accordion-card-focused' : ''}`}>
               <div className="editor-accordion-header" onClick={() => toggleSection('announcement')}>
@@ -150,31 +150,31 @@ export default function StorefrontInspector({
                   >
                     <div className="editor-switch-knob" />
                   </button>
-                  {focusedSection === 'announcement' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  {focusedSection === 'announcement' ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
                 </div>
               </div>
 
               {focusedSection === 'announcement' && (
                 <div className="editor-accordion-body">
                   <div className="editor-field-group">
-                    <label className="editor-field-label">Announcement Text</label>
+                    <label className="editor-field-label">Announcement Message</label>
                     <input
                       type="text"
                       className="editor-field-input"
                       value={editorState.announcement_text || ''}
                       onChange={(e) => updateState('announcement_text', e.target.value)}
-                      placeholder="e.g. COMPLIMENTARY EXPRESS SHIPPING OVER $200"
+                      placeholder="e.g. Complimentary worldwide express shipping over $200"
                     />
                   </div>
 
                   <div className="editor-field-group">
                     <label className="editor-field-label">Banner Background Color</label>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div className="editor-color-input-row">
                       <input
                         type="color"
                         value={editorState.announcement_bg || '#111827'}
                         onChange={(e) => updateState('announcement_bg', e.target.value)}
-                        style={{ width: 34, height: 34, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }}
+                        className="editor-color-picker-dot"
                       />
                       <input
                         type="text"
@@ -200,13 +200,15 @@ export default function StorefrontInspector({
                     <div className="editor-accordion-subtitle">{editorState.store_name}</div>
                   </div>
                 </div>
-                {focusedSection === 'header' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                <div className="editor-accordion-actions">
+                  {focusedSection === 'header' ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                </div>
               </div>
 
               {focusedSection === 'header' && (
                 <div className="editor-accordion-body">
                   <div className="editor-field-group">
-                    <label className="editor-field-label">Brand Title / Atelier Name</label>
+                    <label className="editor-field-label">Atelier Brand Name</label>
                     <input
                       type="text"
                       className="editor-field-input"
@@ -227,22 +229,14 @@ export default function StorefrontInspector({
                   </div>
 
                   <div className="editor-field-group">
-                    <label className="editor-field-label">Header Layout</label>
-                    <div style={{ display: 'flex', gap: 6 }}>
+                    <label className="editor-field-label">Header Alignment</label>
+                    <div className="editor-pill-select-group">
                       {['centered', 'left', 'split'].map(layout => (
                         <button
                           key={layout}
                           type="button"
                           onClick={() => updateState('header_layout', layout)}
-                          className="editor-btn-secondary"
-                          style={{
-                            flex: 1,
-                            justifyContent: 'center',
-                            textTransform: 'capitalize',
-                            borderColor: (editorState.header_layout || 'centered') === layout ? '#2563eb' : undefined,
-                            background: (editorState.header_layout || 'centered') === layout ? '#eff6ff' : undefined,
-                            color: (editorState.header_layout || 'centered') === layout ? '#1e40af' : undefined
-                          }}
+                          className={`editor-pill-select-btn ${(editorState.header_layout || 'centered') === layout ? 'editor-pill-select-btn-active' : ''}`}
                         >
                           {layout}
                         </button>
@@ -261,23 +255,25 @@ export default function StorefrontInspector({
                     <Image size={14} />
                   </div>
                   <div>
-                    <div className="editor-accordion-label">Hero Editorial Showcase</div>
-                    <div className="editor-accordion-subtitle">{editorState.hero_headline || 'Main billboard'}</div>
+                    <div className="editor-accordion-label">Hero Editorial Banner</div>
+                    <div className="editor-accordion-subtitle">{editorState.hero_headline || 'Main showcase'}</div>
                   </div>
                 </div>
-                {focusedSection === 'hero' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                <div className="editor-accordion-actions">
+                  {focusedSection === 'hero' ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                </div>
               </div>
 
               {focusedSection === 'hero' && (
                 <div className="editor-accordion-body">
                   <div className="editor-field-group">
-                    <label className="editor-field-label">Kicker / Badge Note</label>
+                    <label className="editor-field-label">Badge Note / Season Kicker</label>
                     <input
                       type="text"
                       className="editor-field-input"
                       value={editorState.hero_kicker || ''}
                       onChange={(e) => updateState('hero_kicker', e.target.value)}
-                      placeholder="e.g. N° 26 · AUTUMN / WINTER EDITORIAL"
+                      placeholder="e.g. N° 26 · Autumn / Winter Editorial"
                     />
                   </div>
 
@@ -304,23 +300,31 @@ export default function StorefrontInspector({
                   </div>
 
                   <div className="editor-field-group">
-                    <label className="editor-field-label">Curated Fashion Hero Presets</label>
+                    <label className="editor-field-label">Curated Fashion Photography</label>
                     <div className="editor-image-presets-grid">
-                      {HERO_PRESETS.map((preset, idx) => (
-                        <div
-                          key={idx}
-                          className={`editor-image-preset-thumb ${editorState.hero_image === preset.url ? 'editor-image-preset-thumb-active' : ''}`}
-                          onClick={() => updateState('hero_image', preset.url)}
-                          title={preset.name}
-                        >
-                          <img src={preset.url} alt={preset.name} />
-                        </div>
-                      ))}
+                      {HERO_PRESETS.map((preset, idx) => {
+                        const isSelected = editorState.hero_image === preset.url;
+                        return (
+                          <div
+                            key={idx}
+                            className={`editor-image-preset-thumb ${isSelected ? 'editor-image-preset-thumb-active' : ''}`}
+                            onClick={() => updateState('hero_image', preset.url)}
+                            title={preset.name}
+                          >
+                            <img src={preset.url} alt={preset.name} />
+                            {isSelected && (
+                              <div className="editor-preset-check-badge">
+                                <Check size={10} color="#ffffff" />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
                   <div className="editor-field-group">
-                    <label className="editor-field-label">Custom Hero Image URL</label>
+                    <label className="editor-field-label">Custom Image URL</label>
                     <input
                       type="text"
                       className="editor-field-input"
@@ -333,7 +337,7 @@ export default function StorefrontInspector({
                   <div className="editor-field-group">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <label className="editor-field-label">Overlay Darkness</label>
-                      <span style={{ fontSize: '0.72rem', fontWeight: 700 }}>
+                      <span className="editor-field-badge">
                         {Math.round((editorState.hero_overlay_opacity ?? 0.45) * 100)}%
                       </span>
                     </div>
@@ -344,13 +348,13 @@ export default function StorefrontInspector({
                       step="0.05"
                       value={editorState.hero_overlay_opacity ?? 0.45}
                       onChange={(e) => updateState('hero_overlay_opacity', parseFloat(e.target.value))}
-                      style={{ width: '100%', cursor: 'pointer' }}
+                      className="editor-range-slider"
                     />
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
                     <div className="editor-field-group">
-                      <label className="editor-field-label">CTA Button Label</label>
+                      <label className="editor-field-label">Button Label</label>
                       <input
                         type="text"
                         className="editor-field-input"
@@ -359,7 +363,7 @@ export default function StorefrontInspector({
                       />
                     </div>
                     <div className="editor-field-group">
-                      <label className="editor-field-label">CTA Target Link</label>
+                      <label className="editor-field-label">Target Link</label>
                       <input
                         type="text"
                         className="editor-field-input"
@@ -384,36 +388,31 @@ export default function StorefrontInspector({
                     <div className="editor-accordion-subtitle">{editorState.catalog_columns || 4} Columns · Try-On Enabled</div>
                   </div>
                 </div>
-                {focusedSection === 'catalog' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                <div className="editor-accordion-actions">
+                  {focusedSection === 'catalog' ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                </div>
               </div>
 
               {focusedSection === 'catalog' && (
                 <div className="editor-accordion-body">
                   <div className="editor-field-group">
-                    <label className="editor-field-label">Grid Columns</label>
-                    <div style={{ display: 'flex', gap: 6 }}>
+                    <label className="editor-field-label">Desktop Grid Columns</label>
+                    <div className="editor-pill-select-group">
                       {[2, 3, 4].map(cols => (
                         <button
                           key={cols}
                           type="button"
                           onClick={() => updateState('catalog_columns', cols)}
-                          className="editor-btn-secondary"
-                          style={{
-                            flex: 1,
-                            justifyContent: 'center',
-                            borderColor: (editorState.catalog_columns || 4) === cols ? '#2563eb' : undefined,
-                            background: (editorState.catalog_columns || 4) === cols ? '#eff6ff' : undefined,
-                            color: (editorState.catalog_columns || 4) === cols ? '#1e40af' : undefined
-                          }}
+                          className={`editor-pill-select-btn ${(editorState.catalog_columns || 4) === cols ? 'editor-pill-select-btn-active' : ''}`}
                         >
-                          {cols} Cols
+                          {cols} Columns
                         </button>
                       ))}
                     </div>
                   </div>
 
                   <div className="editor-switch-row">
-                    <span className="editor-switch-label">Show "AI Try-On" Quick Action</span>
+                    <span className="editor-switch-label">Show "AI Try-On" Studio Pill</span>
                     <button
                       type="button"
                       className={`editor-switch ${editorState.show_quick_tryon_btn !== false ? 'editor-switch-active' : ''}`}
@@ -460,7 +459,7 @@ export default function StorefrontInspector({
                   >
                     <div className="editor-switch-knob" />
                   </button>
-                  {focusedSection === 'story' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  {focusedSection === 'story' ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
                 </div>
               </div>
 
@@ -532,7 +531,7 @@ export default function StorefrontInspector({
                   >
                     <div className="editor-switch-knob" />
                   </button>
-                  {focusedSection === 'newsletter' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  {focusedSection === 'newsletter' ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
                 </div>
               </div>
 
@@ -573,7 +572,9 @@ export default function StorefrontInspector({
                     <div className="editor-accordion-subtitle">{editorState.email || 'Contact info'}</div>
                   </div>
                 </div>
-                {focusedSection === 'footer' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                <div className="editor-accordion-actions">
+                  {focusedSection === 'footer' ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                </div>
               </div>
 
               {focusedSection === 'footer' && (
@@ -600,7 +601,7 @@ export default function StorefrontInspector({
                 </div>
               )}
             </div>
-          </>
+          </div>
         )}
 
         {/* ====================================================================
@@ -611,7 +612,7 @@ export default function StorefrontInspector({
             {/* 5 Templates */}
             <div>
               <label className="editor-field-label" style={{ marginBottom: 8, display: 'block' }}>
-                Select Storefront Aesthetic
+                Storefront Aesthetic Theme
               </label>
               <div className="editor-template-cards">
                 {TEMPLATES.map(tpl => {
@@ -644,15 +645,20 @@ export default function StorefrontInspector({
                 Brand Accent Palette
               </label>
               <div className="editor-palette-row">
-                {ACCENT_PALETTES.map(p => (
-                  <div
-                    key={p.value}
-                    className={`editor-color-swatch ${editorState.accent_color === p.value ? 'editor-color-swatch-active' : ''}`}
-                    style={{ background: p.value }}
-                    onClick={() => updateState('accent_color', p.value)}
-                    title={p.name}
-                  />
-                ))}
+                {ACCENT_PALETTES.map(p => {
+                  const isSelected = editorState.accent_color === p.value;
+                  return (
+                    <div
+                      key={p.value}
+                      className={`editor-color-swatch ${isSelected ? 'editor-color-swatch-active' : ''}`}
+                      style={{ background: p.value }}
+                      onClick={() => updateState('accent_color', p.value)}
+                      title={p.name}
+                    >
+                      {isSelected && <Check size={12} color="#ffffff" style={{ margin: 'auto' }} />}
+                    </div>
+                  );
+                })}
                 <input
                   type="color"
                   value={editorState.accent_color || '#2563eb'}
@@ -676,20 +682,13 @@ export default function StorefrontInspector({
                       key={font.id}
                       type="button"
                       onClick={() => updateState('font_pairing', font.id)}
-                      className="editor-btn-secondary"
-                      style={{
-                        justifyContent: 'space-between',
-                        borderColor: isSelected ? '#2563eb' : undefined,
-                        background: isSelected ? '#eff6ff' : undefined,
-                        color: isSelected ? '#1e40af' : undefined,
-                        padding: '0.65rem 0.85rem'
-                      }}
+                      className={`editor-font-pair-btn ${isSelected ? 'editor-font-pair-btn-active' : ''}`}
                     >
                       <div style={{ textAlign: 'left' }}>
-                        <div style={{ fontSize: '0.8rem', fontWeight: 700 }}>{font.name}</div>
-                        <div style={{ fontSize: '0.68rem', color: '#64748b' }}>{font.vibe}</div>
+                        <div style={{ fontSize: '0.82rem', fontWeight: 700 }}>{font.name}</div>
+                        <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{font.vibe}</div>
                       </div>
-                      {isSelected && <Check size={14} color="#2563eb" />}
+                      {isSelected && <Check size={14} color="#0f172a" />}
                     </button>
                   );
                 })}
@@ -701,7 +700,7 @@ export default function StorefrontInspector({
               <label className="editor-field-label" style={{ marginBottom: 8, display: 'block' }}>
                 Button & Card Geometry
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
+              <div className="editor-pill-select-group">
                 {[
                   { id: 'sharp', label: 'Sharp 0px' },
                   { id: 'soft', label: 'Soft 6px' },
@@ -712,14 +711,7 @@ export default function StorefrontInspector({
                     key={r.id}
                     type="button"
                     onClick={() => updateState('border_radius', r.id)}
-                    className="editor-btn-secondary"
-                    style={{
-                      justifyContent: 'center',
-                      fontSize: '0.72rem',
-                      borderColor: (editorState.border_radius || 'soft') === r.id ? '#2563eb' : undefined,
-                      background: (editorState.border_radius || 'soft') === r.id ? '#eff6ff' : undefined,
-                      color: (editorState.border_radius || 'soft') === r.id ? '#1e40af' : undefined
-                    }}
+                    className={`editor-pill-select-btn ${(editorState.border_radius || 'soft') === r.id ? 'editor-pill-select-btn-active' : ''}`}
                   >
                     {r.label}
                   </button>

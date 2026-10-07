@@ -21,7 +21,6 @@ export default function StorefrontEditor({
   const [activeTab, setActiveTab] = useState('sections'); // 'sections' | 'theme' | 'domains'
   const [focusedSection, setFocusedSection] = useState('hero'); // 'announcement' | 'header' | 'hero' | 'catalog' | 'story' | 'newsletter' | 'footer'
   const [viewport, setViewport] = useState('desktop'); // 'desktop' | 'tablet' | 'mobile'
-  const [previewMode, setPreviewMode] = useState('canvas'); // 'canvas' | 'iframe'
 
   // Primary Customizer State
   const [editorState, setEditorState] = useState(() => ({
@@ -248,28 +247,6 @@ export default function StorefrontEditor({
               <span>Mobile</span>
             </button>
           </div>
-
-          {/* Mode Switcher */}
-          <div className="editor-viewport-group" style={{ marginLeft: 6 }}>
-            <button
-              type="button"
-              className={`editor-viewport-btn ${previewMode === 'canvas' ? 'editor-viewport-btn-active' : ''}`}
-              onClick={() => setPreviewMode('canvas')}
-              title="Real-Time Interactive Canvas"
-            >
-              <Sliders size={13} />
-              <span>Interactive</span>
-            </button>
-            <button
-              type="button"
-              className={`editor-viewport-btn ${previewMode === 'iframe' ? 'editor-viewport-btn-active' : ''}`}
-              onClick={() => setPreviewMode('iframe')}
-              title="Subdomain Iframe Preview"
-            >
-              <Eye size={13} />
-              <span>Iframe</span>
-            </button>
-          </div>
         </div>
 
         {/* Right Actions */}
@@ -329,13 +306,6 @@ export default function StorefrontEditor({
         <StorefrontLiveCanvas
           editorState={editorState}
           viewport={viewport}
-          onSelectSection={(secId) => {
-            setActiveTab('sections');
-            setFocusedSection(secId);
-          }}
-          focusedSection={focusedSection}
-          previewMode={previewMode}
-          storePreviewUrl={storePreviewUrl}
         />
       </div>
 
