@@ -1,13 +1,12 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { storeService } from '@/services/storeService';
 import { DEFAULT_MERCHANT_STORE, verifyDomainDNS } from '@/lib/storefrontData';
 import {
   Globe, Eye, Sparkles, ExternalLink, ShieldCheck, Lock,
   Copy, Check, RefreshCw, Palette, Server, Monitor, Smartphone,
-  Sliders, Loader2, ArrowRight
+  Sliders, Loader2
 } from 'lucide-react';
 import './MerchantWebsite.css';
 import DomainSettingsTab from '@/components/merchant/storefront-editor/DomainSettingsTab';
@@ -92,7 +91,7 @@ export default function WebsitePage() {
 
   return (
     <div className="merchant-website-hub">
-      {/* ── 1. Top Bar ── */}
+      {/* ── 1. Top Header ── */}
       <div className="hub-header">
         <div className="hub-header-title-wrap">
           <div className="hub-header-icon">
@@ -101,7 +100,7 @@ export default function WebsitePage() {
           <div>
             <h1 className="hub-header-title">Storefront & Website</h1>
             <div className="hub-header-subtitle">
-              Manage your boutique storefront, customize your theme in full studio, and connect custom domains
+              Manage your boutique storefront, customize your theme, and connect custom domains
             </div>
           </div>
         </div>
@@ -111,7 +110,7 @@ export default function WebsitePage() {
             href={liveUrl}
             target="_blank"
             rel="noreferrer"
-            className="editor-btn-secondary"
+            className="hub-btn-secondary"
             title="Open live storefront in new browser tab"
           >
             <ExternalLink size={13} />
@@ -122,51 +121,16 @@ export default function WebsitePage() {
             href="/merchant/website/editor"
             target="_blank"
             rel="noreferrer"
-            className="hub-btn-studio-cta"
-            title="Open dedicated full-screen Storefront Theme Studio in new tab"
+            className="hub-btn-primary"
+            title="Open Storefront Theme Studio in new tab"
           >
-            <Sparkles size={14} />
-            <span>Customize Storefront in Studio ↗</span>
+            <Sparkles size={13} />
+            <span>Customize Storefront ↗</span>
           </a>
         </div>
       </div>
 
-      {/* ── 2. Fullscreen Studio Promotion Card ── */}
-      <div className="hub-studio-card">
-        <div className="hub-studio-content">
-          <div className="hub-studio-badge">
-            <Sparkles size={12} />
-            <span>DEDICATED FULLSCREEN STUDIO AVAILABLE</span>
-          </div>
-          <h2 className="hub-studio-title">
-            Visual Theme & Section Customizer
-          </h2>
-          <p className="hub-studio-desc">
-            Edit your announcement bar, hero typography, curated garments grid, brand narrative, and luxury color palettes with full-screen real-time preview and 0-latency feedback.
-          </p>
-        </div>
-
-        <div className="hub-studio-actions">
-          <a
-            href="/merchant/website/editor"
-            target="_blank"
-            rel="noreferrer"
-            className="hub-btn-studio-cta"
-          >
-            <Sparkles size={15} />
-            <span>Open Studio in New Tab ↗</span>
-          </a>
-
-          <Link
-            to="/merchant/website/editor"
-            className="hub-btn-studio-outline"
-          >
-            <span>Open in Current Tab</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* ── 3. Navigation Tabs ── */}
+      {/* ── 2. Navigation Tabs ── */}
       <div className="hub-tabs">
         <button
           type="button"
@@ -211,9 +175,8 @@ export default function WebsitePage() {
                 <div className="hub-store-details">
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <h3 className="hub-store-name">{settings.store_name}</h3>
-                    <span className="editor-status-badge">
-                      <span className="editor-status-dot" />
-                      <span>Live Storefront</span>
+                    <span className="hub-ssl-pill">
+                      ● Live Storefront
                     </span>
                   </div>
 
@@ -240,7 +203,7 @@ export default function WebsitePage() {
                 <button
                   type="button"
                   onClick={() => handleCopy(liveUrl, 'store-url')}
-                  className="editor-btn-secondary"
+                  className="hub-btn-secondary"
                 >
                   {copiedKey === 'store-url' ? <><Check size={13} color="#16a34a" /> Copied</> : <><Copy size={13} /> Copy Link</>}
                 </button>
@@ -249,7 +212,7 @@ export default function WebsitePage() {
                   href="/merchant/website/editor"
                   target="_blank"
                   rel="noreferrer"
-                  className="editor-btn-primary"
+                  className="hub-btn-primary"
                 >
                   <Sparkles size={13} />
                   <span>Customize in Studio ↗</span>
@@ -296,7 +259,7 @@ export default function WebsitePage() {
                 <button
                   type="button"
                   onClick={() => setPreviewKey(Date.now())}
-                  className="editor-btn-secondary"
+                  className="hub-btn-secondary"
                   style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
                 >
                   <RefreshCw size={12} /> Refresh
@@ -306,11 +269,11 @@ export default function WebsitePage() {
                   href="/merchant/website/editor"
                   target="_blank"
                   rel="noreferrer"
-                  className="hub-btn-studio-cta"
-                  style={{ padding: '0.4rem 0.85rem', fontSize: '0.76rem' }}
+                  className="hub-btn-primary"
+                  style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem' }}
                 >
                   <Sparkles size={12} />
-                  <span>Open Full Studio ↗</span>
+                  <span>Open Studio ↗</span>
                 </a>
               </div>
             </div>
@@ -377,7 +340,7 @@ export default function WebsitePage() {
                 href="/merchant/website/editor"
                 target="_blank"
                 rel="noreferrer"
-                className="hub-btn-studio-cta"
+                className="hub-btn-primary"
               >
                 <Sparkles size={13} />
                 <span>Customize in Studio ↗</span>
