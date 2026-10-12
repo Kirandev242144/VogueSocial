@@ -89,7 +89,7 @@ const INITIAL_PLATFORM_ORDERS = [
       vendor_id: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c'
     },
     items: [
-      { id: 'gar-002', name: 'Silk Slip Cami Dress', size: 'S', color: 'Ivory Champagne', price: 145.00, qty: 1, image: '/Shop_images/2/basic3-500x750.jpeg' }
+      { id: 'gar-002', name: 'Silk Slip Cami Dress', size: 'S', color: 'Ivory Champagne', price: 145.00, qty: 1, image: '/Shop_images/2/cup1-500x750.jpeg' }
     ]
   },
   {
@@ -112,7 +112,7 @@ const INITIAL_PLATFORM_ORDERS = [
       vendor_id: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c'
     },
     items: [
-      { id: 'gar-003', name: 'Oversized Double-Faced Cashmere Trench', size: 'L', color: 'Camel Beige', price: 420.00, qty: 1, image: '/Shop_images/3/basic-500x750.jpeg' }
+      { id: 'gar-003', name: 'Oversized Double-Faced Cashmere Trench', size: 'L', color: 'Camel Beige', price: 420.00, qty: 1, image: '/Shop_images/3/dressblack1-1-500x750.jpeg' }
     ],
     admin_notes: 'Automated escrow settlement: Carrier confirmed delivery signatures.'
   },
@@ -136,7 +136,7 @@ const INITIAL_PLATFORM_ORDERS = [
       vendor_id: 'mch_elena_02'
     },
     items: [
-      { id: 'gar-004', name: 'Embroidered Silk Palazzo Set', size: 'XL', color: 'Dusty Rose', price: 320.00, qty: 1, image: '/Shop_images/4/basic2-500x750.jpeg' }
+      { id: 'gar-004', name: 'Embroidered Silk Palazzo Set', size: 'XL', color: 'Dusty Rose', price: 320.00, qty: 1, image: '/Shop_images/4/graphic1-500x750.jpg' }
     ],
     admin_notes: 'Order cancelled by buyer prior to dispatch. Full $320.00 refunded.'
   },
@@ -159,7 +159,7 @@ const INITIAL_PLATFORM_ORDERS = [
       vendor_id: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c'
     },
     items: [
-      { id: 'gar-005', name: 'Handcrafted Tuxedo Silk Dinner Jacket', size: '40R', color: 'Midnight Obsidian', price: 850.00, qty: 1, image: '/Shop_images/1/basic2-500x750.jpeg' }
+      { id: 'gar-005', name: 'Handcrafted Tuxedo Silk Dinner Jacket', size: '40R', color: 'Midnight Obsidian', price: 850.00, qty: 1, image: '/Shop_images/8/overshirt1-500x750.jpg' }
     ]
   },
   {
@@ -182,7 +182,7 @@ const INITIAL_PLATFORM_ORDERS = [
       vendor_id: 'mch_elena_02'
     },
     items: [
-      { id: 'gar-006', name: 'Pleated Organza Evening Blouse', size: '38 FR', color: 'Pearl White', price: 280.00, qty: 1, image: '/Shop_images/2/basic3-500x750.jpeg' }
+      { id: 'gar-006', name: 'Pleated Organza Evening Blouse', size: '38 FR', color: 'Pearl White', price: 280.00, qty: 1, image: '/Shop_images/5/knotted1-500x750.jpeg' }
     ],
     admin_notes: 'Settled to vendor payout balance. 5% platform protocol fee retained.'
   },
@@ -229,7 +229,7 @@ const INITIAL_PLATFORM_ORDERS = [
       vendor_id: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c'
     },
     items: [
-      { id: 'gar-008', name: 'Raw Denim Sculptural Jacket', size: 'L', color: 'Indigo', price: 210.00, qty: 1, image: '/Shop_images/3/basic-500x750.jpeg' }
+      { id: 'gar-008', name: 'Raw Denim Sculptural Jacket', size: 'L', color: 'Indigo', price: 210.00, qty: 1, image: '/Shop_images/9/pocketmen1-500x750.jpeg' }
     ],
     admin_notes: 'Settled.'
   }
@@ -239,6 +239,29 @@ function getUnifiedOrders() {
   let stored = storageEngine.getItem(STORAGE_KEYS.ORDERS, null);
   if (!stored || !Array.isArray(stored) || stored.length === 0) {
     stored = [...INITIAL_PLATFORM_ORDERS];
+    storageEngine.setItem(STORAGE_KEYS.ORDERS, stored);
+  }
+
+  // Auto-heal any stale or broken image paths in previously cached orders
+  const IMAGE_FIX_MAP = {
+    '/Shop_images/2/basic3-500x750.jpeg': '/Shop_images/2/cup1-500x750.jpeg',
+    '/Shop_images/3/basic-500x750.jpeg': '/Shop_images/3/dressblack1-1-500x750.jpeg',
+    '/Shop_images/4/basic2-500x750.jpeg': '/Shop_images/4/graphic1-500x750.jpg',
+  };
+  let healedAny = false;
+  stored = stored.map(o => {
+    if (!Array.isArray(o.items)) return o;
+    const healedItems = o.items.map(it => {
+      if (IMAGE_FIX_MAP[it.image]) {
+        healedAny = true;
+        return { ...it, image: IMAGE_FIX_MAP[it.image] };
+      }
+      return it;
+    });
+    return { ...o, items: healedItems };
+  });
+
+  if (healedAny) {
     storageEngine.setItem(STORAGE_KEYS.ORDERS, stored);
   }
 
