@@ -748,6 +748,11 @@ export const mockAdminAdapter = {
       config = INITIAL_INTEGRATIONS_CONFIG;
       storageEngine.setItem(STORAGE_KEYS.ADMIN_INTEGRATIONS, config);
     }
+    // Ensure payment and logistics aliases exist for compatibility
+    if (config.payment && !config.stripe) config.stripe = config.payment;
+    if (config.logistics && !config.easypost) config.easypost = config.logistics;
+    if (config.stripe && !config.payment) config.payment = config.stripe;
+    if (config.easypost && !config.logistics) config.logistics = config.easypost;
     return {
       success: true,
       config
@@ -783,22 +788,30 @@ export const mockAdminAdapter = {
     const timestamp = new Date().toISOString();
 
     let newEvent;
+    const idempotencyKey = 'idemp_' + Math.random().toString(36).substring(2, 11);
+
     if (eventType === 'shipment.delivered') {
       const targetOrderId = customPayload.order_id || 'ORD-8241';
       newEvent = {
         id: eventId,
-        source: 'EasyPost (DHL)',
+        domain: 'logistics',
+        source: 'Carrier Webhook (DHL)',
         event: 'shipment.delivered',
         order_id: targetOrderId,
         status: 200,
+        signature_verification: 'verified_hmac_sha256',
+        processing_status: 'processed',
+        retry_count: '1/3',
+        failure_reason: null,
+        idempotency_key: idempotencyKey,
         timestamp,
         payload: {
           tracking_code: customPayload.tracking_code || 'DHL-84920194',
           status: 'DELIVERED',
           signed_by: customPayload.signed_by || 'Aisha Malik',
           location: 'Dubai, UAE',
-          message: 'Package delivered at front door. Signature captured.',
-          auto_escrow_timer_started: true
+          message: 'Package handed to resident. Signature captured.',
+          verification_gates_passed: true
         }
       };
 
@@ -816,34 +829,70 @@ export const mockAdminAdapter = {
     } else if (eventType === 'payment_intent.succeeded') {
       newEvent = {
         id: eventId,
-        source: 'Stripe Connect',
+        domain: 'payment',
+        source: 'Payment Provider (Stripe)',
         event: 'payment_intent.succeeded',
         order_id: customPayload.order_id || 'ORD-8242',
         status: 200,
+        signature_verification: 'verified_hmac_sha256',
+        processing_status: 'processed',
+        retry_count: '1/3',
+        failure_reason: null,
+        idempotency_key: idempotencyKey,
         timestamp,
         payload: {
           payment_intent: 'pi_live_' + Math.random().toString(36).substring(2, 10),
           amount: customPayload.amount || 35000,
           currency: 'usd',
-          escrow_hold: true,
+          funds_status: 'captured_pending_delivery',
           destination_account: 'acct_1N4k92A',
           customer_email: 'buyer@voguesocial.com'
+        }
+      };
+    } else if (eventType === 'transfer.created' || eventType === 'payout.paid') {
+      const targetOrderId = customPayload.order_id || 'ORD-8239';
+      newEvent = {
+        id: eventId,
+        domain: 'payout',
+        source: 'Payment Provider (Stripe)',
+        event: 'transfer.created',
+        order_id: targetOrderId,
+        status: 200,
+        signature_verification: 'verified_hmac_sha256',
+        processing_status: 'processed',
+        retry_count: '1/3',
+        failure_reason: null,
+        idempotency_key: idempotencyKey,
+        timestamp,
+        payload: {
+          transfer_id: 'tr_' + Math.random().toString(36).substring(2, 10),
+          destination_account: 'acct_1N4k92A',
+          amount: 39900,
+          fee_retained: 2100,
+          verification_gates_checked: ['payment_settled', 'delivery_verified', 'no_dispute', 'kyc_eligible'],
+          result: 'disbursement_completed'
         }
       };
     } else if (eventType === 'charge.dispute.created') {
       const targetOrderId = customPayload.order_id || 'ORD-8237';
       newEvent = {
         id: eventId,
-        source: 'Stripe Connect',
+        domain: 'dispute',
+        source: 'Payment Provider (Stripe)',
         event: 'charge.dispute.created',
         order_id: targetOrderId,
         status: 200,
+        signature_verification: 'verified_hmac_sha256',
+        processing_status: 'processed',
+        retry_count: '1/3',
+        failure_reason: 'escrow_hold_frozen_pending_evidence',
+        idempotency_key: idempotencyKey,
         timestamp,
         payload: {
           dispute_id: 'dp_' + Math.random().toString(36).substring(2, 8),
           reason: customPayload.reason || 'damaged_merchandise',
           amount: 85000,
-          escrow_frozen: true,
+          payout_blocked: true,
           evidence_due_by: new Date(Date.now() + 7 * 86400000).toISOString()
         }
       };
@@ -862,10 +911,16 @@ export const mockAdminAdapter = {
     } else {
       newEvent = {
         id: eventId,
+        domain: 'logistics',
         source: 'EasyPost Gateway',
         event: eventType || 'shipment.in_transit',
         order_id: 'ORD-8240',
         status: 200,
+        signature_verification: 'verified_hmac_sha256',
+        processing_status: 'processed',
+        retry_count: '1/3',
+        failure_reason: null,
+        idempotency_key: idempotencyKey,
         timestamp,
         payload: {
           tracking_code: 'DHL-GENERIC',
@@ -894,29 +949,38 @@ export const mockAdminAdapter = {
 };
 
 const INITIAL_INTEGRATIONS_CONFIG = {
-  stripe: {
-    environment: 'sandbox',
+  payment: {
+    provider: 'Stripe Connect (Marketplace)',
+    environment: 'sandbox', // 'sandbox' | 'production'
     publishable_key: 'pk_test_51Mz9V2K9QxVogueSocialAtelierKey001',
-    secret_key: 'sk_test_51Mz9V2K9QxVogueSocialSecretPrivKey992',
-    webhook_secret: 'whsec_892b01fa991cd4208e928c081fba9',
+    secret_key_configured: true,
+    secret_key_ref: 'ENV: STRIPE_SECRET_KEY',
+    webhook_secret_configured: true,
+    webhook_secret_ref: 'ENV: STRIPE_WEBHOOK_SECRET',
     platform_take_rate: 5.0,
-    auto_settle_hours: 48,
-    status: 'connected',
+    settlement_buffer_hours: 48,
+    provider_status: 'operational_testnet',
+    is_simulated_demo: true,
     last_sync: new Date().toISOString()
   },
-  easypost: {
-    api_key: 'EZAK_live_90284019284910283910293',
-    webhook_endpoint: 'https://api.voguesocial.com/webhooks/carriers',
-    default_carrier: 'dhl_express',
+  logistics: {
+    default_model: 'merchant_fulfilled', // 'merchant_fulfilled' | 'platform_labels'
+    platform_labels_active: false,
+    provider: 'EasyPost Universal Gateway',
+    webhook_endpoint: 'https://api.voguesocial.com/webhooks/shipping',
+    api_key_configured: true,
+    api_key_ref: 'ENV: EASYPOST_API_KEY',
     carriers: {
-      dhl_express: { enabled: true, name: 'DHL Express Worldwide', account_num: 'DHL-ACCT-9102' },
-      fedex_priority: { enabled: true, name: 'FedEx International Priority', account_num: 'FDX-ACCT-8491' },
-      ups_worldwide: { enabled: true, name: 'UPS Worldwide Expedited', account_num: 'UPS-ACCT-1928' },
-      laposte_colissimo: { enabled: true, name: 'La Poste Colissimo', account_num: 'LP-ACCT-0091' }
+      dhl_express: { enabled: true, name: 'DHL Express', status: 'connected', region: 'Global (220+ Countries)', model: 'Platform Account & Merchant Self-Ship' },
+      fedex_priority: { enabled: false, name: 'FedEx International Priority', status: 'merchant_account_required', region: 'North America & Europe', model: 'Merchant Own Account' },
+      ups_worldwide: { enabled: false, name: 'UPS Worldwide Expedited', status: 'merchant_account_required', region: 'Global', model: 'Merchant Own Account' },
+      boutique_couriers: { enabled: true, name: 'Merchant Self-Fulfill (Local Courier)', status: 'supported', region: 'Worldwide Domestic', model: 'Merchant Direct Tracking' }
     },
     status: 'operational',
     last_ping: new Date().toISOString()
   },
+  get stripe() { return this.payment; },
+  get easypost() { return this.logistics; },
   connected_accounts: [
     {
       id: 'acct_1N4k92A',
@@ -926,12 +990,15 @@ const INITIAL_INTEGRATIONS_CONFIG = {
       email: 'concierge@studiolabelparis.com',
       country: 'FR',
       currency: 'EUR',
-      kyc_status: 'verified',
-      payouts_enabled: true,
+      kyc_stage: 'complete',
+      payout_eligibility: 'eligible',
+      restrictions: 'None',
       bank_name: 'JPMorgan Chase (Paris)',
       account_last4: '4192',
-      payout_schedule: 'Daily Rolling (48h)',
-      balance_pending: 1585.00
+      payout_schedule: 'Daily rolling (48h inspection buffer)',
+      pending_balance: 1585.00,
+      balance_source: 'simulated_provider',
+      last_synced_at: new Date(Date.now() - 8 * 60000).toISOString()
     },
     {
       id: 'acct_1N8m10B',
@@ -941,12 +1008,15 @@ const INITIAL_INTEGRATIONS_CONFIG = {
       email: 'elena@elenacouture.com',
       country: 'IT',
       currency: 'EUR',
-      kyc_status: 'verified',
-      payouts_enabled: true,
+      kyc_stage: 'complete',
+      payout_eligibility: 'eligible',
+      restrictions: 'None',
       bank_name: 'BNP Paribas Private',
       account_last4: '8821',
-      payout_schedule: 'Weekly Automated',
-      balance_pending: 600.00
+      payout_schedule: 'Weekly automated',
+      pending_balance: 600.00,
+      balance_source: 'simulated_provider',
+      last_synced_at: new Date(Date.now() - 22 * 60000).toISOString()
     },
     {
       id: 'acct_1N9p77C',
@@ -956,12 +1026,15 @@ const INITIAL_INTEGRATIONS_CONFIG = {
       email: 'contact@ateliernoir.com',
       country: 'US',
       currency: 'USD',
-      kyc_status: 'under_review',
-      payouts_enabled: false,
+      kyc_stage: 'documents_required',
+      payout_eligibility: 'restricted',
+      restrictions: 'Tax Form W-8BEN & Owner ID Required',
       bank_name: 'Silicon Valley Bank',
       account_last4: '3049',
-      payout_schedule: 'Manual Hold',
-      balance_pending: 210.00
+      payout_schedule: 'Manual administrative hold',
+      pending_balance: 210.00,
+      balance_source: 'simulated_provider',
+      last_synced_at: new Date(Date.now() - 45 * 60000).toISOString()
     }
   ]
 };
@@ -969,40 +1042,59 @@ const INITIAL_INTEGRATIONS_CONFIG = {
 const INITIAL_WEBHOOK_EVENTS = [
   {
     id: 'evt_wh_9012',
-    source: 'EasyPost (DHL)',
+    domain: 'logistics',
+    source: 'Carrier Webhook (DHL)',
     event: 'shipment.delivered',
     order_id: 'ORD-8239',
     status: 200,
+    signature_verification: 'verified_hmac_sha256',
+    processing_status: 'processed',
+    retry_count: '1/3',
+    failure_reason: null,
+    idempotency_key: 'idemp_8921a4f001',
     timestamp: new Date(Date.now() - 15 * 60000).toISOString(),
     payload: {
       tracking_code: 'DHL-29401824',
       status: 'DELIVERED',
       signed_by: 'P. Sharma',
       location: 'Bangalore, India',
-      message: 'Package handed to resident. Signature captured.'
+      message: 'Package handed to resident. Signature captured.',
+      verification_gates_passed: true
     }
   },
   {
     id: 'evt_wh_9011',
-    source: 'Stripe Connect',
+    domain: 'payment',
+    source: 'Payment Provider (Stripe)',
     event: 'payment_intent.succeeded',
     order_id: 'ORD-8241',
     status: 200,
+    signature_verification: 'verified_hmac_sha256',
+    processing_status: 'processed',
+    retry_count: '1/3',
+    failure_reason: null,
+    idempotency_key: 'idemp_8921a4f002',
     timestamp: new Date(Date.now() - 45 * 60000).toISOString(),
     payload: {
       payment_intent: 'pi_3M9xV2K9QxVogueSocial01',
       amount: 59000,
       currency: 'usd',
-      escrow_hold: true,
+      funds_status: 'captured_pending_delivery',
       destination_account: 'acct_1N4k92A'
     }
   },
   {
     id: 'evt_wh_9010',
-    source: 'EasyPost (FedEx)',
+    domain: 'logistics',
+    source: 'Carrier Webhook (FedEx)',
     event: 'shipment.in_transit',
     order_id: 'ORD-8237',
     status: 200,
+    signature_verification: 'verified_hmac_sha256',
+    processing_status: 'processed',
+    retry_count: '1/3',
+    failure_reason: null,
+    idempotency_key: 'idemp_8921a4f003',
     timestamp: new Date(Date.now() - 120 * 60000).toISOString(),
     payload: {
       tracking_code: 'FDX-8392019',
@@ -1013,17 +1105,23 @@ const INITIAL_WEBHOOK_EVENTS = [
   },
   {
     id: 'evt_wh_9009',
-    source: 'Stripe Connect',
+    domain: 'payout',
+    source: 'Payment Provider (Stripe)',
     event: 'transfer.created',
     order_id: 'ORD-8236',
     status: 200,
+    signature_verification: 'verified_hmac_sha256',
+    processing_status: 'processed',
+    retry_count: '1/3',
+    failure_reason: null,
+    idempotency_key: 'idemp_8921a4f004',
     timestamp: new Date(Date.now() - 240 * 60000).toISOString(),
     payload: {
       transfer_id: 'tr_1N8m10B_99201',
       destination: 'acct_1N8m10B',
       net_amount: 26600,
       fee_collected: 1400,
-      rule: '48h_post_delivery_auto_release'
+      rule: '5_step_verification_passed'
     }
   }
 ];

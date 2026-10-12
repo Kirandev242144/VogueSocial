@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import {
   X, CheckCircle, XCircle, User, Building2,
-  MapPin, CreditCard, Truck, AlertTriangle
+  MapPin, CreditCard, Truck, AlertTriangle, ShieldCheck, Clock
 } from 'lucide-react';
 import { AdminModal, AdminStatusBadge } from '../index';
 
@@ -30,12 +30,54 @@ export default function OrderAuditModal({
   const isRefunded = order.escrow_status === 'refunded';
   const isDisputed = order.escrow_status === 'disputed';
 
+  // Evaluate 5-Step Payout Verification Gates
+  const gate1Passed = !isRefunded && gross > 0;
+  const gate2Passed = order.status === 'delivered' || isReleased;
+  const gate3Passed = order.status !== 'cancelled' && !isRefunded;
+  const gate4Passed = !isDisputed;
+  const gate5Passed = order.vendor?.kyc_status !== 'restricted' && order.vendor?.payout_eligibility !== 'restricted';
+
+  const gates = [
+    {
+      id: 1,
+      title: 'Payment Confirmed & Settled',
+      passed: gate1Passed,
+      detail: gate1Passed ? `Stripe PaymentIntent captured ($${gross.toFixed(2)})` : 'Payment not settled'
+    },
+    {
+      id: 2,
+      title: 'Carrier Delivery Verified (POD)',
+      passed: gate2Passed,
+      detail: gate2Passed ? 'Proof of delivery (POD) confirmed' : `Awaiting delivery confirmation (${order.courier || 'DHL Express'})`
+    },
+    {
+      id: 3,
+      title: 'Order Active (Not Cancelled)',
+      passed: gate3Passed,
+      detail: gate3Passed ? 'Order confirmed and active' : 'Order cancelled / refunded'
+    },
+    {
+      id: 4,
+      title: 'No Active Dispute or Hold',
+      passed: gate4Passed,
+      detail: gate4Passed ? 'Clean transaction history' : 'Chargeback dispute filed (Escrow frozen)'
+    },
+    {
+      id: 5,
+      title: 'Merchant KYC & Account Eligible',
+      passed: gate5Passed,
+      detail: gate5Passed ? 'Atelier bank account verified' : 'Account KYC verification pending'
+    }
+  ];
+
+  const allGatesPassed = gates.every(g => g.passed);
+
   return (
     <AdminModal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Escrow Audit: Order #${cleanId}`}
-      maxWidth="640px"
+      title={`Marketplace Settlement & Payout Audit: Order #${cleanId}`}
+      maxWidth="680px"
       footer={
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: '0.75rem' }}>
           <button
@@ -67,7 +109,7 @@ export default function OrderAuditModal({
                   disabled={actionLoading}
                 >
                   <CheckCircle size={13} />
-                  {actionLoading ? 'Processing...' : `Force Release Escrow ($${net95})`}
+                  {actionLoading ? 'Processing...' : `Disburse Payout ($${net95})`}
                 </button>
               </>
             )}
@@ -107,14 +149,86 @@ export default function OrderAuditModal({
       >
         <div>
           <div style={{ fontSize: '0.7rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            Order Fulfillment
+            Order Fulfillment Lifecycle
           </div>
           <div style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--adm-text-main)', marginTop: '2px', textTransform: 'capitalize' }}>
-            {order.status} Lifecycle
+            {order.status} • Courier: {order.courier || 'DHL Express'}
           </div>
         </div>
         <div>
           <AdminStatusBadge status={order.escrow_status} />
+        </div>
+      </div>
+
+      {/* 5-Step Automated Payout Eligibility Checklist */}
+      <div
+        style={{
+          padding: '1rem',
+          borderRadius: '8px',
+          background: 'var(--adm-bg)',
+          border: '1px solid var(--adm-border)',
+          marginBottom: '1.25rem'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <ShieldCheck size={13} color="#38bdf8" />
+            5-Step Automated Payout Eligibility Protocol
+          </div>
+          <span
+            style={{
+              fontSize: '0.65rem',
+              fontWeight: 700,
+              padding: '2px 7px',
+              borderRadius: '4px',
+              background: allGatesPassed ? 'rgba(16, 185, 129, 0.12)' : 'rgba(245, 158, 11, 0.12)',
+              color: allGatesPassed ? '#10b981' : '#f59e0b'
+            }}
+          >
+            {allGatesPassed ? 'All 5 Gates Satisfied' : 'Pending Verification'}
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+          {gates.map((gate) => (
+            <div
+              key={gate.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0.45rem 0.65rem',
+                borderRadius: '6px',
+                background: gate.passed ? 'rgba(16, 185, 129, 0.04)' : 'rgba(255, 255, 255, 0.02)',
+                border: `1px solid ${gate.passed ? 'rgba(16, 185, 129, 0.15)' : 'var(--adm-border-subtle)'}`
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    borderRadius: '50%',
+                    background: gate.passed ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                    color: gate.passed ? '#10b981' : '#f59e0b',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.65rem',
+                    fontWeight: 700
+                  }}
+                >
+                  {gate.passed ? '✓' : '!'}
+                </span>
+                <span style={{ fontSize: '0.74rem', fontWeight: 600, color: 'var(--adm-text-main)' }}>
+                  {gate.id}. {gate.title}
+                </span>
+              </div>
+              <span style={{ fontSize: '0.68rem', color: gate.passed ? '#10b981' : 'var(--adm-text-sub)' }}>
+                {gate.detail}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -150,7 +264,7 @@ export default function OrderAuditModal({
             @{order.vendor?.store_handle || 'studiolabel'}
           </div>
           <div style={{ fontSize: '0.72rem', color: 'var(--adm-text-muted)', marginTop: '5px', lineHeight: 1.4 }}>
-            Courier: <strong>{order.courier || 'Standard Logistics'}</strong>
+            Courier: <strong>{order.courier || 'DHL Express'}</strong>
             <br />
             Tracking: <strong>{order.tracking_number || 'Awaiting Dispatch'}</strong>
           </div>
@@ -202,7 +316,7 @@ export default function OrderAuditModal({
         </div>
       </div>
 
-      {/* Financial Escrow Ledger */}
+      {/* Financial Ledger Breakdown */}
       <div
         style={{
           padding: '1rem',
@@ -213,7 +327,7 @@ export default function OrderAuditModal({
         }}
       >
         <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <CreditCard size={13} /> Escrow Financial Ledger Breakdown
+          <CreditCard size={13} /> Marketplace Settlement Ledger Breakdown
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', fontSize: '0.78rem' }}>
@@ -222,31 +336,31 @@ export default function OrderAuditModal({
             <span style={{ fontWeight: 700, color: 'var(--adm-text-main)' }}>${gross.toFixed(2)}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--adm-text-muted)' }}>VogueSocial Protocol Fee (5% retained):</span>
+            <span style={{ color: 'var(--adm-text-muted)' }}>VogueSocial Protocol Fee (5% take-rate retained):</span>
             <span style={{ fontWeight: 700, color: '#818cf8' }}>-${fee5}</span>
           </div>
           <div style={{ height: '1px', background: 'var(--adm-border)', margin: '4px 0' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--adm-text-main)', fontWeight: 600 }}>Merchant Net Balance (95% disbursement):</span>
+            <span style={{ color: 'var(--adm-text-main)', fontWeight: 600 }}>Merchant Net Payout (95% disbursement):</span>
             <span style={{ fontWeight: 800, color: '#10b981', fontSize: '0.88rem' }}>${net95}</span>
           </div>
         </div>
 
         {isReleased && (
           <div style={{ marginTop: '0.75rem', padding: '0.5rem 0.75rem', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', fontSize: '0.72rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <CheckCircle size={13} /> Escrow funds released to merchant bank balance.
+            <CheckCircle size={13} /> Funds disbursed to merchant connected bank account.
           </div>
         )}
 
         {isRefunded && (
           <div style={{ marginTop: '0.75rem', padding: '0.5rem 0.75rem', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '0.72rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <XCircle size={13} /> Order cancelled. 100% of escrow returned to customer card.
+            <XCircle size={13} /> Order cancelled. 100% of payment refunded to customer card.
           </div>
         )}
 
         {isDisputed && (
           <div style={{ marginTop: '0.75rem', padding: '0.5rem 0.75rem', borderRadius: '6px', background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', fontSize: '0.72rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <AlertTriangle size={13} /> Active claim filed. Funds frozen pending arbitration.
+            <AlertTriangle size={13} /> Active dispute filed. Payout frozen pending evidence arbitration.
           </div>
         )}
       </div>

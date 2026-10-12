@@ -17,7 +17,7 @@ export default function AdminIntegrationsPage() {
   const [savingStripe, setSavingStripe] = useState(false);
   const [savingCarriers, setSavingCarriers] = useState(false);
   const [simulating, setSimulating] = useState(false);
-  const [activeTab, setActiveTab] = useState('stripe');
+  const [activeTab, setActiveTab] = useState('payment');
 
   const loadAll = async () => {
     setLoading(true);
@@ -44,8 +44,13 @@ export default function AdminIntegrationsPage() {
     try {
       const updated = {
         ...config,
+        payment: {
+          ...(config?.payment || config?.stripe),
+          ...stripeData,
+          last_sync: new Date().toISOString()
+        },
         stripe: {
-          ...config.stripe,
+          ...(config?.stripe || config?.payment),
           ...stripeData,
           last_sync: new Date().toISOString()
         }
@@ -53,7 +58,7 @@ export default function AdminIntegrationsPage() {
       const res = await adminService.saveIntegrationsConfig(updated);
       if (res?.success) setConfig(res.config);
     } catch (err) {
-      console.error('Failed to save Stripe config:', err);
+      console.error('Failed to save payment config:', err);
     } finally {
       setSavingStripe(false);
     }
@@ -64,8 +69,13 @@ export default function AdminIntegrationsPage() {
     try {
       const updated = {
         ...config,
+        logistics: {
+          ...(config?.logistics || config?.easypost),
+          ...carrierData,
+          last_ping: new Date().toISOString()
+        },
         easypost: {
-          ...config.easypost,
+          ...(config?.easypost || config?.logistics),
           ...carrierData,
           last_ping: new Date().toISOString()
         }
@@ -73,7 +83,7 @@ export default function AdminIntegrationsPage() {
       const res = await adminService.saveIntegrationsConfig(updated);
       if (res?.success) setConfig(res.config);
     } catch (err) {
-      console.error('Failed to save Carrier config:', err);
+      console.error('Failed to save carrier config:', err);
     } finally {
       setSavingCarriers(false);
     }
@@ -103,7 +113,7 @@ export default function AdminIntegrationsPage() {
   };
 
   const TABS = [
-    { id: 'stripe', label: 'Payment Gateway' },
+    { id: 'payment', label: 'Marketplace Payments & Payouts' },
     { id: 'carriers', label: 'Carrier Logistics' },
     { id: 'accounts', label: 'Merchant Accounts', count: config?.connected_accounts?.length },
     { id: 'webhooks', label: 'Webhooks', count: events.length },
@@ -113,7 +123,7 @@ export default function AdminIntegrationsPage() {
     <>
       <AdminTopBar
         title="Integrations & Gateways"
-        subtitle="Manage Stripe Connect escrow vaults, carrier logistics APIs, and webhook event streaming"
+        subtitle="Manage marketplace payment processors, carrier tracking logistics, merchant accounts, and webhook streams"
         onRefresh={loadAll}
         refreshing={loading}
       />
@@ -147,9 +157,9 @@ export default function AdminIntegrationsPage() {
           </div>
         ) : (
           <>
-            {activeTab === 'stripe' && (
+            {activeTab === 'payment' && (
               <StripeGatewayCard
-                config={config?.stripe}
+                config={config?.payment || config?.stripe}
                 onSave={handleSaveStripe}
                 saving={savingStripe}
               />
@@ -157,7 +167,7 @@ export default function AdminIntegrationsPage() {
 
             {activeTab === 'carriers' && (
               <CarrierLogisticsCard
-                config={config?.easypost}
+                config={config?.logistics || config?.easypost}
                 onSave={handleSaveCarriers}
                 saving={savingCarriers}
               />
