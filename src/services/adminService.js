@@ -92,5 +92,37 @@ export const adminService = {
       body: JSON.stringify({ category })
     });
     return res.json();
+  },
+
+  async getOrders(filter = 'all', search = '') {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.getOrders(filter, search);
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/orders?filter=${encodeURIComponent(filter)}&q=${encodeURIComponent(search)}`);
+    return res.json();
+  },
+
+  async releaseOrderEscrow(orderId, notes = '') {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.releaseOrderEscrow(orderId, notes);
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/orders/release`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId, notes })
+    });
+    return res.json();
+  },
+
+  async refundOrder(orderId, notes = '') {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.refundOrder(orderId, notes);
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/orders/refund`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId, notes })
+    });
+    return res.json();
   }
 };

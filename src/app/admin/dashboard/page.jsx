@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { adminService } from '@/services/adminService';
 import {
   DollarSign, Landmark, ShieldCheck, Users,
@@ -171,9 +172,13 @@ export default function AdminDashboardPage() {
               <Package size={16} color="#818cf8" />
               Recent Escrow Transactions
             </span>
-            <span style={{ fontSize: '0.72rem', color: 'var(--adm-text-sub)' }}>
-              Total: {data.recentOrders.length} Records
-            </span>
+            <Link
+              to="/admin/orders"
+              className="admin-btn admin-btn-ghost admin-btn-sm"
+              style={{ fontSize: '0.72rem' }}
+            >
+              View Full Escrow Vault ({data.recentOrders.length}) <ArrowUpRight size={12} />
+            </Link>
           </div>
 
           {loading ? (
