@@ -42,14 +42,58 @@ export const adminService = {
     return res.json();
   },
 
-  async updateVendorStatus(vendorId, action) {
+  async getVendorById(vendorId) {
     if (IS_MOCK_MODE) {
-      return mockAdminAdapter.updateVendorStatus(vendorId, action);
+      return mockAdminAdapter.getVendorById(vendorId);
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/vendors/${vendorId}`);
+    return res.json();
+  },
+
+  async updateVendorStatus(vendorId, action, notes = '') {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.updateVendorStatus(vendorId, action, notes);
     }
     const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/vendors`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ vendorId, action })
+      body: JSON.stringify({ vendorId, action, admin_notes: notes })
+    });
+    return res.json();
+  },
+
+  async updateVendorBusinessInfo(vendorId, businessData) {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.updateVendorBusinessInfo(vendorId, businessData);
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/vendors/${vendorId}/business`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(businessData)
+    });
+    return res.json();
+  },
+
+  async updateVendorDocumentStatus(vendorId, docId, status, notes = '') {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.updateVendorDocumentStatus(vendorId, docId, status, notes);
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/vendors/${vendorId}/documents/${docId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, notes })
+    });
+    return res.json();
+  },
+
+  async updateVendorCommercialTerms(vendorId, terms) {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.updateVendorCommercialTerms(vendorId, terms);
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/vendors/${vendorId}/commercials`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(terms)
     });
     return res.json();
   },

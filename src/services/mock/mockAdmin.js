@@ -421,30 +421,10 @@ export const mockAdminAdapter = {
     let stores = storageEngine.getItem(STORAGE_KEYS.STORES, []);
     const products = storageEngine.getItem(STORAGE_KEYS.PRODUCTS, []);
 
-    // Ensure fallback stores exist if empty
-    if (!stores || stores.length === 0) {
-      stores = [
-        {
-          id: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c',
-          vendor_id: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c',
-          store_name: 'Studio Label Paris',
-          store_handle: 'studiolabel',
-          email: 'concierge@studiolabelparis.com',
-          vendor_status: 'approved',
-          created_at: '2026-08-15T10:00:00Z',
-          custom_domain: 'shop.studiolabelparis.com'
-        },
-        {
-          id: 'mch_elena_02',
-          vendor_id: 'mch_elena_02',
-          store_name: 'Elena Couture',
-          store_handle: 'elenacouture',
-          email: 'elena@elenacouture.com',
-          vendor_status: 'approved',
-          created_at: '2026-09-01T14:30:00Z',
-          custom_domain: 'shop.elenacouture.com'
-        }
-      ];
+    // Ensure fallback stores exist or are upgraded with full compliance schema
+    if (!stores || stores.length < 5 || !stores[0]?.legal_business_name) {
+      stores = INITIAL_VENDORS_DATA;
+      storageEngine.setItem(STORAGE_KEYS.STORES, stores);
     }
 
     const enriched = stores.map(s => {
@@ -457,18 +437,27 @@ export const mockAdminAdapter = {
         store_handle: s.store_handle || s.storeHandle || 'studiolabel',
         email: s.email || 'vendor@voguesocial.com',
         vendor_status: s.vendor_status || 'approved',
-        products_count: count,
+        products_count: s.products_count !== undefined ? s.products_count : count,
         created_at: s.created_at || '2026-08-01T00:00:00Z'
       };
     });
 
     const filtered = enriched.filter(v => {
       const name = (v.store_name || '').toLowerCase();
+      const legal = (v.legal_business_name || '').toLowerCase();
       const email = (v.email || '').toLowerCase();
       const handle = (v.store_handle || '').toLowerCase();
       const q = search.toLowerCase();
-      const matchesSearch = !q || name.includes(q) || email.includes(q) || handle.includes(q);
-      const matchesFilter = filter === 'all' || v.vendor_status === filter;
+      const matchesSearch = !q || name.includes(q) || legal.includes(q) || email.includes(q) || handle.includes(q);
+      
+      let matchesFilter = true;
+      if (filter === 'all') matchesFilter = true;
+      else if (filter === 'approved') matchesFilter = v.vendor_status === 'approved';
+      else if (filter === 'pending_approval') matchesFilter = v.vendor_status === 'pending_approval';
+      else if (filter === 'changes_requested') matchesFilter = v.vendor_status === 'changes_requested';
+      else if (filter === 'suspended') matchesFilter = v.vendor_status === 'suspended';
+      else matchesFilter = v.vendor_status === filter;
+
       return matchesSearch && matchesFilter;
     });
 
@@ -479,17 +468,137 @@ export const mockAdminAdapter = {
     };
   },
 
-  async updateVendorStatus(vendorId, action) {
+  async getVendorById(vendorId) {
     await delay();
     let stores = storageEngine.getItem(STORAGE_KEYS.STORES, []);
+    if (!stores || stores.length === 0 || !stores[0]?.legal_business_name) {
+      stores = INITIAL_VENDORS_DATA;
+      storageEngine.setItem(STORAGE_KEYS.STORES, stores);
+    }
+    const vendor = stores.find(s => (s.vendor_id === vendorId || s.id === vendorId || s.vendorId === vendorId));
+    if (!vendor) {
+      return { success: false, error: 'Merchant not found' };
+    }
+    return {
+      success: true,
+      vendor
+    };
+  },
+
+  async updateVendorBusinessInfo(vendorId, businessData) {
+    await delay(300);
+    let stores = storageEngine.getItem(STORAGE_KEYS.STORES, INITIAL_VENDORS_DATA);
+    const idx = stores.findIndex(s => (s.vendor_id === vendorId || s.id === vendorId || s.vendorId === vendorId));
+    if (idx === -1) {
+      return { success: false, error: 'Vendor not found' };
+    }
+
+    stores[idx] = {
+      ...stores[idx],
+      legal_business_name: businessData.legal_business_name || stores[idx].legal_business_name,
+      business_type: businessData.business_type || stores[idx].business_type,
+      tax_id: businessData.tax_id || stores[idx].tax_id,
+      registration_number: businessData.registration_number || stores[idx].registration_number,
+      phone: businessData.phone || stores[idx].phone,
+      country: businessData.country || stores[idx].country,
+      legal_address: {
+        ...(stores[idx].legal_address || {}),
+        ...(businessData.legal_address || {})
+      },
+      return_warehouse_address: {
+        ...(stores[idx].return_warehouse_address || {}),
+        ...(businessData.return_warehouse_address || {})
+      },
+      representative: {
+        ...(stores[idx].representative || {}),
+        ...(businessData.representative || {})
+      },
+      updated_at: new Date().toISOString()
+    };
+
+    storageEngine.setItem(STORAGE_KEYS.STORES, stores);
+    return {
+      success: true,
+      vendor: stores[idx]
+    };
+  },
+
+  async updateVendorDocumentStatus(vendorId, docId, status, notes = '') {
+    await delay(250);
+    let stores = storageEngine.getItem(STORAGE_KEYS.STORES, INITIAL_VENDORS_DATA);
+    const idx = stores.findIndex(s => (s.vendor_id === vendorId || s.id === vendorId || s.vendorId === vendorId));
+    if (idx === -1) {
+      return { success: false, error: 'Vendor not found' };
+    }
+
+    const docs = stores[idx].documents || [];
+    const dIdx = docs.findIndex(d => d.id === docId);
+    if (dIdx !== -1) {
+      docs[dIdx] = {
+        ...docs[dIdx],
+        status,
+        notes: notes || docs[dIdx].notes,
+        verified_at: status === 'verified' ? new Date().toISOString() : docs[dIdx].verified_at
+      };
+      stores[idx] = {
+        ...stores[idx],
+        documents: docs,
+        updated_at: new Date().toISOString()
+      };
+      storageEngine.setItem(STORAGE_KEYS.STORES, stores);
+    }
+
+    return {
+      success: true,
+      vendor: stores[idx]
+    };
+  },
+
+  async updateVendorCommercialTerms(vendorId, terms) {
+    await delay(250);
+    let stores = storageEngine.getItem(STORAGE_KEYS.STORES, INITIAL_VENDORS_DATA);
+    const idx = stores.findIndex(s => (s.vendor_id === vendorId || s.id === vendorId || s.vendorId === vendorId));
+    if (idx === -1) {
+      return { success: false, error: 'Vendor not found' };
+    }
+
+    stores[idx] = {
+      ...stores[idx],
+      commercial_terms: {
+        ...(stores[idx].commercial_terms || {}),
+        ...terms
+      },
+      updated_at: new Date().toISOString()
+    };
+    storageEngine.setItem(STORAGE_KEYS.STORES, stores);
+
+    return {
+      success: true,
+      vendor: stores[idx]
+    };
+  },
+
+  async updateVendorStatus(vendorId, action, notes = '') {
+    await delay(300);
+    let stores = storageEngine.getItem(STORAGE_KEYS.STORES, INITIAL_VENDORS_DATA);
     const idx = stores.findIndex(s => (s.vendor_id === vendorId || s.id === vendorId || s.vendorId === vendorId));
 
-    const nextStatus = action === 'approve' ? 'approved' : (action === 'suspend' ? 'suspended' : 'pending_approval');
+    let nextStatus = 'approved';
+    if (action === 'approve' || action === 'reactivate') nextStatus = 'approved';
+    else if (action === 'suspend') nextStatus = 'suspended';
+    else if (action === 'request_changes') nextStatus = 'changes_requested';
+    else if (action === 'reject') nextStatus = 'rejected';
+    else if (action === 'pending') nextStatus = 'pending_approval';
 
     if (idx !== -1) {
+      const existingNotes = stores[idx].admin_notes || '';
+      const auditEntry = notes ? `[${new Date().toLocaleDateString()}] ${notes}` : '';
+      const newNotes = auditEntry ? (existingNotes ? `${existingNotes}\n${auditEntry}` : auditEntry) : existingNotes;
+
       stores[idx] = {
         ...stores[idx],
         vendor_status: nextStatus,
+        admin_notes: newNotes,
         status_updated_at: new Date().toISOString()
       };
       storageEngine.setItem(STORAGE_KEYS.STORES, stores);
@@ -497,7 +606,8 @@ export const mockAdminAdapter = {
 
     return {
       success: true,
-      vendor_status: nextStatus
+      vendor_status: nextStatus,
+      vendor: idx !== -1 ? stores[idx] : null
     };
   },
 
@@ -1123,5 +1233,258 @@ const INITIAL_WEBHOOK_EVENTS = [
       fee_collected: 1400,
       rule: '5_step_verification_passed'
     }
+  }
+];
+
+const INITIAL_VENDORS_DATA = [
+  {
+    id: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c',
+    vendor_id: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c',
+    store_name: 'Studio Label Paris',
+    store_handle: 'studiolabel',
+    email: 'concierge@studiolabelparis.com',
+    phone: '+33 1 42 68 55 00',
+    custom_domain: 'shop.studiolabelparis.com',
+    vendor_status: 'approved',
+    kyc_status: 'verified',
+    legal_business_name: 'Studio Label Paris S.A.S.',
+    business_type: 'Société par Actions Simplifiée (SAS)',
+    tax_id: 'FR 89 293849102',
+    registration_number: 'RCS Paris 892 938 491',
+    country: 'France',
+    products_count: 8,
+    created_at: '2026-08-15T10:00:00Z',
+    legal_address: {
+      street: '18 Rue du Faubourg Saint-Honoré',
+      city: 'Paris',
+      postal_code: '75008',
+      country: 'France'
+    },
+    return_warehouse_address: {
+      street: '42 Rue de Paradis, Atelier 3B',
+      city: 'Paris',
+      postal_code: '75010',
+      country: 'France'
+    },
+    representative: {
+      name: 'Camille Laurent',
+      title: 'Managing Director & Atelier Head',
+      email: 'camille@studiolabelparis.com',
+      phone: '+33 6 12 34 56 78'
+    },
+    documents: [
+      { id: 'doc_101', type: 'address_proof', title: 'Proof of Business Address', filename: 'commercial_lease_faubourg.pdf', size: '2.4 MB', uploaded_at: '2026-08-10T12:00:00Z', status: 'verified', notes: 'Verified against Paris commercial property registry.' },
+      { id: 'doc_102', type: 'incorporation', title: 'Certificate of Incorporation (Kbis)', filename: 'kbis_extract_2026.pdf', size: '1.1 MB', uploaded_at: '2026-08-10T12:00:00Z', status: 'verified', notes: 'Active in Paris Registry of Commerce.' },
+      { id: 'doc_103', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'passport_c_laurent.pdf', size: '3.8 MB', uploaded_at: '2026-08-10T12:00:00Z', status: 'verified', notes: 'Passport valid through 2031.' },
+      { id: 'doc_104', type: 'trademark', title: 'Brand Trademark Registration', filename: 'euipo_trademark_01829.pdf', size: '940 KB', uploaded_at: '2026-08-10T12:00:00Z', status: 'verified', notes: 'EUIPO registered brand owner.' }
+    ],
+    commercial_terms: {
+      take_rate_pct: 5.0,
+      payout_hold: false,
+      stripe_account_id: 'acct_1N4k92A',
+      bank_name: 'JPMorgan Chase (Paris)',
+      account_last4: '4192'
+    },
+    admin_notes: 'Atelier verified during Paris Fashion Week intake.'
+  },
+  {
+    id: 'mch_elena_02',
+    vendor_id: 'mch_elena_02',
+    store_name: 'Elena Couture',
+    store_handle: 'elenacouture',
+    email: 'elena@elenacouture.com',
+    phone: '+39 02 7600 1234',
+    custom_domain: 'shop.elenacouture.com',
+    vendor_status: 'approved',
+    kyc_status: 'verified',
+    legal_business_name: 'Elena Couture S.r.l.',
+    business_type: 'Società a Responsabilità Limitata (S.r.l.)',
+    tax_id: 'IT 08192840152',
+    registration_number: 'REA Milano MI-2091823',
+    country: 'Italy',
+    products_count: 2,
+    created_at: '2026-09-01T14:30:00Z',
+    legal_address: {
+      street: 'Via Montenapoleone 12',
+      city: 'Milano',
+      postal_code: '20121',
+      country: 'Italy'
+    },
+    return_warehouse_address: {
+      street: 'Via della Spiga 8, Cortile Interno',
+      city: 'Milano',
+      postal_code: '20121',
+      country: 'Italy'
+    },
+    representative: {
+      name: 'Elena Rossi',
+      title: 'Founder & Head Designer',
+      email: 'elena@elenacouture.com',
+      phone: '+39 340 1234567'
+    },
+    documents: [
+      { id: 'doc_201', type: 'address_proof', title: 'Proof of Business Address', filename: 'telecom_italia_utility_bill.pdf', size: '1.8 MB', uploaded_at: '2026-08-28T09:30:00Z', status: 'verified', notes: 'Matches Montenapoleone commercial registry.' },
+      { id: 'doc_202', type: 'incorporation', title: 'Certificate of Incorporation', filename: 'camera_commercio_milano.pdf', size: '2.1 MB', uploaded_at: '2026-08-28T09:30:00Z', status: 'verified', notes: 'Milan Chamber of Commerce certified.' },
+      { id: 'doc_203', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'carta_identita_rossi.pdf', size: '2.9 MB', uploaded_at: '2026-08-28T09:30:00Z', status: 'verified', notes: 'Italian national identity verified.' },
+      { id: 'doc_204', type: 'trademark', title: 'Brand Trademark Registration', filename: 'uibm_marchio_elena.pdf', size: '1.2 MB', uploaded_at: '2026-08-28T09:30:00Z', status: 'verified', notes: 'Italian Patent and Trademark Office registered.' }
+    ],
+    commercial_terms: {
+      take_rate_pct: 4.5,
+      payout_hold: false,
+      stripe_account_id: 'acct_1N8m10B',
+      bank_name: 'BNP Paribas Private',
+      account_last4: '8821'
+    },
+    admin_notes: 'Direct contract negotiated at 4.5% platform commission.'
+  },
+  {
+    id: 'mch_ombre_03',
+    vendor_id: 'mch_ombre_03',
+    store_name: "Maison de L'Ombre",
+    store_handle: 'maisondelombre',
+    email: 'contact@maisondelombre.fr',
+    phone: '+33 1 48 05 99 11',
+    custom_domain: 'boutique.maisondelombre.fr',
+    vendor_status: 'pending_approval',
+    kyc_status: 'under_review',
+    legal_business_name: "Maison de L'Ombre Créations SARL",
+    business_type: 'Société à Responsabilité Limitée (SARL)',
+    tax_id: 'FR 41 908123456',
+    registration_number: 'RCS Paris 908 123 456',
+    country: 'France',
+    products_count: 4,
+    created_at: '2026-10-08T15:20:00Z',
+    legal_address: {
+      street: '7 Rue de Charonne',
+      city: 'Paris',
+      postal_code: '75011',
+      country: 'France'
+    },
+    return_warehouse_address: {
+      street: '7 Rue de Charonne, Rez-de-chaussée',
+      city: 'Paris',
+      postal_code: '75011',
+      country: 'France'
+    },
+    representative: {
+      name: 'Mathieu Vaneau',
+      title: 'Creative Director',
+      email: 'm.vaneau@maisondelombre.fr',
+      phone: '+33 6 77 88 99 00'
+    },
+    documents: [
+      { id: 'doc_301', type: 'address_proof', title: 'Proof of Business Address', filename: 'edf_electricity_bill_july2026.pdf', size: '1.4 MB', uploaded_at: '2026-10-08T15:20:00Z', status: 'pending', notes: 'Awaiting admin verification against Charonne commercial lease.' },
+      { id: 'doc_302', type: 'incorporation', title: 'Certificate of Incorporation (Kbis)', filename: 'kbis_extrait_ombre.pdf', size: '890 KB', uploaded_at: '2026-10-08T15:20:00Z', status: 'verified', notes: 'Validated with Infogreffe database.' },
+      { id: 'doc_303', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'passeport_vaneau.pdf', size: '3.1 MB', uploaded_at: '2026-10-08T15:20:00Z', status: 'verified', notes: 'Passport verified via Stripe Identity check.' },
+      { id: 'doc_304', type: 'trademark', title: 'Brand Trademark Registration', filename: 'inpi_marque_depot_ombre.pdf', size: '1.5 MB', uploaded_at: '2026-10-08T15:20:00Z', status: 'pending', notes: 'French INPI application pending final publication review.' }
+    ],
+    commercial_terms: {
+      take_rate_pct: 5.0,
+      payout_hold: true,
+      stripe_account_id: 'acct_1N9p77C',
+      bank_name: 'Société Générale (Bastille)',
+      account_last4: '1092'
+    },
+    admin_notes: 'Initial application received. Catalog contains 4 haute couture evening pieces. Address proof and trademark pending approval.'
+  },
+  {
+    id: 'mch_noir_04',
+    vendor_id: 'mch_noir_04',
+    store_name: 'Atelier Noir Studio',
+    store_handle: 'ateliernoir',
+    email: 'contact@ateliernoir.com',
+    phone: '+1 (212) 555-0184',
+    custom_domain: 'ateliernoir.com',
+    vendor_status: 'changes_requested',
+    kyc_status: 'documents_required',
+    legal_business_name: 'Noir Studio LLC',
+    business_type: 'Limited Liability Company (LLC)',
+    tax_id: 'US 13-9824018',
+    registration_number: 'NY DOS ID 6920194',
+    country: 'United States',
+    products_count: 5,
+    created_at: '2026-09-20T11:00:00Z',
+    legal_address: {
+      street: '520 Broadway, Suite 800',
+      city: 'New York',
+      postal_code: '10012',
+      country: 'United States'
+    },
+    return_warehouse_address: {
+      street: '145 Industrial Pkwy, Dock 4',
+      city: 'Jersey City',
+      postal_code: '07305',
+      country: 'United States'
+    },
+    representative: {
+      name: 'Julian Vance',
+      title: 'Principal Operator',
+      email: 'jvance@ateliernoir.com',
+      phone: '+1 (917) 555-0199'
+    },
+    documents: [
+      { id: 'doc_401', type: 'address_proof', title: 'Proof of Business Address', filename: 'conedison_bill_unclear.pdf', size: '720 KB', uploaded_at: '2026-09-20T11:00:00Z', status: 'rejected', notes: 'Rejected: Bill is dated over 6 months ago. Upload utility bill from last 90 days or signed Soho lease.' },
+      { id: 'doc_402', type: 'incorporation', title: 'Certificate of Formation', filename: 'ny_articles_of_organization.pdf', size: '1.3 MB', uploaded_at: '2026-09-20T11:00:00Z', status: 'verified', notes: 'New York Department of State verified.' },
+      { id: 'doc_403', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'ny_driver_license_vance.pdf', size: '2.5 MB', uploaded_at: '2026-09-20T11:00:00Z', status: 'verified', notes: 'Driver license valid through 2028.' },
+      { id: 'doc_404', type: 'trademark', title: 'USPTO Trademark Filing', filename: 'uspto_sn_97812903.pdf', size: '1.1 MB', uploaded_at: '2026-09-20T11:00:00Z', status: 'verified', notes: 'USPTO Principal Register active.' }
+    ],
+    commercial_terms: {
+      take_rate_pct: 5.0,
+      payout_hold: true,
+      stripe_account_id: 'acct_1N9x55D',
+      bank_name: 'Silicon Valley Bank / First Citizens',
+      account_last4: '3049'
+    },
+    admin_notes: 'Address proof was rejected on Oct 1st. Notified applicant to supply valid utility bill or Soho commercial lease.'
+  },
+  {
+    id: 'mch_vanguard_05',
+    vendor_id: 'mch_vanguard_05',
+    store_name: 'Vanguard Streetwear Co.',
+    store_handle: 'vanguardstreet',
+    email: 'legal@vanguardstreet.co.uk',
+    phone: '+44 20 7946 0912',
+    custom_domain: 'shop.vanguardstreet.co.uk',
+    vendor_status: 'suspended',
+    kyc_status: 'suspended',
+    legal_business_name: 'Vanguard Streetwear Limited',
+    business_type: 'Private Limited Company (Ltd)',
+    tax_id: 'GB 992 0192 84',
+    registration_number: 'Companies House 12904812',
+    country: 'United Kingdom',
+    products_count: 6,
+    created_at: '2026-07-15T08:00:00Z',
+    legal_address: {
+      street: '14 Shoreditch High Street',
+      city: 'London',
+      postal_code: 'E1 6PG',
+      country: 'United Kingdom'
+    },
+    return_warehouse_address: {
+      street: 'Unit 4, Hackney Downs Studios',
+      city: 'London',
+      postal_code: 'E8 2BT',
+      country: 'United Kingdom'
+    },
+    representative: {
+      name: 'Liam Sterling',
+      title: 'Operations Director',
+      email: 'l.sterling@vanguardstreet.co.uk',
+      phone: '+44 7700 900123'
+    },
+    documents: [
+      { id: 'doc_501', type: 'address_proof', title: 'Proof of Business Address', filename: 'shoreditch_lease_deed.pdf', size: '3.1 MB', uploaded_at: '2026-07-15T08:00:00Z', status: 'verified', notes: 'Verified commercial lease.' },
+      { id: 'doc_502', type: 'incorporation', title: 'Certificate of Incorporation', filename: 'companies_house_extract.pdf', size: '1.4 MB', uploaded_at: '2026-07-15T08:00:00Z', status: 'verified', notes: 'Companies House registered.' },
+      { id: 'doc_503', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'uk_passport_sterling.pdf', size: '2.8 MB', uploaded_at: '2026-07-15T08:00:00Z', status: 'verified', notes: 'UK passport verified.' },
+      { id: 'doc_504', type: 'trademark', title: 'Brand Trademark Registration', filename: 'uk_ipo_trademark.pdf', size: '1.0 MB', uploaded_at: '2026-07-15T08:00:00Z', status: 'rejected', notes: 'Flagged: Active trademark dispute filed by third party rights holder.' }
+    ],
+    commercial_terms: {
+      take_rate_pct: 6.0,
+      payout_hold: true,
+      stripe_account_id: 'acct_1N7k19E',
+      bank_name: 'Barclays Commercial UK',
+      account_last4: '9901'
+    },
+    admin_notes: 'Account suspended on Oct 2nd following trademark infringement notice. Storefront unlisted and payouts locked.'
   }
 ];
