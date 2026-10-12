@@ -1,11 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { adminService } from '@/services/adminService';
-import { AdminTopBar, AdminKpiCard } from '@/components/admin';
-import {
-  CreditCard, Truck, Terminal, Building2,
-  Radio, ShieldCheck, CheckCircle2, RefreshCw
-} from 'lucide-react';
+import { AdminTopBar } from '@/components/admin';
+import { RefreshCw } from 'lucide-react';
 import {
   StripeGatewayCard,
   CarrierLogisticsCard,
@@ -106,93 +103,46 @@ export default function AdminIntegrationsPage() {
   };
 
   const TABS = [
-    { id: 'stripe', label: 'Payment Gateway (Stripe)', icon: CreditCard },
-    { id: 'carriers', label: 'Carrier Logistics (EasyPost)', icon: Truck },
-    { id: 'accounts', label: `Merchant KYC Accounts (${config?.connected_accounts?.length || 0})`, icon: Building2 },
-    { id: 'webhooks', label: `Live Webhook Stream (${events.length})`, icon: Terminal },
+    { id: 'stripe', label: 'Payment Gateway' },
+    { id: 'carriers', label: 'Carrier Logistics' },
+    { id: 'accounts', label: 'Merchant Accounts', count: config?.connected_accounts?.length },
+    { id: 'webhooks', label: 'Webhooks', count: events.length },
   ];
 
   return (
     <>
       <AdminTopBar
         title="Integrations & Gateways"
-        subtitle="Manage Stripe Connect escrow vaults, multi-carrier logistics routing, merchant KYC banking, and real-time webhook streaming"
+        subtitle="Manage Stripe Connect escrow vaults, carrier logistics APIs, and webhook event streaming"
         onRefresh={loadAll}
         refreshing={loading}
       />
 
-      <div className="admin-content">
-        {/* KPI Platform Gateways Grid */}
-        <div className="admin-kpi-grid">
-          <AdminKpiCard
-            label="Payment Gateway"
-            value="Stripe Connect"
-            sub={config?.stripe?.environment === 'production' ? '● Live Production Gateway' : '○ Sandbox Testnet Active'}
-            icon={CreditCard}
-            trend="up"
-            trendLabel="Operational"
-            iconBg="rgba(99, 102, 241, 0.12)"
-            iconColor="#818cf8"
-          />
-
-          <AdminKpiCard
-            label="Multi-Carrier Routing"
-            value="EasyPost Gateway"
-            sub="DHL, FedEx, UPS & Colissimo"
-            icon={Truck}
-            trend="up"
-            trendLabel="4 Carriers"
-            iconBg="rgba(56, 189, 248, 0.12)"
-            iconColor="#38bdf8"
-          />
-
-          <AdminKpiCard
-            label="Platform Take-Rate"
-            value={`${config?.stripe?.platform_take_rate || 5.0}%`}
-            sub="Automatic 95% merchant payout"
-            icon={ShieldCheck}
-            trend="neutral"
-            trendLabel="Fixed Rate"
-            iconBg="rgba(16, 185, 129, 0.12)"
-            iconColor="#10b981"
-          />
-
-          <AdminKpiCard
-            label="Webhook Listener"
-            value="Active & Listening"
-            sub={`${events.length} events processed this session`}
-            icon={Radio}
-            trend="up"
-            trendLabel="99.98% Uptime"
-            iconBg="rgba(245, 158, 11, 0.12)"
-            iconColor="#f59e0b"
-          />
-        </div>
-
-        {/* Tab Navigation */}
-        <div style={{ display: 'flex', gap: '0.45rem', borderBottom: '1px solid var(--adm-border)', paddingBottom: '0.5rem', flexWrap: 'wrap' }}>
+      <div className="admin-content" style={{ maxWidth: '1080px' }}>
+        {/* Minimalist Tab Navigation */}
+        <nav className="admin-tab-nav">
           {TABS.map((tab) => {
-            const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`admin-btn ${isActive ? 'admin-btn-primary' : 'admin-btn-secondary'}`}
-                style={{ fontSize: '0.74rem', padding: '0.45rem 0.9rem' }}
+                className={`admin-tab-nav-btn ${isActive ? 'active' : ''}`}
               >
-                <Icon size={13} />
                 <span>{tab.label}</span>
+                {tab.count !== undefined && (
+                  <span className="admin-tab-badge">{tab.count}</span>
+                )}
               </button>
             );
           })}
-        </div>
+        </nav>
 
         {/* Tab Panels */}
         {loading ? (
           <div className="admin-empty-state">
-            <RefreshCw size={28} className="animate-spin admin-empty-icon" />
+            <RefreshCw size={24} className="animate-spin admin-empty-icon" />
             <p>Loading gateway configuration...</p>
           </div>
         ) : (

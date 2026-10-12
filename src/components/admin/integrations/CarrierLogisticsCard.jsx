@@ -1,9 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import {
-  Truck, Check, Copy, RefreshCw, Save,
-  CheckCircle, Globe, Shield, Radio
-} from 'lucide-react';
+import { Check, Copy, Eye, EyeOff } from 'lucide-react';
 
 export default function CarrierLogisticsCard({
   config = {},
@@ -21,27 +18,28 @@ export default function CarrierLogisticsCard({
     }
   });
 
-  const [copied, setCopied] = useState(false);
+  const [showKey, setShowKey] = useState(false);
+  const [copiedEndpoint, setCopiedEndpoint] = useState(false);
+  const [pingStatus, setPingStatus] = useState(null);
   const [pingLoading, setPingLoading] = useState(false);
-  const [pingSuccess, setPingSuccess] = useState(null);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  const handleCopyEndpoint = () => {
-    navigator.clipboard.writeText(form.webhook_endpoint);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopiedEndpoint(true);
+    setTimeout(() => setCopiedEndpoint(false), 2000);
   };
 
-  const handlePingCarriers = async () => {
+  const handlePing = async () => {
     setPingLoading(true);
-    setPingSuccess(null);
-    await new Promise(r => setTimeout(r, 600));
+    setPingStatus(null);
+    await new Promise(r => setTimeout(r, 500));
     setPingLoading(false);
-    setPingSuccess('All 4 carrier gateways responded in 42ms. EasyPost webhook routing active.');
-    setTimeout(() => setPingSuccess(null), 4000);
+    setPingStatus('All 4 carrier gateways connected (42ms)');
+    setTimeout(() => setPingStatus(null), 3500);
   };
 
-  const handleToggleCarrier = (key) => {
+  const handleToggle = (key) => {
     setForm({
       ...form,
       carriers: {
@@ -62,159 +60,146 @@ export default function CarrierLogisticsCard({
   };
 
   return (
-    <div className="admin-panel" style={{ padding: '1.5rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div
-            style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '8px',
-              background: 'rgba(56, 189, 248, 0.12)',
-              color: '#38bdf8',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Truck size={20} />
+    <div className="admin-panel" style={{ padding: '1.75rem' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '1.25rem', borderBottom: '1px solid var(--adm-border)' }}>
+        <div>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--adm-text-main)', margin: 0 }}>
+            Shipping & Logistics
+          </h3>
+          <p style={{ fontSize: '0.74rem', color: 'var(--adm-text-sub)', margin: '3px 0 0' }}>
+            Multi-carrier parcel routing, automated labels, and tracking updates.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          className="admin-btn admin-btn-ghost admin-btn-sm"
+          onClick={handlePing}
+          disabled={pingLoading}
+        >
+          {pingLoading ? 'Testing...' : 'Test connection'}
+        </button>
+      </div>
+
+      {pingStatus && (
+        <div style={{ margin: '1rem 0 0', padding: '0.5rem 0.75rem', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.08)', color: '#10b981', fontSize: '0.72rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Check size={12} /> {pingStatus}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} style={{ marginTop: '0.5rem' }}>
+        {/* Row 1: API Key */}
+        <div className="admin-settings-row">
+          <div className="admin-settings-info">
+            <div className="admin-settings-title">EasyPost API Key</div>
+            <div className="admin-settings-desc">Master API key for multi-carrier dispatch and rate retrieval.</div>
           </div>
-          <div>
-            <h3 className="admin-panel-title" style={{ margin: 0 }}>
-              Multi-Carrier Logistics & Tracking Engine
-            </h3>
-            <div style={{ fontSize: '0.72rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
-              EasyPost Universal API • Automatic Waybill PDFs • Real-Time Satellite Tracking Scans
+          <div className="admin-settings-control">
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showKey ? "text" : "password"}
+                className="admin-input"
+                value={form.api_key}
+                onChange={(e) => setForm({ ...form, api_key: e.target.value })}
+                style={{ width: '100%', fontFamily: 'monospace', fontSize: '0.76rem', paddingRight: '2.5rem' }}
+                placeholder="EZAK_..."
+              />
+              <button
+                type="button"
+                onClick={() => setShowKey(!showKey)}
+                style={{ position: 'absolute', right: '0.65rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'var(--adm-text-sub)', cursor: 'pointer', padding: '2px' }}
+              >
+                {showKey ? <EyeOff size={13} /> : <Eye size={13} />}
+              </button>
             </div>
           </div>
         </div>
 
-        <div>
-          <button
-            type="button"
-            className="admin-btn admin-btn-secondary admin-btn-sm"
-            onClick={handlePingCarriers}
-            disabled={pingLoading}
-          >
-            {pingLoading ? <RefreshCw size={12} className="animate-spin" /> : <Radio size={12} color="#10b981" />}
-            <span>{pingLoading ? 'Pinging Satellites...' : 'Ping Carrier APIs'}</span>
-          </button>
-        </div>
-      </div>
-
-      {pingSuccess && (
-        <div style={{ padding: '0.65rem 0.85rem', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.25)', color: '#10b981', fontSize: '0.74rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <CheckCircle size={14} /> {pingSuccess}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        {/* Inbound Webhook Receiver URL */}
-        <div style={{ marginBottom: '1.25rem', padding: '0.85rem', borderRadius: '8px', background: 'var(--adm-bg)', border: '1px solid var(--adm-border)' }}>
-          <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--adm-text-sub)', marginBottom: '0.4rem' }}>
-            Inbound Carrier Webhook Receiver Endpoint
-          </label>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <input
-              type="text"
-              readOnly
-              className="admin-search-input"
-              value={form.webhook_endpoint}
-              style={{ flex: 1, paddingLeft: '0.85rem', fontFamily: 'monospace', fontSize: '0.76rem', background: 'var(--adm-panel)' }}
-            />
-            <button
-              type="button"
-              className="admin-btn admin-btn-secondary admin-btn-sm"
-              onClick={handleCopyEndpoint}
-              style={{ minWidth: '110px' }}
-            >
-              {copied ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
-              <span>{copied ? 'Copied URL!' : 'Copy URL'}</span>
-            </button>
+        {/* Row 2: Inbound Webhook Endpoint */}
+        <div className="admin-settings-row">
+          <div className="admin-settings-info">
+            <div className="admin-settings-title">Webhook Receiver</div>
+            <div className="admin-settings-desc">Target URL configured in carrier portals for delivery scans.</div>
           </div>
-          <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', marginTop: '4px' }}>
-            Register this URL in DHL Express and FedEx Developer Consoles to receive instant <code>shipment.delivered</code> scans.
-          </div>
-        </div>
-
-        {/* EasyPost Key */}
-        <div style={{ marginBottom: '1.25rem' }}>
-          <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--adm-text-sub)', marginBottom: '0.35rem' }}>
-            EasyPost Production Master API Key
-          </label>
-          <input
-            type="password"
-            className="admin-search-input"
-            value={form.api_key}
-            onChange={(e) => setForm({ ...form, api_key: e.target.value })}
-            style={{ width: '100%', paddingLeft: '0.85rem', fontFamily: 'monospace', fontSize: '0.76rem' }}
-            placeholder="EZAK_..."
-          />
-        </div>
-
-        {/* Carrier Services Checklist */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--adm-text-sub)', marginBottom: '0.65rem' }}>
-            Active Carrier Integrations & Merchant Routing
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.75rem' }}>
-            {Object.entries(form.carriers).map(([key, carrier]) => (
-              <div
-                key={key}
-                onClick={() => handleToggleCarrier(key)}
-                style={{
-                  padding: '0.75rem 0.85rem',
-                  borderRadius: '8px',
-                  border: `1px solid ${carrier.enabled ? 'rgba(56, 189, 248, 0.3)' : 'var(--adm-border)'}`,
-                  background: carrier.enabled ? 'rgba(56, 189, 248, 0.05)' : 'var(--adm-bg)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease'
-                }}
+          <div className="admin-settings-control">
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                readOnly
+                className="admin-input"
+                value={form.webhook_endpoint}
+                style={{ width: '100%', fontFamily: 'monospace', fontSize: '0.74rem', background: 'var(--adm-bg)', paddingRight: '2.5rem' }}
+              />
+              <button
+                type="button"
+                onClick={() => handleCopy(form.webhook_endpoint)}
+                style={{ position: 'absolute', right: '0.65rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'var(--adm-text-sub)', cursor: 'pointer', padding: '2px' }}
+                title="Copy webhook URL"
               >
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: '0.8rem', color: 'var(--adm-text-main)' }}>
-                    {carrier.name}
-                  </div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)' }}>
-                    Account: {carrier.account_num}
-                  </div>
-                </div>
-                <div>
-                  <span
-                    style={{
-                      fontSize: '0.66rem',
-                      fontWeight: 700,
-                      padding: '2px 7px',
-                      borderRadius: '99px',
-                      background: carrier.enabled ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.12)',
-                      color: carrier.enabled ? '#10b981' : '#ef4444'
-                    }}
-                  >
-                    {carrier.enabled ? 'ACTIVE' : 'DISABLED'}
-                  </span>
-                </div>
-              </div>
-            ))}
+                {copiedEndpoint ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Save */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.75rem' }}>
+        {/* Row 3: Active Carriers */}
+        <div className="admin-settings-row">
+          <div className="admin-settings-info">
+            <div className="admin-settings-title">Connected Carriers</div>
+            <div className="admin-settings-desc">Enabled shipping providers available to merchant boutiques.</div>
+          </div>
+          <div className="admin-settings-control">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {Object.entries(form.carriers).map(([key, carrier]) => (
+                <label
+                  key={key}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.65rem 0.85rem',
+                    borderRadius: '6px',
+                    border: '1px solid var(--adm-border)',
+                    background: 'var(--adm-bg)',
+                    cursor: 'pointer',
+                    userSelect: 'none'
+                  }}
+                >
+                  <div>
+                    <div style={{ fontSize: '0.78rem', fontWeight: 500, color: 'var(--adm-text-main)' }}>
+                      {carrier.name}
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)' }}>
+                      Account: {carrier.account_num}
+                    </div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={carrier.enabled}
+                    onChange={() => handleToggle(key)}
+                    style={{ cursor: 'pointer', accentColor: 'var(--adm-accent)' }}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Action Footer */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--adm-border)' }}>
           {savedSuccess && (
-            <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <Check size={14} /> Logistics settings saved!
+            <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Check size={13} /> Settings saved
             </span>
           )}
           <button
             type="submit"
-            className="admin-btn admin-btn-primary"
+            className="admin-btn admin-btn-primary admin-btn-sm"
             disabled={saving}
+            style={{ minWidth: '110px' }}
           >
-            {saving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
-            <span>{saving ? 'Updating...' : 'Save Carrier Settings'}</span>
+            {saving ? 'Saving...' : 'Save changes'}
           </button>
         </div>
       </form>

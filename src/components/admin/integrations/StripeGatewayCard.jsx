@@ -1,9 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import {
-  CreditCard, ShieldCheck, Eye, EyeOff, Check,
-  Save, AlertCircle, RefreshCw, Lock
-} from 'lucide-react';
+import { Eye, EyeOff, Check, Copy } from 'lucide-react';
 
 export default function StripeGatewayCard({
   config = {},
@@ -21,7 +18,14 @@ export default function StripeGatewayCard({
 
   const [showSecret, setShowSecret] = useState(false);
   const [showWebhookSecret, setShowWebhookSecret] = useState(false);
+  const [copiedKey, setCopiedKey] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(true);
+    setTimeout(() => setCopiedKey(false), 2000);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,213 +35,182 @@ export default function StripeGatewayCard({
   };
 
   return (
-    <div className="admin-panel" style={{ padding: '1.5rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div
-            style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '8px',
-              background: 'rgba(99, 102, 241, 0.12)',
-              color: '#818cf8',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <CreditCard size={20} />
-          </div>
-          <div>
-            <h3 className="admin-panel-title" style={{ margin: 0 }}>
-              Stripe Connect & Escrow Gateway
-            </h3>
-            <div style={{ fontSize: '0.72rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
-              Custom Marketplace Accounts • Automated Separate Charges & Transfers (95% Net / 5% Protocol Fee)
-            </div>
-          </div>
+    <div className="admin-panel" style={{ padding: '1.75rem' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '1.25rem', borderBottom: '1px solid var(--adm-border)' }}>
+        <div>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--adm-text-main)', margin: 0 }}>
+            Stripe Connect
+          </h3>
+          <p style={{ fontSize: '0.74rem', color: 'var(--adm-text-sub)', margin: '3px 0 0' }}>
+            Escrow custody, custom accounts, and automated seller payouts.
+          </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span
-            style={{
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              padding: '3px 8px',
-              borderRadius: '99px',
-              background: form.environment === 'production' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-              color: form.environment === 'production' ? '#10b981' : '#f59e0b',
-              border: `1px solid ${form.environment === 'production' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`
-            }}
+        {/* Minimal Segmented Switcher */}
+        <div className="admin-segmented">
+          <button
+            type="button"
+            className={`admin-segmented-btn ${form.environment === 'sandbox' ? 'active' : ''}`}
+            onClick={() => setForm({ ...form, environment: 'sandbox' })}
           >
-            {form.environment === 'production' ? '● LIVE PRODUCTION' : '○ SANDBOX TESTNET'}
-          </span>
+            Test Mode
+          </button>
+          <button
+            type="button"
+            className={`admin-segmented-btn ${form.environment === 'production' ? 'active' : ''}`}
+            onClick={() => setForm({ ...form, environment: 'production' })}
+          >
+            Live Mode
+          </button>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        {/* Environment Mode Switch */}
-        <div style={{ marginBottom: '1.25rem', padding: '0.85rem', borderRadius: '8px', background: 'var(--adm-bg)', border: '1px solid var(--adm-border)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-            <div>
-              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--adm-text-main)' }}>
-                Gateway Environment Mode
-              </div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--adm-text-sub)' }}>
-                Test keys process simulated charges. Live keys connect actual merchant bank accounts.
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: '6px' }}>
+      <form onSubmit={handleSubmit} style={{ marginTop: '0.5rem' }}>
+        {/* Row 1: Publishable Key */}
+        <div className="admin-settings-row">
+          <div className="admin-settings-info">
+            <div className="admin-settings-title">Publishable Key</div>
+            <div className="admin-settings-desc">Client-side identifier used for checkout tokenization.</div>
+          </div>
+          <div className="admin-settings-control">
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                className="admin-input"
+                value={form.publishable_key}
+                onChange={(e) => setForm({ ...form, publishable_key: e.target.value })}
+                style={{ width: '100%', fontFamily: 'monospace', fontSize: '0.76rem', paddingRight: '2.5rem' }}
+                placeholder="pk_test_..."
+              />
               <button
                 type="button"
-                className={`admin-btn admin-btn-sm ${form.environment === 'sandbox' ? 'admin-btn-primary' : 'admin-btn-secondary'}`}
-                onClick={() => setForm({ ...form, environment: 'sandbox' })}
+                onClick={() => handleCopy(form.publishable_key)}
+                style={{ position: 'absolute', right: '0.65rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'var(--adm-text-sub)', cursor: 'pointer', padding: '2px' }}
+                title="Copy key"
               >
-                Sandbox Mode
-              </button>
-              <button
-                type="button"
-                className={`admin-btn admin-btn-sm ${form.environment === 'production' ? 'admin-btn-primary' : 'admin-btn-secondary'}`}
-                onClick={() => setForm({ ...form, environment: 'production' })}
-              >
-                Production Mode
+                {copiedKey ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* API Credentials */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--adm-text-sub)', marginBottom: '0.35rem' }}>
-              Publishable Key
-            </label>
-            <input
-              type="text"
-              className="admin-search-input"
-              value={form.publishable_key}
-              onChange={(e) => setForm({ ...form, publishable_key: e.target.value })}
-              style={{ width: '100%', paddingLeft: '0.85rem', fontFamily: 'monospace', fontSize: '0.76rem' }}
-              placeholder="pk_test_..."
-            />
+        {/* Row 2: Restricted Secret Key */}
+        <div className="admin-settings-row">
+          <div className="admin-settings-info">
+            <div className="admin-settings-title">Secret Key</div>
+            <div className="admin-settings-desc">Restricted server key for escrow balance transfers and refunds.</div>
           </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--adm-text-sub)', marginBottom: '0.35rem' }}>
-              Restricted Secret Key
-            </label>
+          <div className="admin-settings-control">
             <div style={{ position: 'relative' }}>
               <input
                 type={showSecret ? "text" : "password"}
-                className="admin-search-input"
+                className="admin-input"
                 value={form.secret_key}
                 onChange={(e) => setForm({ ...form, secret_key: e.target.value })}
-                style={{ width: '100%', paddingLeft: '0.85rem', paddingRight: '2.5rem', fontFamily: 'monospace', fontSize: '0.76rem' }}
+                style={{ width: '100%', fontFamily: 'monospace', fontSize: '0.76rem', paddingRight: '2.5rem' }}
                 placeholder="sk_test_..."
               />
               <button
                 type="button"
                 onClick={() => setShowSecret(!showSecret)}
-                style={{ position: 'absolute', right: '0.65rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'var(--adm-text-sub)', cursor: 'pointer' }}
+                style={{ position: 'absolute', right: '0.65rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'var(--adm-text-sub)', cursor: 'pointer', padding: '2px' }}
               >
-                {showSecret ? <EyeOff size={14} /> : <Eye size={14} />}
+                {showSecret ? <EyeOff size={13} /> : <Eye size={13} />}
               </button>
             </div>
           </div>
+        </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--adm-text-sub)', marginBottom: '0.35rem' }}>
-              Webhook Endpoint Secret
-            </label>
+        {/* Row 3: Webhook Signing Secret */}
+        <div className="admin-settings-row">
+          <div className="admin-settings-info">
+            <div className="admin-settings-title">Signing Secret</div>
+            <div className="admin-settings-desc">Verifies cryptographic signatures on inbound events.</div>
+          </div>
+          <div className="admin-settings-control">
             <div style={{ position: 'relative' }}>
               <input
                 type={showWebhookSecret ? "text" : "password"}
-                className="admin-search-input"
+                className="admin-input"
                 value={form.webhook_secret}
                 onChange={(e) => setForm({ ...form, webhook_secret: e.target.value })}
-                style={{ width: '100%', paddingLeft: '0.85rem', paddingRight: '2.5rem', fontFamily: 'monospace', fontSize: '0.76rem' }}
+                style={{ width: '100%', fontFamily: 'monospace', fontSize: '0.76rem', paddingRight: '2.5rem' }}
                 placeholder="whsec_..."
               />
               <button
                 type="button"
                 onClick={() => setShowWebhookSecret(!showWebhookSecret)}
-                style={{ position: 'absolute', right: '0.65rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'var(--adm-text-sub)', cursor: 'pointer' }}
+                style={{ position: 'absolute', right: '0.65rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'var(--adm-text-sub)', cursor: 'pointer', padding: '2px' }}
               >
-                {showWebhookSecret ? <EyeOff size={14} /> : <Eye size={14} />}
+                {showWebhookSecret ? <EyeOff size={13} /> : <Eye size={13} />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Platform Take-Rate & Hold Window */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem', marginBottom: '1.5rem', padding: '1rem', borderRadius: '8px', background: 'var(--adm-bg)', border: '1px solid var(--adm-border)' }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--adm-text-main)' }}>
-                VogueSocial Protocol Fee (Take-Rate)
-              </span>
-              <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#818cf8' }}>
-                {form.platform_take_rate}%
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="20"
-              step="0.5"
-              value={form.platform_take_rate}
-              onChange={(e) => setForm({ ...form, platform_take_rate: parseFloat(e.target.value) })}
-              style={{ width: '100%', cursor: 'pointer', accentColor: '#818cf8' }}
-            />
-            <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', marginTop: '4px' }}>
-              Upon delivery verification, 95% net transfers to merchant bank and 5% is retained.
-            </div>
+        {/* Row 4: Platform Take-Rate */}
+        <div className="admin-settings-row">
+          <div className="admin-settings-info">
+            <div className="admin-settings-title">Platform Commission</div>
+            <div className="admin-settings-desc">Percentage deducted automatically upon escrow release.</div>
           </div>
-
-          <div>
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--adm-text-main)', marginBottom: '0.35rem' }}>
-              Automated Escrow Inspection Window
-            </div>
-            <select
-              className="admin-search-input"
-              value={form.auto_settle_hours}
-              onChange={(e) => setForm({ ...form, auto_settle_hours: parseInt(e.target.value) })}
-              style={{ width: '100%', paddingLeft: '0.85rem', fontSize: '0.76rem', cursor: 'pointer' }}
-            >
-              <option value="24">24 Hours Post-Delivery</option>
-              <option value="48">48 Hours Post-Delivery (Recommended Luxury Standard)</option>
-              <option value="72">72 Hours Post-Delivery</option>
-              <option value="168">7 Calendar Days</option>
-            </select>
-            <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', marginTop: '4px' }}>
-              Funds automatically disburse if the buyer raises zero dispute claims before this timer expires.
+          <div className="admin-settings-control">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <input
+                type="number"
+                min="0"
+                max="30"
+                step="0.5"
+                className="admin-input"
+                value={form.platform_take_rate}
+                onChange={(e) => setForm({ ...form, platform_take_rate: parseFloat(e.target.value) || 0 })}
+                style={{ width: '90px', fontWeight: 600 }}
+              />
+              <span style={{ fontSize: '0.8rem', color: 'var(--adm-text-sub)' }}>%</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--adm-text-muted)', marginLeft: '0.5rem' }}>
+                ({(100 - form.platform_take_rate).toFixed(1)}% disbursed to merchant)
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Actions & Feedback */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: 'var(--adm-text-sub)' }}>
-            <Lock size={12} color="#10b981" />
-            <span>End-to-end encrypted AES-256 vault credentials</span>
+        {/* Row 5: Escrow Hold Duration */}
+        <div className="admin-settings-row">
+          <div className="admin-settings-info">
+            <div className="admin-settings-title">Settlement Hold Window</div>
+            <div className="admin-settings-desc">Delay before unlocked funds disburse if no claim is filed.</div>
           </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {savedSuccess && (
-              <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Check size={14} /> Configuration saved & verified!
-              </span>
-            )}
-            <button
-              type="submit"
-              className="admin-btn admin-btn-primary"
-              disabled={saving}
-              style={{ minWidth: '150px' }}
+          <div className="admin-settings-control">
+            <select
+              className="admin-select"
+              value={form.auto_settle_hours}
+              onChange={(e) => setForm({ ...form, auto_settle_hours: parseInt(e.target.value) })}
+              style={{ width: '100%', cursor: 'pointer' }}
             >
-              {saving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
-              <span>{saving ? 'Validating...' : 'Save Stripe Config'}</span>
-            </button>
+              <option value="24">24 hours post-delivery</option>
+              <option value="48">48 hours post-delivery (Standard)</option>
+              <option value="72">72 hours post-delivery</option>
+              <option value="168">7 calendar days</option>
+            </select>
           </div>
+        </div>
+
+        {/* Action Footer */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--adm-border)' }}>
+          {savedSuccess && (
+            <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Check size={13} /> Settings saved
+            </span>
+          )}
+          <button
+            type="submit"
+            className="admin-btn admin-btn-primary admin-btn-sm"
+            disabled={saving}
+            style={{ minWidth: '110px' }}
+          >
+            {saving ? 'Saving...' : 'Save changes'}
+          </button>
         </div>
       </form>
     </div>
