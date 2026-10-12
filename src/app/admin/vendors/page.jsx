@@ -1,190 +1,254 @@
 "use client";
-import { useEffect, useState } from 'react';
-import styles from '../admin.module.css';
-import { Users, CheckCircle, ShieldAlert, AlertTriangle, Search, Check, RefreshCw } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { adminService } from '@/services/adminService';
+import {
+  Users, CheckCircle, ShieldAlert, AlertTriangle,
+  Search, ExternalLink, Loader2, Globe
+} from 'lucide-react';
+import {
+  AdminTopBar, AdminKpiCard, AdminStatusBadge
+} from '@/components/admin';
+
 export default function AdminVendorsPage() {
-    const [vendors, setVendors] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState('');
-    const [filter, setFilter] = useState('all');
-    const loadVendors = async () => {
-        setLoading(true);
-        try {
-            const response = await fetch('/api/admin/vendors');
-            const data = await response.json();
-            if (data.success && data.vendors) {
-                setVendors(data.vendors);
-            }
-        }
-        catch (e) {
-            console.error("Failed to load vendors", e);
-        }
-        finally {
-            setLoading(false);
-        }
-    };
-    useEffect(() => {
-        loadVendors();
-    }, []);
-    const handleAction = async (vendorId, action) => {
-        try {
-            const response = await fetch('/api/admin/vendors', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ vendorId, action })
-            });
-            const data = await response.json();
-            if (data.success) {
-                // Optimistically update the status locally for instantaneous UI response
-                setVendors(prev => prev.map(v => {
-                    if (v.id === vendorId) {
-                        return {
-                            ...v,
-                            vendor_status: action === 'approve' ? 'approved' : 'suspended'
-                        };
-                    }
-                    return v;
-                }));
-            }
-        }
-        catch (e) {
-            console.error("Error updating vendor status", e);
-        }
-    };
-    const filtered = vendors.filter(v => {
-        const matchesSearch = v.store_name.toLowerCase().includes(search.toLowerCase()) ||
-            v.email.toLowerCase().includes(search.toLowerCase()) ||
-            v.store_handle.toLowerCase().includes(search.toLowerCase());
-        const matchesFilter = filter === 'all' || v.vendor_status === filter;
-        return matchesSearch && matchesFilter;
-    });
-    const getStatusBadge = (status) => {
-        switch (status) {
-            case 'approved':
-                return <span className={`${styles.badge} ${styles.badgeActive}`}><CheckCircle size={10}/> Active</span>;
-            case 'pending_approval':
-                return <span className={`${styles.badge} ${styles.badgePending}`}><AlertTriangle size={10}/> Pending Approval</span>;
-            case 'suspended':
-                return <span className={`${styles.badge} ${styles.badgeSuspended}`}><ShieldAlert size={10}/> Suspended</span>;
-            default:
-                return null;
-        }
-    };
-    return (<>
-      <div className={styles.topbar}>
-        <div>
-          <div className={styles.pageTitle}>Vendor Directory</div>
-          <div className={styles.pageSubtitle}>Review merchant store registrations, approvals, and credentials</div>
+  const [vendors, setVendors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
+
+  const loadVendors = async () => {
+    setLoading(true);
+    try {
+      const res = await adminService.getVendors(filter, search);
+      if (res && res.success) {
+        setVendors(res.vendors || []);
+      }
+    } catch (err) {
+      console.error('Failed to load vendors:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadVendors();
+  }, [filter, search]);
+
+  const handleToggleStatus = async (vendorId, currentStatus) => {
+    const nextAction = currentStatus === 'approved' ? 'suspend' : 'approve';
+    try {
+      const res = await adminService.updateVendorStatus(vendorId, nextAction);
+      if (res && res.success) {
+        setVendors(prev => prev.map(v => v.id === vendorId ? { ...v, vendor_status: res.vendor_status } : v));
+      }
+    } catch (err) {
+      console.error('Failed to update vendor status:', err);
+    }
+  };
+
+  const approvedCount = vendors.filter(v => v.vendor_status === 'approved').length;
+  const pendingCount = vendors.filter(v => v.vendor_status === 'pending_approval').length;
+  const suspendedCount = vendors.filter(v => v.vendor_status === 'suspended').length;
+
+  return (
+    <>
+      <AdminTopBar
+        title="Merchant Directory"
+        subtitle="Manage brand storefronts, audit vendor accounts, and control marketplace access"
+        onRefresh={loadVendors}
+        refreshing={loading}
+      />
+
+      <div className="admin-content">
+        {/* KPI Row */}
+        <div className="admin-kpi-grid">
+          <AdminKpiCard
+            label="Active Storefronts"
+            value={approvedCount}
+            sub="Approved luxury boutiques"
+            icon={CheckCircle}
+            iconBg="rgba(16, 185, 129, 0.12)"
+            iconColor="#10b981"
+          />
+
+          <AdminKpiCard
+            label="Pending Applications"
+            value={pendingCount}
+            sub="Awaiting identity & catalog audit"
+            icon={AlertTriangle}
+            iconBg="rgba(245, 158, 11, 0.12)"
+            iconColor="#f59e0b"
+          />
+
+          <AdminKpiCard
+            label="Suspended Accounts"
+            value={suspendedCount}
+            sub="Paused due to policy infractions"
+            icon={ShieldAlert}
+            iconBg="rgba(239, 68, 68, 0.12)"
+            iconColor="#ef4444"
+          />
+
+          <AdminKpiCard
+            label="Total Platform Brands"
+            value={vendors.length}
+            sub="Registered vendor profiles"
+            icon={Users}
+            iconBg="rgba(56, 189, 248, 0.12)"
+            iconColor="#38bdf8"
+          />
         </div>
-        <div className={styles.topbarRight}>
-          <button className={styles.btnGhost} onClick={loadVendors} style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-            <RefreshCw size={13}/>
-            Refresh
-          </button>
+
+        {/* Vendors Table Panel */}
+        <div className="admin-panel">
+          <div className="admin-filter-bar">
+            <div className="admin-filter-tabs">
+              {[
+                { id: 'all', label: 'All Merchants' },
+                { id: 'approved', label: `Active (${approvedCount})` },
+                { id: 'pending_approval', label: `Pending (${pendingCount})` },
+                { id: 'suspended', label: `Suspended (${suspendedCount})` }
+              ].map(t => (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`admin-filter-tab ${filter === t.id ? 'admin-filter-tab-active' : ''}`}
+                  onClick={() => setFilter(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="admin-search-box">
+              <Search size={14} className="admin-search-icon" />
+              <input
+                type="text"
+                className="admin-search-input"
+                placeholder="Search brand name, handle, email..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="admin-empty-state">
+              <Loader2 size={24} className="animate-spin admin-empty-icon" />
+              <p>Loading merchant directory...</p>
+            </div>
+          ) : vendors.length === 0 ? (
+            <div className="admin-empty-state">
+              <Users size={32} className="admin-empty-icon" />
+              <div className="admin-empty-title">No Merchants Found</div>
+              <p className="admin-empty-desc">
+                {search ? 'Try clearing your search query.' : 'No vendors currently match this status filter.'}
+              </p>
+            </div>
+          ) : (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Merchant Atelier</th>
+                    <th>Subdomain & Handle</th>
+                    <th>Contact Email</th>
+                    <th>Active Garments</th>
+                    <th>Joined</th>
+                    <th>Status</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {vendors.map(v => (
+                    <tr key={v.id}>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <div style={{
+                            width: 34, height: 34, borderRadius: 8, background: 'var(--adm-panel-hover)',
+                            border: '1px solid var(--adm-border)', display: 'flex', alignItems: 'center',
+                            justifyContent: 'center', fontWeight: 700, fontSize: '0.85rem', color: 'var(--adm-accent)'
+                          }}>
+                            {(v.store_name || 'V').charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 600, color: 'var(--adm-text-main)' }}>
+                              {v.store_name}
+                            </div>
+                            {v.custom_domain && (
+                              <div style={{ fontSize: '0.7rem', color: 'var(--adm-text-sub)', display: 'flex', alignItems: 'center', gap: 3 }}>
+                                <Globe size={10} /> {v.custom_domain}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+
+                      <td>
+                        <a
+                          href={`/store/${v.store_handle}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 4,
+                            color: 'var(--adm-accent)', textDecoration: 'none', fontWeight: 600, fontSize: '0.78rem'
+                          }}
+                        >
+                          <span>@{v.store_handle}</span>
+                          <ExternalLink size={11} />
+                        </a>
+                      </td>
+
+                      <td>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--adm-text-muted)' }}>
+                          {v.email}
+                        </span>
+                      </td>
+
+                      <td>
+                        <span style={{ fontWeight: 600, color: 'var(--adm-text-main)' }}>
+                          {v.products_count ?? 0} pieces
+                        </span>
+                      </td>
+
+                      <td>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--adm-text-sub)' }}>
+                          {new Date(v.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                        </span>
+                      </td>
+
+                      <td>
+                        <AdminStatusBadge status={v.vendor_status} />
+                      </td>
+
+                      <td style={{ textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '0.5rem', alignItems: 'center' }}>
+                          <a
+                            href={`/store/${v.store_handle}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="admin-btn admin-btn-ghost admin-btn-sm"
+                            title="Visit public storefront"
+                          >
+                            <ExternalLink size={12} /> Visit
+                          </a>
+
+                          <button
+                            type="button"
+                            className={`admin-btn admin-btn-sm ${v.vendor_status === 'approved' ? 'admin-btn-danger' : 'admin-btn-primary'}`}
+                            onClick={() => handleToggleStatus(v.id, v.vendor_status)}
+                          >
+                            {v.vendor_status === 'approved' ? 'Suspend' : 'Approve'}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
-
-      <div className={styles.pageContent}>
-        {/* Statistics row */}
-        <div className={styles.kpiGrid} style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: '1.5rem' }}>
-          <div className={styles.kpiCard}>
-            <div className={styles.kpiLabel}>Pending Approvals</div>
-            <div className={styles.kpiValue} style={{ color: 'var(--color-amber)' }}>
-              {vendors.filter(v => v.vendor_status === 'pending_approval').length}
-            </div>
-            <div className={styles.kpiSub}>Awaiting compliance audit</div>
-          </div>
-          <div className={styles.kpiCard}>
-            <div className={styles.kpiLabel}>Active Storefronts</div>
-            <div className={styles.kpiValue} style={{ color: 'var(--color-emerald)' }}>
-              {vendors.filter(v => v.vendor_status === 'approved').length}
-            </div>
-            <div className={styles.kpiSub}>Authorized vendors selling live</div>
-          </div>
-          <div className={styles.kpiCard}>
-            <div className={styles.kpiLabel}>Suspended Accounts</div>
-            <div className={styles.kpiValue} style={{ color: 'var(--color-rose)' }}>
-              {vendors.filter(v => v.vendor_status === 'suspended').length}
-            </div>
-            <div className={styles.kpiSub}>Disabled due to rules violation</div>
-          </div>
-        </div>
-
-        {/* Filters and search panel */}
-        <div className={styles.panel} style={{ marginBottom: '1.5rem', padding: '1rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-            <div className={styles.searchBar}>
-              <Search size={14} color="var(--d-t4)"/>
-              <input placeholder="Search by store, owner, email..." value={search} onChange={e => setSearch(e.target.value)}/>
-            </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              {['all', 'pending_approval', 'approved', 'suspended'].map(tab => (<button key={tab} className={`${styles.actionBtn} ${filter === tab ? styles.actionBtnPrimary : ''}`} onClick={() => setFilter(tab)}>
-                  {tab === 'all' ? 'All Vendors' :
-                tab === 'pending_approval' ? 'Pending' :
-                    tab === 'approved' ? 'Approved' : 'Suspended'}
-                </button>))}
-            </div>
-          </div>
-        </div>
-
-        {/* Vendors list panel */}
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelTitle}>
-              <Users size={16} color="#8b5cf6"/>
-              Vendor Applications
-            </span>
-          </div>
-
-          {loading ? (<div style={{ padding: '3rem', textAlign: 'center', color: 'var(--d-t3)' }}>Loading vendor records...</div>) : filtered.length === 0 ? (<div className={styles.empty}>
-              <Users size={40} className={styles.emptyIcon} style={{ color: 'var(--d-t4)' }}/>
-              <div className={styles.emptyTitle}>No vendors match criteria</div>
-              <div className={styles.emptyText}>Try adjusting filters or checking query parameters.</div>
-            </div>) : (<table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Store Details</th>
-                  <th>Owner</th>
-                  <th>Category</th>
-                  <th>Date Joined</th>
-                  <th>Verification Status</th>
-                  <th style={{ textAlign: 'right' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((vendor) => (<tr key={vendor.id}>
-                    <td>
-                      <div style={{ fontWeight: 700, color: 'var(--d-t1)' }}>{vendor.store_name}</div>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--d-t4)' }}>@{vendor.store_handle}</div>
-                    </td>
-                    <td>
-                      <div style={{ fontWeight: 600, color: 'var(--d-t2)' }}>{vendor.full_name}</div>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--d-t4)' }}>{vendor.email}</div>
-                    </td>
-                    <td>
-                      <span style={{ fontSize: '0.8rem', background: 'var(--d-hover)', border: '1px solid var(--d-border)', padding: '2px 8px', borderRadius: '4px' }}>
-                        {vendor.store_category}
-                      </span>
-                    </td>
-                    <td style={{ fontSize: '0.78rem', color: 'var(--d-t4)' }}>
-                      {new Date(vendor.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-                    </td>
-                    <td>{getStatusBadge(vendor.vendor_status)}</td>
-                    <td style={{ textAlign: 'right' }}>
-                      <div style={{ display: 'inline-flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                        {vendor.vendor_status !== 'approved' && (<button className={styles.actionBtnPrimary} style={{ display: 'flex', gap: 4, alignItems: 'center' }} onClick={() => handleAction(vendor.id, 'approve')}>
-                            <Check size={12}/>
-                            Approve
-                          </button>)}
-                        {vendor.vendor_status === 'approved' && (<button className={styles.actionBtnDanger} onClick={() => handleAction(vendor.id, 'suspend')}>
-                            Suspend
-                          </button>)}
-                      </div>
-                    </td>
-                  </tr>))}
-              </tbody>
-            </table>)}
-        </div>
-      </div>
-    </>);
+    </>
+  );
 }

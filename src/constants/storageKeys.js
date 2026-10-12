@@ -27,6 +27,10 @@ export const STORAGE_KEYS = {
   CART_PREFIX: 'vogue_cart_', // e.g. vogue_cart_studiolabel
   ORDERS: 'vogue_orders',
 
+  // Administration & Escrows
+  ADMIN_DISPUTES: 'vogue_admin_disputes',
+  RUNPOD_JOBS: 'vogue_admin_runpod_jobs',
+
   // System Flags
   SEEDED_INITIALIZED: 'vogue_data_seeded_v1',
 };

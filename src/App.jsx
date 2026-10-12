@@ -25,9 +25,11 @@ import ProductPage from './app/store/[handle]/product/[id]/page';
 import FeedProductPage from './app/product/[id]/page';
 import BrandProfilePage from './app/brand/[handle]/page';
 
+import AdminDashboardPage from './app/admin/dashboard/page';
 import AdminProductsPage from './app/admin/products/page';
 import AdminVendorsPage from './app/admin/vendors/page';
 import AdminDisputesPage from './app/admin/disputes/page';
+import AdminRunPodPage from './app/admin/runpod/page';
 
 import MerchantOnboarding from './app/onboarding/merchant/page';
 import MerchantLoginPage from './app/merchant/login/page';
@@ -119,10 +121,12 @@ export default function App() {
 
           {/* Admin Console Routes Wrapped with Admin Layout */}
           <Route element={<AdminLayout />}>
-            <Route path="/admin" element={<Navigate to="/admin/products" replace />} />
+            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
             <Route path="/admin/products" element={<AdminProductsPage />} />
             <Route path="/admin/vendors" element={<AdminVendorsPage />} />
             <Route path="/admin/disputes" element={<AdminDisputesPage />} />
+            <Route path="/admin/runpod" element={<AdminRunPodPage />} />
           </Route>
 
           {/* Fallback */}
