@@ -30,6 +30,7 @@ import AdminOrdersPage from './app/admin/orders/page';
 import AdminProductsPage from './app/admin/products/page';
 import AdminVendorsPage from './app/admin/vendors/page';
 import AdminDisputesPage from './app/admin/disputes/page';
+import AdminIntegrationsPage from './app/admin/integrations/page';
 import AdminRunPodPage from './app/admin/runpod/page';
 
 import MerchantOnboarding from './app/onboarding/merchant/page';
@@ -128,6 +129,7 @@ export default function App() {
             <Route path="/admin/products" element={<AdminProductsPage />} />
             <Route path="/admin/vendors" element={<AdminVendorsPage />} />
             <Route path="/admin/disputes" element={<AdminDisputesPage />} />
+            <Route path="/admin/integrations" element={<AdminIntegrationsPage />} />
             <Route path="/admin/runpod" element={<AdminRunPodPage />} />
           </Route>
 

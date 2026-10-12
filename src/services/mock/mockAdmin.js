@@ -739,5 +739,291 @@ export const mockAdminAdapter = {
       success: true,
       order: allOrders[idx]
     };
+  },
+
+  async getIntegrationsConfig() {
+    await delay();
+    let config = storageEngine.getItem(STORAGE_KEYS.ADMIN_INTEGRATIONS, null);
+    if (!config) {
+      config = INITIAL_INTEGRATIONS_CONFIG;
+      storageEngine.setItem(STORAGE_KEYS.ADMIN_INTEGRATIONS, config);
+    }
+    return {
+      success: true,
+      config
+    };
+  },
+
+  async saveIntegrationsConfig(updatedConfig) {
+    await delay(300);
+    storageEngine.setItem(STORAGE_KEYS.ADMIN_INTEGRATIONS, updatedConfig);
+    return {
+      success: true,
+      config: updatedConfig
+    };
+  },
+
+  async getWebhookEvents() {
+    await delay();
+    let events = storageEngine.getItem(STORAGE_KEYS.ADMIN_WEBHOOK_EVENTS, null);
+    if (!events) {
+      events = INITIAL_WEBHOOK_EVENTS;
+      storageEngine.setItem(STORAGE_KEYS.ADMIN_WEBHOOK_EVENTS, events);
+    }
+    return {
+      success: true,
+      events
+    };
+  },
+
+  async simulateWebhookEvent(eventType, customPayload = {}) {
+    await delay(400);
+    let events = storageEngine.getItem(STORAGE_KEYS.ADMIN_WEBHOOK_EVENTS, INITIAL_WEBHOOK_EVENTS);
+    const eventId = 'evt_wh_' + Math.floor(10000 + Math.random() * 90000);
+    const timestamp = new Date().toISOString();
+
+    let newEvent;
+    if (eventType === 'shipment.delivered') {
+      const targetOrderId = customPayload.order_id || 'ORD-8241';
+      newEvent = {
+        id: eventId,
+        source: 'EasyPost (DHL)',
+        event: 'shipment.delivered',
+        order_id: targetOrderId,
+        status: 200,
+        timestamp,
+        payload: {
+          tracking_code: customPayload.tracking_code || 'DHL-84920194',
+          status: 'DELIVERED',
+          signed_by: customPayload.signed_by || 'Aisha Malik',
+          location: 'Dubai, UAE',
+          message: 'Package delivered at front door. Signature captured.',
+          auto_escrow_timer_started: true
+        }
+      };
+
+      // Also update order status in storage if present
+      const allOrders = getUnifiedOrders();
+      const oIdx = allOrders.findIndex(o => o.id === targetOrderId || o.id === `#${targetOrderId}`);
+      if (oIdx !== -1) {
+        allOrders[oIdx] = {
+          ...allOrders[oIdx],
+          status: 'delivered',
+          admin_notes: (allOrders[oIdx].admin_notes ? allOrders[oIdx].admin_notes + ' | ' : '') + 'Carrier delivery confirmed via webhook ' + eventId
+        };
+        storageEngine.setItem(STORAGE_KEYS.ORDERS, allOrders);
+      }
+    } else if (eventType === 'payment_intent.succeeded') {
+      newEvent = {
+        id: eventId,
+        source: 'Stripe Connect',
+        event: 'payment_intent.succeeded',
+        order_id: customPayload.order_id || 'ORD-8242',
+        status: 200,
+        timestamp,
+        payload: {
+          payment_intent: 'pi_live_' + Math.random().toString(36).substring(2, 10),
+          amount: customPayload.amount || 35000,
+          currency: 'usd',
+          escrow_hold: true,
+          destination_account: 'acct_1N4k92A',
+          customer_email: 'buyer@voguesocial.com'
+        }
+      };
+    } else if (eventType === 'charge.dispute.created') {
+      const targetOrderId = customPayload.order_id || 'ORD-8237';
+      newEvent = {
+        id: eventId,
+        source: 'Stripe Connect',
+        event: 'charge.dispute.created',
+        order_id: targetOrderId,
+        status: 200,
+        timestamp,
+        payload: {
+          dispute_id: 'dp_' + Math.random().toString(36).substring(2, 8),
+          reason: customPayload.reason || 'damaged_merchandise',
+          amount: 85000,
+          escrow_frozen: true,
+          evidence_due_by: new Date(Date.now() + 7 * 86400000).toISOString()
+        }
+      };
+
+      // Freeze escrow in orders if present
+      const allOrders = getUnifiedOrders();
+      const oIdx = allOrders.findIndex(o => o.id === targetOrderId || o.id === `#${targetOrderId}`);
+      if (oIdx !== -1) {
+        allOrders[oIdx] = {
+          ...allOrders[oIdx],
+          escrow_status: 'disputed',
+          admin_notes: (allOrders[oIdx].admin_notes ? allOrders[oIdx].admin_notes + ' | ' : '') + 'Dispute filed via Stripe webhook ' + eventId
+        };
+        storageEngine.setItem(STORAGE_KEYS.ORDERS, allOrders);
+      }
+    } else {
+      newEvent = {
+        id: eventId,
+        source: 'EasyPost Gateway',
+        event: eventType || 'shipment.in_transit',
+        order_id: 'ORD-8240',
+        status: 200,
+        timestamp,
+        payload: {
+          tracking_code: 'DHL-GENERIC',
+          status: 'IN_TRANSIT',
+          checkpoint: 'Regional Logistics Center'
+        }
+      };
+    }
+
+    const updatedEvents = [newEvent, ...events.slice(0, 49)];
+    storageEngine.setItem(STORAGE_KEYS.ADMIN_WEBHOOK_EVENTS, updatedEvents);
+
+    return {
+      success: true,
+      event: newEvent
+    };
+  },
+
+  async clearWebhookEvents() {
+    await delay(150);
+    storageEngine.setItem(STORAGE_KEYS.ADMIN_WEBHOOK_EVENTS, []);
+    return {
+      success: true
+    };
   }
 };
+
+const INITIAL_INTEGRATIONS_CONFIG = {
+  stripe: {
+    environment: 'sandbox',
+    publishable_key: 'pk_test_51Mz9V2K9QxVogueSocialAtelierKey001',
+    secret_key: 'sk_test_51Mz9V2K9QxVogueSocialSecretPrivKey992',
+    webhook_secret: 'whsec_892b01fa991cd4208e928c081fba9',
+    platform_take_rate: 5.0,
+    auto_settle_hours: 48,
+    status: 'connected',
+    last_sync: new Date().toISOString()
+  },
+  easypost: {
+    api_key: 'EZAK_live_90284019284910283910293',
+    webhook_endpoint: 'https://api.voguesocial.com/webhooks/carriers',
+    default_carrier: 'dhl_express',
+    carriers: {
+      dhl_express: { enabled: true, name: 'DHL Express Worldwide', account_num: 'DHL-ACCT-9102' },
+      fedex_priority: { enabled: true, name: 'FedEx International Priority', account_num: 'FDX-ACCT-8491' },
+      ups_worldwide: { enabled: true, name: 'UPS Worldwide Expedited', account_num: 'UPS-ACCT-1928' },
+      laposte_colissimo: { enabled: true, name: 'La Poste Colissimo', account_num: 'LP-ACCT-0091' }
+    },
+    status: 'operational',
+    last_ping: new Date().toISOString()
+  },
+  connected_accounts: [
+    {
+      id: 'acct_1N4k92A',
+      vendor_id: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c',
+      store_name: 'Studio Label Paris',
+      store_handle: 'studiolabel',
+      email: 'concierge@studiolabelparis.com',
+      country: 'FR',
+      currency: 'EUR',
+      kyc_status: 'verified',
+      payouts_enabled: true,
+      bank_name: 'JPMorgan Chase (Paris)',
+      account_last4: '4192',
+      payout_schedule: 'Daily Rolling (48h)',
+      balance_pending: 1585.00
+    },
+    {
+      id: 'acct_1N8m10B',
+      vendor_id: 'mch_elena_02',
+      store_name: 'Elena Couture',
+      store_handle: 'elenacouture',
+      email: 'elena@elenacouture.com',
+      country: 'IT',
+      currency: 'EUR',
+      kyc_status: 'verified',
+      payouts_enabled: true,
+      bank_name: 'BNP Paribas Private',
+      account_last4: '8821',
+      payout_schedule: 'Weekly Automated',
+      balance_pending: 600.00
+    },
+    {
+      id: 'acct_1N9p77C',
+      vendor_id: 'mch_noir_03',
+      store_name: 'Atelier Noir',
+      store_handle: 'ateliernoir',
+      email: 'contact@ateliernoir.com',
+      country: 'US',
+      currency: 'USD',
+      kyc_status: 'under_review',
+      payouts_enabled: false,
+      bank_name: 'Silicon Valley Bank',
+      account_last4: '3049',
+      payout_schedule: 'Manual Hold',
+      balance_pending: 210.00
+    }
+  ]
+};
+
+const INITIAL_WEBHOOK_EVENTS = [
+  {
+    id: 'evt_wh_9012',
+    source: 'EasyPost (DHL)',
+    event: 'shipment.delivered',
+    order_id: 'ORD-8239',
+    status: 200,
+    timestamp: new Date(Date.now() - 15 * 60000).toISOString(),
+    payload: {
+      tracking_code: 'DHL-29401824',
+      status: 'DELIVERED',
+      signed_by: 'P. Sharma',
+      location: 'Bangalore, India',
+      message: 'Package handed to resident. Signature captured.'
+    }
+  },
+  {
+    id: 'evt_wh_9011',
+    source: 'Stripe Connect',
+    event: 'payment_intent.succeeded',
+    order_id: 'ORD-8241',
+    status: 200,
+    timestamp: new Date(Date.now() - 45 * 60000).toISOString(),
+    payload: {
+      payment_intent: 'pi_3M9xV2K9QxVogueSocial01',
+      amount: 59000,
+      currency: 'usd',
+      escrow_hold: true,
+      destination_account: 'acct_1N4k92A'
+    }
+  },
+  {
+    id: 'evt_wh_9010',
+    source: 'EasyPost (FedEx)',
+    event: 'shipment.in_transit',
+    order_id: 'ORD-8237',
+    status: 200,
+    timestamp: new Date(Date.now() - 120 * 60000).toISOString(),
+    payload: {
+      tracking_code: 'FDX-8392019',
+      status: 'IN_TRANSIT',
+      checkpoint: 'Riyadh Logistics Facility',
+      message: 'International shipment scanned at customs gateway.'
+    }
+  },
+  {
+    id: 'evt_wh_9009',
+    source: 'Stripe Connect',
+    event: 'transfer.created',
+    order_id: 'ORD-8236',
+    status: 200,
+    timestamp: new Date(Date.now() - 240 * 60000).toISOString(),
+    payload: {
+      transfer_id: 'tr_1N8m10B_99201',
+      destination: 'acct_1N8m10B',
+      net_amount: 26600,
+      fee_collected: 1400,
+      rule: '48h_post_delivery_auto_release'
+    }
+  }
+];

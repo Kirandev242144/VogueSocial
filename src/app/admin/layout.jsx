@@ -4,7 +4,7 @@ import { useNavigate, useLocation, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import {
   LayoutDashboard, Users, AlertTriangle, ShieldAlert,
-  Home, LogOut, Cpu, Package, Sun, Moon, ShoppingBag
+  Home, LogOut, Cpu, Package, Sun, Moon, ShoppingBag, Webhook
 } from 'lucide-react';
 import './AdminPanel.css';
 
@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { label: 'Product Approvals', icon: Package, href: '/admin/products' },
   { label: 'Vendors', icon: Users, href: '/admin/vendors' },
   { label: 'Disputes & Escrow', icon: AlertTriangle, href: '/admin/disputes' },
+  { label: 'Integrations & Gateways', icon: Webhook, href: '/admin/integrations' },
   { label: 'GPU Computing', icon: Cpu, href: '/admin/runpod' },
   { section: 'STOREFRONT' },
   { label: 'Go to Main Store', icon: Home, href: '/' },

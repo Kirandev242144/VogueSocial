@@ -124,5 +124,55 @@ export const adminService = {
       body: JSON.stringify({ orderId, notes })
     });
     return res.json();
+  },
+
+  async getIntegrationsConfig() {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.getIntegrationsConfig();
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/integrations`);
+    return res.json();
+  },
+
+  async saveIntegrationsConfig(config) {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.saveIntegrationsConfig(config);
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/integrations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config)
+    });
+    return res.json();
+  },
+
+  async getWebhookEvents() {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.getWebhookEvents();
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/integrations/webhooks`);
+    return res.json();
+  },
+
+  async simulateWebhookEvent(eventType, payload = {}) {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.simulateWebhookEvent(eventType, payload);
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/integrations/webhooks/simulate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventType, payload })
+    });
+    return res.json();
+  },
+
+  async clearWebhookEvents() {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.clearWebhookEvents();
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/integrations/webhooks/clear`, {
+      method: 'POST'
+    });
+    return res.json();
   }
 };

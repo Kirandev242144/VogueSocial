@@ -30,6 +30,8 @@ export const STORAGE_KEYS = {
   // Administration & Escrows
   ADMIN_DISPUTES: 'vogue_admin_disputes',
   RUNPOD_JOBS: 'vogue_admin_runpod_jobs',
+  ADMIN_INTEGRATIONS: 'vogue_admin_integrations',
+  ADMIN_WEBHOOK_EVENTS: 'vogue_admin_webhook_events',
 
   // System Flags
   SEEDED_INITIALIZED: 'vogue_data_seeded_v1',
