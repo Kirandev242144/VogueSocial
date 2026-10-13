@@ -55,6 +55,20 @@ export default function VendorAuditModal({
     payout_hold: Boolean(vendor.commercial_terms?.payout_hold)
   });
 
+  // Address equivalence helper
+  const isAddressesEqual = (a1, a2) => {
+    if (!a1 || !a2) return false;
+    const s1 = (a1.street || '').trim().toLowerCase();
+    const s2 = (a2.street || '').trim().toLowerCase();
+    const c1 = (a1.city || '').trim().toLowerCase();
+    const c2 = (a2.city || '').trim().toLowerCase();
+    return s1.length > 0 && s1 === s2 && c1 === c2;
+  };
+
+  const [sameAsRegistered, setSameAsRegistered] = useState(
+    isAddressesEqual(vendor.legal_address, vendor.return_warehouse_address) || !vendor.return_warehouse_address?.street
+  );
+
   // Action notes state
   const [auditNote, setAuditNote] = useState('');
   const [feedback, setFeedback] = useState(null);
@@ -64,6 +78,8 @@ export default function VendorAuditModal({
 
   useEffect(() => {
     if (vendor) {
+      const areEqual = isAddressesEqual(vendor.legal_address, vendor.return_warehouse_address) || !vendor.return_warehouse_address?.street;
+      setSameAsRegistered(areEqual);
       setBizForm({
         legal_business_name: vendor.legal_business_name || vendor.store_name || '',
         business_type: vendor.business_type || 'Corporation / LLC',
@@ -103,10 +119,25 @@ export default function VendorAuditModal({
     setTimeout(() => setFeedback(null), 3000);
   };
 
+  const handleSameAddressToggle = (e) => {
+    const checked = e.target.checked;
+    setSameAsRegistered(checked);
+    if (checked) {
+      setBizForm(prev => ({
+        ...prev,
+        return_warehouse_address: { ...prev.legal_address }
+      }));
+    }
+  };
+
   const handleSaveBusinessInfo = async (e) => {
     e.preventDefault();
     if (onSaveBusiness) {
-      await onSaveBusiness(vendor.id, bizForm);
+      const dataToSave = {
+        ...bizForm,
+        return_warehouse_address: sameAsRegistered ? { ...bizForm.legal_address } : bizForm.return_warehouse_address
+      };
+      await onSaveBusiness(vendor.id, dataToSave);
       showFeedback('Business profile & addresses saved successfully.');
     }
   };
@@ -144,7 +175,7 @@ export default function VendorAuditModal({
       isOpen={isOpen}
       onClose={onClose}
       title={`Boutique Audit Dossier: ${vendor.store_name}`}
-      maxWidth="780px"
+      maxWidth="840px"
       footer={
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.72rem', color: 'var(--adm-text-sub)' }}>
@@ -332,14 +363,14 @@ export default function VendorAuditModal({
             </div>
 
             {/* Addresses Card */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              {/* Registered Legal Corporate Address */}
-              <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
-                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <MapPin size={12} color="#38bdf8" /> Registered Corporate Address
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
+              {/* Registered Business Address */}
+              <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', lineHeight: 1.35 }}>
+                  <MapPin size={12} color="#38bdf8" /> Registered Business Address
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
                   <div>
                     <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Street Address</label>
                     <input
@@ -399,70 +430,116 @@ export default function VendorAuditModal({
                 </div>
               </div>
 
-              {/* Physical Dispatch & Return Warehouse Address */}
-              <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
-                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <MapPin size={12} color="#10b981" /> Atelier Dispatch / Return Hub
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <div>
-                    <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Street / Unit</label>
-                    <input
-                      type="text"
-                      className="admin-input"
-                      value={bizForm.return_warehouse_address.street}
-                      onChange={(e) => setBizForm({
-                        ...bizForm,
-                        return_warehouse_address: { ...bizForm.return_warehouse_address, street: e.target.value }
-                      })}
-                      placeholder="42 Rue de Paradis, Atelier 3B"
-                    />
+              {/* Shipping & Returns Address */}
+              <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px', lineHeight: 1.35 }}>
+                    <MapPin size={12} color="#10b981" /> Shipping & Returns Address
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '0.5rem' }}>
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', cursor: 'pointer', fontSize: '0.68rem', color: 'var(--adm-text-sub)', userSelect: 'none' }}>
+                    <input
+                      type="checkbox"
+                      checked={sameAsRegistered}
+                      onChange={handleSameAddressToggle}
+                      style={{ accentColor: 'var(--adm-accent)', cursor: 'pointer' }}
+                    />
+                    <span>Same as registered address</span>
+                  </label>
+                </div>
+
+                {sameAsRegistered ? (
+                  <div
+                    style={{
+                      flex: 1,
+                      padding: '0.85rem',
+                      borderRadius: '6px',
+                      background: 'var(--adm-panel-hover)',
+                      border: '1px dashed var(--adm-border)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      gap: '5px',
+                      fontSize: '0.72rem',
+                      color: 'var(--adm-text-muted)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--adm-text-main)', fontWeight: 600 }}>
+                      <CheckCircle size={13} color="#10b981" />
+                      <span>Same as registered business address</span>
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)' }}>
+                      Customer dispatches and returns route to the registered corporate address:
+                    </div>
+                    <div style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: 'var(--adm-text-main)', background: 'var(--adm-bg)', padding: '0.45rem 0.65rem', borderRadius: '4px', border: '1px solid var(--adm-border-subtle)', marginTop: '2px' }}>
+                      {bizForm.legal_address.street || 'Address on file'}
+                      <br />
+                      {bizForm.legal_address.city || ''} {bizForm.legal_address.postal_code || ''} {bizForm.legal_address.country ? `• ${bizForm.legal_address.country}` : ''}
+                    </div>
+                    <div style={{ marginTop: '4px', fontSize: '0.66rem', color: 'var(--adm-text-sub)' }}>
+                      Uncheck "Same as registered address" above to specify a separate dispatch facility or return warehouse.
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
                     <div>
-                      <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>City</label>
+                      <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Street / Unit</label>
                       <input
                         type="text"
                         className="admin-input"
-                        value={bizForm.return_warehouse_address.city}
+                        value={bizForm.return_warehouse_address.street}
                         onChange={(e) => setBizForm({
                           ...bizForm,
-                          return_warehouse_address: { ...bizForm.return_warehouse_address, city: e.target.value }
+                          return_warehouse_address: { ...bizForm.return_warehouse_address, street: e.target.value }
                         })}
-                        placeholder="Paris"
+                        placeholder="e.g. 42 Rue de Paradis, Atelier 3B"
                       />
                     </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '0.5rem' }}>
+                      <div>
+                        <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>City</label>
+                        <input
+                          type="text"
+                          className="admin-input"
+                          value={bizForm.return_warehouse_address.city}
+                          onChange={(e) => setBizForm({
+                            ...bizForm,
+                            return_warehouse_address: { ...bizForm.return_warehouse_address, city: e.target.value }
+                          })}
+                          placeholder="Paris"
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Postal Code</label>
+                        <input
+                          type="text"
+                          className="admin-input"
+                          value={bizForm.return_warehouse_address.postal_code}
+                          onChange={(e) => setBizForm({
+                            ...bizForm,
+                            return_warehouse_address: { ...bizForm.return_warehouse_address, postal_code: e.target.value }
+                          })}
+                          placeholder="75010"
+                        />
+                      </div>
+                    </div>
+
                     <div>
-                      <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Postal Code</label>
+                      <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Country</label>
                       <input
                         type="text"
                         className="admin-input"
-                        value={bizForm.return_warehouse_address.postal_code}
+                        value={bizForm.return_warehouse_address.country}
                         onChange={(e) => setBizForm({
                           ...bizForm,
-                          return_warehouse_address: { ...bizForm.return_warehouse_address, postal_code: e.target.value }
+                          return_warehouse_address: { ...bizForm.return_warehouse_address, country: e.target.value }
                         })}
-                        placeholder="75010"
+                        placeholder="France"
                       />
                     </div>
                   </div>
-
-                  <div>
-                    <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Country</label>
-                    <input
-                      type="text"
-                      className="admin-input"
-                      value={bizForm.return_warehouse_address.country}
-                      onChange={(e) => setBizForm({
-                        ...bizForm,
-                        return_warehouse_address: { ...bizForm.return_warehouse_address, country: e.target.value }
-                      })}
-                      placeholder="France"
-                    />
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
