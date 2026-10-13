@@ -471,7 +471,7 @@ export const mockAdminAdapter = {
   async getVendorById(vendorId) {
     await delay();
     let stores = storageEngine.getItem(STORAGE_KEYS.STORES, []);
-    if (!stores || stores.length === 0 || !stores[0]?.legal_business_name) {
+    if (!stores || stores.length < 5 || !stores[0]?.marketplace_agreement) {
       stores = INITIAL_VENDORS_DATA;
       storageEngine.setItem(STORAGE_KEYS.STORES, stores);
     }

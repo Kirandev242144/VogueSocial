@@ -1209,6 +1209,75 @@ export default function VendorAuditModal({
       {/* Tab 4: Audit & Account Status */}
       {activeTab === 'decision' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* Executive Governance & Lifecycle Overview */}
+          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <ShieldCheck size={14} color="#10b981" /> Executive Governance & Decision
+              </div>
+              <div style={{ fontSize: '0.66rem', color: 'var(--adm-text-sub)' }}>
+                Decision Recorded: <strong>{new Date(vendor.created_at || '2026-08-15T10:00:00Z').toLocaleDateString()}</strong> by <strong>Platform Root Admin</strong>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.6rem', marginTop: '0.5rem' }}>
+              <div style={{ padding: '0.65rem 0.8rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)' }}>
+                <div style={{ fontSize: '0.62rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Marketplace Lifecycle</div>
+                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--adm-text-main)', marginTop: '2px', textTransform: 'capitalize' }}>
+                  {storefrontStatus === 'active' ? 'Approved & Fully Authorized' : (storefrontStatus === 'suspended' ? 'Suspended (Policy Hold)' : 'Application Under Review')}
+                </div>
+                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                  Reviewer: Senior Compliance Auditor #4
+                </div>
+              </div>
+
+              <div style={{ padding: '0.65rem 0.8rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)' }}>
+                <div style={{ fontSize: '0.62rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Compliance & Warnings</div>
+                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: kybStatus === 'rejected' || storefrontStatus === 'suspended' ? '#ef4444' : '#10b981', marginTop: '2px' }}>
+                  {storefrontStatus === 'suspended' ? 'Trademark / Policy Hold Active' : (kybStatus === 'verified' ? 'Zero Policy Warnings Active' : 'Document Submission Required')}
+                </div>
+                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                  {kybStatus === 'verified' ? 'Identity & address verified' : 'Auditor flagged missing items'}
+                </div>
+              </div>
+
+              <div style={{ padding: '0.65rem 0.8rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)' }}>
+                <div style={{ fontSize: '0.62rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Payout Governance Gate</div>
+                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: payoutEligibility === 'eligible' ? '#10b981' : '#ef4444', marginTop: '2px' }}>
+                  {payoutEligibility === 'eligible' ? 'Rolling Payouts Active' : 'Administrative Payout Hold'}
+                </div>
+                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                  {payoutEligibility === 'eligible' ? 'Disbursements verified per order' : 'Fund transfers paused by admin'}
+                </div>
+              </div>
+            </div>
+
+            {/* Critical Business Detail Callout */}
+            <div
+              style={{
+                marginTop: '0.85rem',
+                padding: '0.65rem 0.85rem',
+                borderRadius: '6px',
+                background: 'rgba(56, 189, 248, 0.06)',
+                border: '1px solid rgba(56, 189, 248, 0.2)',
+                fontSize: '0.7rem',
+                color: 'var(--adm-text-main)',
+                lineHeight: 1.45
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#38bdf8', fontWeight: 600, marginBottom: '2px' }}>
+                <Info size={13} />
+                <span>Order Fund Settlement Architecture (Delivery Verification Protocol)</span>
+              </div>
+              <div>
+                <strong>Workflow:</strong> Customer pays → Merchant ships → Carrier POD verified → 48-hour buyer inspection buffer → Payout eligible.
+              </div>
+              <div style={{ fontSize: '0.66rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                Merchant payout eligibility in this dossier grants permission for rolling automated transfers. Individual fund releases are evaluated on an order-by-order basis via tracking webhooks on the Orders Ledger, never released arbitrarily in bulk from this profile.
+              </div>
+            </div>
+          </div>
+
           {/* Gate 1: Storefront Access Management */}
           <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
