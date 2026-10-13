@@ -1,11 +1,9 @@
 /* ==========================================================================
-   VendorAuditModal - Boutique Audit Dossier & Governance Stylesheet
-   Adheres to VogueSocial Minimalist Admin Design System Tokens (--adm-*)
+   VendorAuditModal - Realistic Luxury Marketplace Merchant Dossier
+   Minimalist Stripe/Linear Style adhering to design tokens (--adm-*)
    ========================================================================== */
 
-/* --------------------------------------------------------------------------
-   Modal Footer Layout
-   -------------------------------------------------------------------------- */
+/* Modal Root & Footer */
 .vam-footer {
   display: flex;
   align-items: center;
@@ -19,22 +17,18 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   color: var(--adm-text-sub);
 }
 
 .vam-footer-code {
   font-family: monospace;
+  font-size: 0.75rem;
   color: var(--adm-text-main);
-}
-
-.vam-footer-sep {
-  color: var(--adm-border);
-}
-
-.vam-footer-demo {
-  color: #818cf8;
-  font-weight: 500;
+  background: var(--adm-panel-hover);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--adm-border-subtle);
 }
 
 .vam-footer-actions {
@@ -42,36 +36,35 @@
   gap: 0.5rem;
 }
 
-/* --------------------------------------------------------------------------
-   Feedback Toast Banner
-   -------------------------------------------------------------------------- */
+/* Feedback Notification */
 .vam-toast {
-  padding: 0.65rem 0.85rem;
+  padding: 0.65rem 0.9rem;
   border-radius: 6px;
   margin-bottom: 1rem;
   font-size: 0.75rem;
   font-weight: 500;
   display: flex;
   align-items: center;
-  animation: vamFadeIn 0.2s ease-out;
+  gap: 8px;
+  animation: vamFadeIn 0.15s ease-out;
 }
 
 .vam-toast-success {
   background: rgba(16, 185, 129, 0.12);
   color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
 .vam-toast-error {
   background: rgba(239, 68, 68, 0.12);
   color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
 @keyframes vamFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateY(-3px);
   }
   to {
     opacity: 1;
@@ -80,13 +73,13 @@
 }
 
 /* --------------------------------------------------------------------------
-   Header Summary Banner & 3 Separated Governance Gates
+   Header Summary & Status Bar
    -------------------------------------------------------------------------- */
 .vam-header {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 0.95rem 1.1rem;
+  gap: 0.85rem;
+  padding: 1rem 1.15rem;
   border-radius: 8px;
   background: var(--adm-panel-hover);
   border: 1px solid var(--adm-border);
@@ -104,12 +97,12 @@
 .vam-header-left {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .vam-avatar {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 8px;
   background: var(--adm-bg);
   border: 1px solid var(--adm-border);
@@ -117,7 +110,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   color: var(--adm-accent);
   flex-shrink: 0;
 }
@@ -135,121 +128,96 @@
 }
 
 .vam-store-name {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--adm-text-main);
 }
 
-.vam-demo-pill {
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: rgba(99, 102, 241, 0.12);
-  color: #818cf8;
-  border: 1px solid rgba(99, 102, 241, 0.25);
-}
-
 .vam-subtitle {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: var(--adm-text-sub);
   margin-top: 2px;
 }
 
-.vam-preview-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.72rem;
-  color: var(--adm-accent);
-  text-decoration: none;
-  font-weight: 600;
-  transition: opacity 0.15s ease;
-}
-
-.vam-preview-link:hover {
-  opacity: 0.85;
-}
-
-/* 3 Governance Gate Cards */
-.vam-gates-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 0.6rem;
-  padding-top: 0.65rem;
-  border-top: 1px solid var(--adm-border-subtle);
-}
-
-.vam-gate-card {
+.vam-header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: var(--adm-bg);
-  padding: 0.45rem 0.65rem;
-  border-radius: 6px;
-  border: 1px solid var(--adm-border);
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.vam-gate-dot {
-  width: 8px;
-  height: 8px;
+/* Compact Status Bar */
+.vam-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--adm-border-subtle);
+  flex-wrap: wrap;
+}
+
+.vam-status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--adm-bg);
+  border: 1px solid var(--adm-border);
+  font-size: 0.72rem;
+}
+
+.vam-chip-label {
+  color: var(--adm-text-sub);
+  font-weight: 500;
+}
+
+.vam-chip-val {
+  font-weight: 600;
+  color: var(--adm-text-main);
+}
+
+.vam-chip-dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-.vam-gate-dot.status-active,
-.vam-gate-dot.status-verified,
-.vam-gate-dot.status-eligible {
+.vam-chip-dot.active,
+.vam-chip-dot.verified,
+.vam-chip-dot.eligible {
   background: #10b981;
 }
 
-.vam-gate-dot.status-suspended,
-.vam-gate-dot.status-rejected,
-.vam-gate-dot.status-hold {
+.vam-chip-dot.suspended,
+.vam-chip-dot.rejected,
+.vam-chip-dot.hold {
   background: #ef4444;
 }
 
-.vam-gate-dot.status-review,
-.vam-gate-dot.status-pending {
+.vam-chip-dot.review,
+.vam-chip-dot.pending {
   background: #f59e0b;
 }
 
-.vam-gate-label {
-  font-size: 0.62rem;
-  color: var(--adm-text-sub);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.vam-gate-value {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--adm-text-main);
-  text-transform: capitalize;
-}
-
-.vam-gate-value.status-hold {
-  color: #ef4444;
-}
-
 /* --------------------------------------------------------------------------
-   Tab Navigation & Badges
+   Tab Navigation
    -------------------------------------------------------------------------- */
 .vam-tab-nav {
   margin-bottom: 1.25rem;
 }
 
-.vam-tab-tag {
+.vam-tab-badge {
   font-size: 0.62rem;
-  padding: 1px 5px;
-  border-radius: 3px;
+  padding: 1px 6px;
+  border-radius: 10px;
   background: var(--adm-panel-hover);
   color: var(--adm-text-sub);
+  font-weight: 600;
 }
 
-.vam-tab-alert-dot {
+.vam-tab-alert {
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -257,7 +225,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   General Cards & Stacks
+   Layout Stacks & Cards
    -------------------------------------------------------------------------- */
 .vam-stack {
   display: flex;
@@ -266,74 +234,54 @@
 }
 
 .vam-card {
-  padding: 1rem;
+  padding: 1rem 1.15rem;
   border-radius: 8px;
   border: 1px solid var(--adm-border);
   background: var(--adm-bg);
 }
 
-.vam-card.hold-active {
+.vam-card.alert-border {
   border-color: rgba(239, 68, 68, 0.4);
 }
 
 .vam-card-header {
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--adm-text-sub);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .vam-card-title {
   display: flex;
   align-items: center;
-  gap: 6px;
-}
-
-.vam-card-tag {
-  font-size: 0.62rem;
-  color: #818cf8;
-  font-weight: 500;
-  text-transform: none;
-  letter-spacing: normal;
+  gap: 7px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--adm-text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .vam-grid-2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .vam-field-label {
   display: block;
+  font-size: 0.7rem;
+  color: var(--adm-text-sub);
   margin-bottom: 4px;
-}
-
-.vam-field-label-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 4px;
-}
-
-.vam-field-label-text {
-  margin: 0;
-}
-
-.vam-field-hint {
-  font-size: 0.62rem;
-  color: var(--adm-text-muted);
 }
 
 .vam-sublabel {
+  display: block;
   font-size: 0.68rem;
   color: var(--adm-text-sub);
-  display: block;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .vam-form-actions {
@@ -343,16 +291,16 @@
 }
 
 /* --------------------------------------------------------------------------
-   Addresses Section (Tab 1)
+   Tab 1: Addresses
    -------------------------------------------------------------------------- */
-.vam-grid-addresses {
+.vam-addresses-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1rem;
 }
 
 .vam-address-card {
-  padding: 1rem;
+  padding: 1rem 1.15rem;
   border-radius: 8px;
   border: 1px solid var(--adm-border);
   background: var(--adm-bg);
@@ -365,28 +313,27 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.75rem;
-  gap: 0.5rem;
   flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .vam-address-title {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--adm-text-sub);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
   display: flex;
   align-items: center;
   gap: 6px;
-  line-height: 1.35;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--adm-text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .vam-checkbox-label {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   cursor: pointer;
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   color: var(--adm-text-sub);
   user-select: none;
 }
@@ -399,14 +346,14 @@
 .vam-address-fields {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.55rem;
   flex: 1;
 }
 
 .vam-grid-city-postal {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
-  gap: 0.5rem;
+  gap: 0.55rem;
 }
 
 .vam-same-address-box {
@@ -418,9 +365,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 5px;
-  font-size: 0.72rem;
-  color: var(--adm-text-muted);
+  gap: 6px;
+  font-size: 0.74rem;
 }
 
 .vam-same-address-heading {
@@ -429,51 +375,23 @@
   gap: 6px;
   color: var(--adm-text-main);
   font-weight: 600;
-}
-
-.vam-same-address-desc {
-  font-size: 0.68rem;
-  color: var(--adm-text-sub);
+  font-size: 0.75rem;
 }
 
 .vam-same-address-code {
   font-family: monospace;
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   color: var(--adm-text-main);
   background: var(--adm-bg);
-  padding: 0.45rem 0.65rem;
+  padding: 0.5rem 0.65rem;
   border-radius: 4px;
   border: 1px solid var(--adm-border-subtle);
-  margin-top: 2px;
   line-height: 1.45;
 }
 
-.vam-same-address-hint {
-  margin-top: 4px;
-  font-size: 0.66rem;
-  color: var(--adm-text-sub);
-}
-
 /* --------------------------------------------------------------------------
-   Documents Section (Tab 2)
+   Tab 2: Compliance Documents
    -------------------------------------------------------------------------- */
-.vam-docs-header {
-  margin-bottom: 1rem;
-  font-size: 0.74rem;
-  color: var(--adm-text-sub);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.vam-docs-sandbox-note {
-  font-size: 0.64rem;
-  color: #818cf8;
-  font-weight: 500;
-}
-
 .vam-docs-list {
   display: flex;
   flex-direction: column;
@@ -481,14 +399,15 @@
 }
 
 .vam-doc-item {
-  padding: 0.9rem;
+  padding: 0.85rem 1rem;
   border-radius: 8px;
   border: 1px solid var(--adm-border);
   background: var(--adm-bg);
+  transition: border-color 0.15s ease;
 }
 
 .vam-doc-item.rejected {
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.35);
 }
 
 .vam-doc-row {
@@ -496,18 +415,18 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.65rem;
 }
 
 .vam-doc-left {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.75rem;
 }
 
 .vam-doc-icon {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 6px;
   background: var(--adm-panel-hover);
   display: flex;
@@ -517,34 +436,26 @@
   flex-shrink: 0;
 }
 
-.vam-doc-title-row {
+.vam-doc-info {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
 }
 
 .vam-doc-title {
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: var(--adm-text-main);
 }
 
-.vam-doc-tag {
-  font-size: 0.62rem;
-  padding: 1px 5px;
-  border-radius: 3px;
-  background: var(--adm-panel-hover);
-  color: var(--adm-text-sub);
-}
-
 .vam-doc-meta {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   color: var(--adm-text-sub);
   margin-top: 2px;
 }
 
 .vam-doc-filename {
   font-family: monospace;
+  color: var(--adm-text-main);
 }
 
 .vam-doc-actions {
@@ -554,9 +465,9 @@
 }
 
 .vam-doc-badge {
-  font-size: 0.66rem;
-  font-weight: 700;
-  padding: 2px 7px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 8px;
   border-radius: 4px;
 }
 
@@ -576,21 +487,16 @@
 }
 
 .vam-btn-compact {
-  padding: 2px 7px !important;
-  font-size: 0.68rem !important;
-}
-
-.vam-btn-compact-pad {
-  padding: 2px 8px !important;
-  font-size: 0.68rem !important;
+  padding: 3px 8px !important;
+  font-size: 0.7rem !important;
 }
 
 .vam-doc-notes {
   margin-top: 0.5rem;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: var(--adm-text-muted);
   background: var(--adm-panel-hover);
-  padding: 0.4rem 0.65rem;
+  padding: 0.45rem 0.75rem;
   border-radius: 4px;
 }
 
@@ -598,25 +504,20 @@
   color: #ef4444;
 }
 
-.vam-doc-reviewer {
-  margin-left: 6px;
-  color: var(--adm-text-sub);
-}
-
-/* Document Rejection Inline Dialog */
+/* Document Rejection Prompt */
 .vam-reject-dialog {
   margin-top: 0.75rem;
   padding: 0.75rem;
   border-radius: 6px;
-  background: rgba(239, 68, 68, 0.06);
+  background: rgba(239, 68, 68, 0.05);
   border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .vam-reject-title {
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   font-weight: 600;
   color: #ef4444;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
 
 .vam-reject-input {
@@ -630,7 +531,7 @@
   gap: 0.5rem;
 }
 
-/* Document Preview Lightbox */
+/* Document Inspection Modal */
 .vam-preview-body {
   padding: 1.25rem;
   text-align: center;
@@ -646,174 +547,136 @@
 
 .vam-preview-filename {
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   color: var(--adm-text-main);
-}
-
-.vam-preview-type {
-  font-size: 0.7rem;
-  color: #818cf8;
-  margin-top: 2px;
-  font-weight: 500;
 }
 
 .vam-preview-meta-list {
   margin-top: 1rem;
-  padding: 0.75rem;
+  padding: 0.75rem 0.9rem;
   border-radius: 6px;
   background: var(--adm-panel-hover);
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   color: var(--adm-text-main);
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .vam-preview-code {
   font-family: monospace;
 }
 
-.vam-preview-status {
-  text-transform: capitalize;
-}
-
-.vam-preview-notes {
-  margin-top: 4px;
-  color: var(--adm-text-sub);
-}
-
-.vam-preview-disclaimer {
-  margin-top: 0.85rem;
-  font-size: 0.66rem;
-  color: var(--adm-text-muted);
-}
-
 /* --------------------------------------------------------------------------
-   Marketplace Agreement Tab (Tab 3)
+   Tab 3: Financials & Commercials
    -------------------------------------------------------------------------- */
-.vam-agreement-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.vam-agreement-title-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.vam-agreement-title {
-  font-size: 0.84rem;
-  font-weight: 700;
-  color: var(--adm-text-main);
-}
-
-.vam-agreement-badge {
-  font-size: 0.64rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: rgba(16, 185, 129, 0.12);
-  color: #10b981;
-  font-weight: 600;
-}
-
-.vam-agreement-effective {
-  font-size: 0.68rem;
-  color: var(--adm-text-sub);
-}
-
-.vam-agreement-desc {
-  font-size: 0.72rem;
-  color: var(--adm-text-sub);
-  margin-bottom: 0.75rem;
-  line-height: 1.45;
-}
-
-.vam-terms-grid {
+.vam-finance-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 0.75rem;
-  margin-top: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.85rem;
 }
 
-.vam-term-box {
-  padding: 0.65rem 0.85rem;
+.vam-info-box {
+  padding: 0.75rem 0.9rem;
   border-radius: 6px;
   background: var(--adm-panel-hover);
   border: 1px solid var(--adm-border-subtle);
 }
 
-.vam-term-label {
-  font-size: 0.64rem;
+.vam-info-label {
+  font-size: 0.66rem;
   color: var(--adm-text-sub);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  margin-bottom: 3px;
 }
 
-.vam-term-value-lg {
-  font-size: 0.92rem;
+.vam-info-val-lg {
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--adm-text-main);
-  margin-top: 2px;
 }
 
-.vam-term-unit {
+.vam-info-val-md {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--adm-text-main);
+}
+
+.vam-info-sub {
   font-size: 0.68rem;
-  font-weight: 400;
-  color: var(--adm-text-muted);
-}
-
-.vam-term-sub {
-  font-size: 0.64rem;
   color: var(--adm-text-sub);
   margin-top: 2px;
 }
 
-.vam-term-value-md {
-  font-size: 0.76rem;
-  font-weight: 600;
-  color: var(--adm-text-main);
-  margin-top: 2px;
+/* Stripe Account Row */
+.vam-stripe-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-/* Agreement Rate Amendment Form */
-.vam-rate-form {
+.vam-stripe-id-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vam-stripe-input {
+  font-family: monospace;
+  font-size: 0.78rem;
+  background: var(--adm-panel-hover) !important;
+}
+
+/* Payout Hold Alert */
+.vam-hold-alert {
+  padding: 0.75rem 0.9rem;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  font-size: 0.74rem;
+}
+
+.vam-hold-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ef4444;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.vam-hold-content {
+  color: var(--adm-text-main);
+}
+
+.vam-hold-meta {
+  font-size: 0.68rem;
+  color: var(--adm-text-sub);
+  margin-top: 4px;
+}
+
+/* Commission Rate Form */
+.vam-rate-inline-form {
   display: grid;
   grid-template-columns: 1fr 1fr 1.5fr auto;
   gap: 0.75rem;
   align-items: flex-end;
+  margin-top: 0.75rem;
 }
 
-.vam-rate-label {
-  font-size: 0.68rem;
-  color: var(--adm-text-sub);
-  display: block;
-  margin-bottom: 4px;
-}
-
-.vam-rate-submit-btn {
+.vam-rate-btn {
   height: 34px !important;
-}
-
-/* Agreement History */
-.vam-history-header {
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--adm-text-sub);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.6rem;
 }
 
 .vam-history-list {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-top: 0.65rem;
 }
 
 .vam-history-item {
@@ -830,7 +693,7 @@
 .vam-history-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .vam-history-version {
@@ -843,287 +706,22 @@
   color: var(--adm-text-main);
 }
 
-.vam-history-reason {
-  color: var(--adm-text-sub);
-}
-
 .vam-history-meta {
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   color: var(--adm-text-muted);
 }
 
-/* --------------------------------------------------------------------------
-   Audit & Governance Tab (Tab 4)
-   -------------------------------------------------------------------------- */
-.vam-decision-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.65rem;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.vam-decision-title {
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--adm-text-sub);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.vam-decision-recorded {
-  font-size: 0.66rem;
-  color: var(--adm-text-sub);
-}
-
-.vam-decision-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.6rem;
-  margin-top: 0.5rem;
-}
-
-.vam-decision-box {
-  padding: 0.65rem 0.8rem;
-  border-radius: 6px;
-  background: var(--adm-panel-hover);
-  border: 1px solid var(--adm-border-subtle);
-}
-
-.vam-decision-box-label {
-  font-size: 0.62rem;
-  color: var(--adm-text-sub);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.vam-decision-box-val {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--adm-text-main);
-  margin-top: 2px;
-  text-transform: capitalize;
-}
-
-.vam-decision-box-val.success {
-  color: #10b981;
-}
-
-.vam-decision-box-val.danger {
-  color: #ef4444;
-}
-
-.vam-decision-box-sub {
-  font-size: 0.64rem;
-  color: var(--adm-text-sub);
-  margin-top: 2px;
-}
-
-/* Order Settlement Protocol Callout */
-.vam-protocol-banner {
-  margin-top: 0.85rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: 6px;
-  background: rgba(56, 189, 248, 0.06);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  font-size: 0.7rem;
-  color: var(--adm-text-main);
-  line-height: 1.45;
-}
-
-.vam-protocol-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #38bdf8;
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.vam-protocol-subtext {
-  font-size: 0.66rem;
-  color: var(--adm-text-sub);
-  margin-top: 2px;
-}
-
-/* Storefront Access Row */
-.vam-gate-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.vam-gate-row-title {
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--adm-text-sub);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.vam-gate-row-status {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--adm-text-main);
-  margin-top: 2px;
-}
-
-.vam-gate-row-desc {
-  font-size: 0.7rem;
-  color: var(--adm-text-sub);
-  margin-top: 2px;
-  max-width: 520px;
-}
-
-/* Payment Provider (Stripe Connect) */
-.vam-provider-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.vam-provider-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--adm-text-sub);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.vam-provider-badge {
-  font-size: 0.64rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-
-.vam-provider-badge.enabled {
-  background: rgba(16, 185, 129, 0.12);
-  color: #10b981;
-}
-
-.vam-provider-badge.blocked {
-  background: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
-}
-
-.vam-provider-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 0.75rem;
-}
-
-.vam-provider-acct-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.vam-acct-input {
-  font-family: monospace;
-  font-size: 0.74rem;
-  background: var(--adm-panel-hover) !important;
-}
-
-.vam-acct-btn {
-  padding: 4px 7px !important;
-}
-
-.vam-bank-box {
-  padding: 0.5rem 0.65rem;
-  border-radius: 6px;
-  background: var(--adm-panel-hover);
-  border: 1px solid var(--adm-border-subtle);
-  font-size: 0.72rem;
-  color: var(--adm-text-main);
-}
-
-.vam-bank-synced {
-  font-size: 0.62rem;
-  color: var(--adm-text-muted);
-  margin-left: 6px;
-}
-
-.vam-provider-notice {
-  font-size: 0.66rem;
-  color: var(--adm-text-sub);
-  margin-top: 0.6rem;
-}
-
-/* Administrative Payout Governance */
-.vam-hold-status-val {
-  font-size: 0.82rem;
-  font-weight: 600;
-  margin-top: 2px;
-}
-
-.vam-hold-status-val.hold {
-  color: #ef4444;
-}
-
-.vam-hold-status-val.eligible {
-  color: #10b981;
-}
-
-.vam-hold-alert-box {
-  margin-top: 0.85rem;
-  padding: 0.75rem;
-  border-radius: 6px;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  font-size: 0.72rem;
-}
-
-.vam-hold-alert-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #ef4444;
-  font-weight: 600;
-  margin-bottom: 3px;
-}
-
-.vam-hold-alert-content {
-  color: var(--adm-text-main);
-}
-
-.vam-hold-alert-placed {
-  font-size: 0.66rem;
-  color: var(--adm-text-sub);
-  margin-top: 4px;
-}
-
-/* Compliance Audit Trail */
-.vam-audit-header {
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--adm-text-sub);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.65rem;
-}
-
-.vam-audit-trail-scroll {
+/* Audit Activity Timeline */
+.vam-audit-scroll {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  max-height: 220px;
+  max-height: 180px;
   overflow-y: auto;
+  margin-top: 0.5rem;
 }
 
-.vam-audit-entry {
+.vam-audit-item {
   padding: 0.55rem 0.75rem;
   border-radius: 6px;
   background: var(--adm-panel-hover);
@@ -1131,35 +729,35 @@
   font-size: 0.72rem;
 }
 
-.vam-audit-entry-header {
+.vam-audit-item-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 2px;
 }
 
-.vam-audit-entry-action {
+.vam-audit-action {
   font-weight: 600;
   color: var(--adm-text-main);
 }
 
-.vam-audit-entry-time {
-  font-size: 0.64rem;
+.vam-audit-time {
+  font-size: 0.66rem;
   color: var(--adm-text-muted);
 }
 
-.vam-audit-entry-note {
+.vam-audit-note {
   color: var(--adm-text-sub);
 }
 
-.vam-audit-entry-actor {
-  font-size: 0.64rem;
+.vam-audit-actor {
+  font-size: 0.66rem;
   color: var(--adm-accent);
   margin-top: 2px;
 }
 
 /* --------------------------------------------------------------------------
-   Sub-Dialog Modals (Hold, Release, Storefront Status)
+   Sub-Dialog Modals
    -------------------------------------------------------------------------- */
 .vam-submodal-stack {
   display: flex;
@@ -1168,22 +766,15 @@
 }
 
 .vam-submodal-desc {
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   color: var(--adm-text-sub);
-  line-height: 1.4;
-}
-
-.vam-submodal-label {
-  font-size: 0.68rem;
-  color: var(--adm-text-sub);
-  display: block;
-  margin-bottom: 4px;
+  line-height: 1.45;
 }
 
 .vam-submodal-textarea {
   width: 100%;
   height: auto !important;
-  padding: 0.5rem 0.75rem !important;
+  padding: 0.55rem 0.75rem !important;
 }
 
 .vam-submodal-footer {
@@ -1201,11 +792,11 @@
     grid-template-columns: 1fr;
   }
 
-  .vam-rate-form {
+  .vam-addresses-grid {
     grid-template-columns: 1fr;
   }
 
-  .vam-grid-addresses {
+  .vam-rate-inline-form {
     grid-template-columns: 1fr;
   }
 }
