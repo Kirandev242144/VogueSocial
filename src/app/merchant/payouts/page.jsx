@@ -1,92 +1,282 @@
 "use client";
+import React, { useState } from 'react';
 import styles from '../merchant.module.css';
-import { CheckCircle, DollarSign, TrendingUp, ArrowRight } from 'lucide-react';
-const HISTORY = [
-    { id: 'PAY-001', amount: '$127.40', date: 'Apr 15, 2026', orders: 2 },
-    { id: 'PAY-002', amount: '$89.00', date: 'Apr 08, 2026', orders: 1 },
-    { id: 'PAY-003', amount: '$215.50', date: 'Mar 30, 2026', orders: 3 },
+import './MerchantPayouts.css';
+import {
+  CheckCircle, DollarSign, TrendingUp, ArrowRight,
+  ExternalLink, Building2, ShieldCheck, Clock, Landmark
+} from 'lucide-react';
+
+const TRANSFERS_HISTORY = [
+  {
+    id: 'tr_1Ox8A1K92',
+    orderRef: 'ORD-8239',
+    gross: 420.00,
+    fee: 21.00,
+    net: 399.00,
+    date: 'Apr 28, 2026',
+    ordersCount: 1,
+    bank: 'JPMorgan Chase •••• 4192',
+    status: 'paid'
+  },
+  {
+    id: 'tr_1Ox7B4L03',
+    orderRef: 'ORD-8236',
+    gross: 280.00,
+    fee: 14.00,
+    net: 266.00,
+    date: 'Apr 24, 2026',
+    ordersCount: 1,
+    bank: 'JPMorgan Chase •••• 4192',
+    status: 'paid'
+  },
+  {
+    id: 'tr_1Ox6C8M19',
+    orderRef: 'ORD-8230',
+    gross: 890.00,
+    fee: 44.50,
+    net: 845.50,
+    date: 'Apr 18, 2026',
+    ordersCount: 2,
+    bank: 'JPMorgan Chase •••• 4192',
+    status: 'paid'
+  },
+  {
+    id: 'tr_1Ox5D2N88',
+    orderRef: 'ORD-8241',
+    gross: 590.00,
+    fee: 29.50,
+    net: 560.50,
+    date: 'Est. May 02, 2026',
+    ordersCount: 1,
+    bank: 'JPMorgan Chase •••• 4192',
+    status: 'in_transit'
+  }
 ];
+
 export default function PayoutsPage() {
-    return (<>
+  const [transfers] = useState(TRANSFERS_HISTORY);
+
+  return (
+    <>
       <div className={styles.topbar}>
         <div>
-          <div className={styles.pageTitle}>Payouts</div>
-          <div className={styles.pageSubtitle}>Track your earnings and payment schedule</div>
+          <div className={styles.pageTitle}>Payouts & Payments</div>
+          <div className={styles.pageSubtitle}>
+            Manage your Stripe Connect settlement account, track earnings, and review bank disbursements
+          </div>
         </div>
       </div>
 
       <div className={styles.pageContent}>
-        {/* Balance Hero */}
-        <div className={styles.payoutHero}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '2rem' }}>
-            <div>
-              <div className={styles.payoutLabel}>Pending Balance</div>
-              <div className={styles.payoutAmount}>$641.00</div>
-              <div className={styles.payoutMeta}>Releases after delivery confirmation</div>
-            </div>
-            <div>
-              <div className={styles.payoutLabel}>Total Earned (All Time)</div>
-              <div className={styles.payoutAmount} style={{ fontSize: '2.2rem' }}>$2,831</div>
-              <div className={styles.payoutMeta}>Since joining VogueSocial</div>
-            </div>
-            <div>
-              <div className={styles.payoutLabel}>Platform Commission</div>
-              <div className={styles.payoutAmount} style={{ fontSize: '2.2rem', opacity: 0.6 }}>5%</div>
-              <div className={styles.payoutMeta}>Auto-deducted on each payout</div>
-            </div>
-          </div>
-        </div>
-
-        {/* How it works */}
-        <div className={styles.panel} style={{ marginBottom: '1rem' }}>
-          <div className={styles.panelHeader}><span className={styles.panelTitle}>How Payouts Work</span></div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1px', background: 'var(--d-border2)' }}>
-            {[
-            { icon: DollarSign, color: '#cbf382', colorL: '#16a34a', bg: 'rgba(203,243,130,0.08)', bgL: '#f0fdf4', n: '01', title: 'Customer Pays', desc: 'When a user buys your product, payment is held securely by VogueSocial.' },
-            { icon: TrendingUp, color: '#60a5fa', colorL: '#1d4ed8', bg: 'rgba(96,165,250,0.08)', bgL: '#eff6ff', n: '02', title: 'You Ship', desc: 'Fulfill the order using your courier and enter the tracking ID in your dashboard.' },
-            { icon: CheckCircle, color: '#34d399', colorL: '#059669', bg: 'rgba(52,211,153,0.08)', bgL: '#ecfdf5', n: '03', title: 'Payout Released', desc: 'Once delivery is confirmed, your earnings (minus 5%) are transferred to your bank.' },
-        ].map(s => {
-            const Icon = s.icon;
-            return (<div key={s.n} style={{ padding: '1.5rem', background: 'var(--d-panel)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--d-card)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon size={16} color={s.color}/></div>
-                    <span style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--d-t4)', letterSpacing: '0.1em' }}>STEP {s.n}</span>
+        <div className="mp-container">
+          {/* ── Stripe Connect Express Account Card ── */}
+          <div className="mp-stripe-card">
+            <div className="mp-stripe-header">
+              <div className="mp-stripe-brand">
+                <div className="mp-stripe-icon-box">S</div>
+                <div>
+                  <div className="mp-stripe-title-row">
+                    <h3 className="mp-stripe-title">Stripe Connect Account</h3>
+                    <span className="mp-status-pill">
+                      <span className="mp-status-dot" />
+                      Active & Connected
+                    </span>
                   </div>
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--d-t1)', marginBottom: '0.35rem' }}>{s.title}</div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--d-t3)', lineHeight: 1.55 }}>{s.desc}</div>
-                </div>);
-        })}
+                  <div className="mp-stripe-subtitle">
+                    Express account configured for automated payouts and tax reporting
+                  </div>
+                </div>
+              </div>
+
+              <a
+                href="https://connect.stripe.com/express_login"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mp-btn-stripe"
+              >
+                <span>Open Stripe Express Dashboard</span>
+                <ExternalLink size={14} />
+              </a>
+            </div>
+
+            <div className="mp-stripe-grid">
+              <div className="mp-kv-item">
+                <span className="mp-kv-label">Connected Account ID</span>
+                <div className="mp-kv-val">
+                  <code className="mp-code">acct_1Ox7Y8K92A8291</code>
+                </div>
+              </div>
+
+              <div className="mp-kv-item">
+                <span className="mp-kv-label">Settlement Bank</span>
+                <div className="mp-kv-val">
+                  <Landmark size={14} />
+                  <span>JPMorgan Chase •••• 4192</span>
+                  <span className="mp-kv-hint">(USD)</span>
+                </div>
+              </div>
+
+              <div className="mp-kv-item">
+                <span className="mp-kv-label">Payout Schedule</span>
+                <div className="mp-kv-val">
+                  <span>Rolling automated (48h post-delivery)</span>
+                </div>
+              </div>
+
+              <div className="mp-kv-item">
+                <span className="mp-kv-label">Tax Documents (1099-K)</span>
+                <div className="mp-kv-val">
+                  <span>Managed directly via Stripe</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Payout History */}
-        <div className={styles.panel} style={{ marginBottom: '1rem' }}>
-          <div className={styles.panelHeader}><span className={styles.panelTitle}>Payout History</span></div>
-          <table className={styles.table}>
-            <thead><tr><th>Payout ID</th><th>Amount</th><th>Orders</th><th>Date</th><th>Status</th></tr></thead>
-            <tbody>
-              {HISTORY.map(p => (<tr key={p.id}>
-                  <td style={{ fontFamily: 'monospace', fontWeight: 600, color: 'var(--d-t2)' }}>{p.id}</td>
-                  <td style={{ fontWeight: 700, color: 'var(--d-chart)' }}>{p.amount}</td>
-                  <td style={{ color: 'var(--d-t3)' }}>{p.orders} order{p.orders > 1 ? 's' : ''}</td>
-                  <td style={{ color: 'var(--d-t4)', fontSize: '0.82rem' }}>{p.date}</td>
-                  <td><span className={`${styles.badge} ${styles.badgeDelivered}`}><CheckCircle size={10}/>Paid</span></td>
-                </tr>))}
-            </tbody>
-          </table>
-        </div>
+          {/* ── Balance KPI Grid ── */}
+          <div className="mp-kpi-grid">
+            <div className="mp-kpi-card">
+              <span className="mp-kpi-label">Available for Payout</span>
+              <div className="mp-kpi-amount mp-kpi-highlight">$641.00</div>
+              <span className="mp-kpi-meta">Cleared orders ready for scheduled bank transfer</span>
+            </div>
 
-        {/* Stripe Connect */}
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><span className={styles.panelTitle}>Bank Account</span></div>
-          <div className={styles.empty}>
-            <div className={styles.emptyTitle}>Connect your bank to receive payouts</div>
-            <div className={styles.emptyText} style={{ marginBottom: '1.25rem' }}>We use Stripe Connect to securely send payouts to any bank worldwide.</div>
-            <button disabled style={{ padding: '0.65rem 1.5rem', borderRadius: 8, background: 'var(--d-input)', border: '1px solid var(--d-border)', color: 'var(--d-t4)', fontWeight: 700, fontSize: '0.85rem', cursor: 'not-allowed', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 auto' }}>
-              Connect with Stripe <ArrowRight size={15}/> <span style={{ fontSize: '0.7rem', opacity: 0.6 }}>Coming Soon</span>
-            </button>
+            <div className="mp-kpi-card">
+              <span className="mp-kpi-label">Pending Delivery Clearance</span>
+              <div className="mp-kpi-amount">$435.00</div>
+              <span className="mp-kpi-meta">Disburses 48h after courier delivery verification (POD)</span>
+            </div>
+
+            <div className="mp-kpi-card">
+              <span className="mp-kpi-label">Total Disbursed (All Time)</span>
+              <div className="mp-kpi-amount">$2,831.00</div>
+              <span className="mp-kpi-meta">Lifetime net earnings received in your bank account</span>
+            </div>
+
+            <div className="mp-kpi-card">
+              <span className="mp-kpi-label">Platform Take-Rate</span>
+              <div className="mp-kpi-amount">5.0%</div>
+              <span className="mp-kpi-meta">Agreed marketplace commission deducted on checkout</span>
+            </div>
+          </div>
+
+          {/* ── Settlement Process Steps ── */}
+          <div className="mp-steps-panel">
+            <div className="mp-steps-header">
+              <span className="mp-steps-title">How Stripe Connect Payouts Work</span>
+            </div>
+
+            <div className="mp-steps-grid">
+              <div className="mp-step-item">
+                <div className="mp-step-badge-row">
+                  <div className="mp-step-icon-wrap">
+                    <DollarSign size={16} color="var(--vs-lime, #cbf382)" />
+                  </div>
+                  <span className="mp-step-num">STEP 01</span>
+                </div>
+                <div className="mp-step-name">Customer Checkout</div>
+                <p className="mp-step-desc">
+                  When a customer purchases your garment, Stripe authorizes the charge. Funds are held securely in platform settlement.
+                </p>
+              </div>
+
+              <div className="mp-step-item">
+                <div className="mp-step-badge-row">
+                  <div className="mp-step-icon-wrap">
+                    <TrendingUp size={16} color="#38bdf8" />
+                  </div>
+                  <span className="mp-step-num">STEP 02</span>
+                </div>
+                <div className="mp-step-name">Fulfill & Track</div>
+                <p className="mp-step-desc">
+                  Pack and dispatch your item with your chosen courier. Enter the tracking reference in your Orders dashboard to initiate clearance.
+                </p>
+              </div>
+
+              <div className="mp-step-item">
+                <div className="mp-step-badge-row">
+                  <div className="mp-step-icon-wrap">
+                    <CheckCircle size={16} color="#10b981" />
+                  </div>
+                  <span className="mp-step-num">STEP 03</span>
+                </div>
+                <div className="mp-step-name">Direct Bank Deposit</div>
+                <p className="mp-step-desc">
+                  Upon verified carrier delivery, Stripe automatically routes your net earnings (minus 5%) directly to your registered bank account.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Payout Transfers Table ── */}
+          <div className="mp-table-panel">
+            <div className="mp-table-header">
+              <span className="mp-table-title">Recent Payout Transfers</span>
+              <span className="mp-table-count">{transfers.length} Transfers Recorded</span>
+            </div>
+
+            <div className="mp-table-wrap">
+              <table className="mp-table">
+                <thead>
+                  <tr>
+                    <th>Transfer ID</th>
+                    <th>Order Ref</th>
+                    <th>Gross Sale</th>
+                    <th>VogueSocial Fee</th>
+                    <th>Net Disbursed</th>
+                    <th>Settlement Bank</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transfers.map(p => (
+                    <tr key={p.id}>
+                      <td>
+                        <span className="mp-td-transfer-id">{p.id}</span>
+                      </td>
+                      <td>
+                        <span className="mp-td-order-ref">#{p.orderRef}</span>
+                      </td>
+                      <td>
+                        <span className="mp-td-gross">${p.gross.toFixed(2)}</span>
+                      </td>
+                      <td>
+                        <span className="mp-td-fee">-${p.fee.toFixed(2)}</span>
+                      </td>
+                      <td>
+                        <span className="mp-td-net">${p.net.toFixed(2)}</span>
+                      </td>
+                      <td>
+                        <span className="mp-td-bank">
+                          <Building2 size={12} />
+                          {p.bank}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="mp-td-date">{p.date}</span>
+                      </td>
+                      <td>
+                        {p.status === 'paid' ? (
+                          <span className="mp-badge-paid">
+                            <CheckCircle size={10} />
+                            Paid
+                          </span>
+                        ) : (
+                          <span className="mp-badge-transit">
+                            <Clock size={10} />
+                            In Transit
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </>);
+    </>
+  );
 }

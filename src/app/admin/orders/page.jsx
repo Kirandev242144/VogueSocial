@@ -9,6 +9,7 @@ import {
   OrdersTable,
   OrderAuditModal
 } from '@/components/admin/orders';
+import './OrdersPage.css';
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -75,7 +76,7 @@ export default function AdminOrdersPage() {
       if (res && res.success) {
         setActionFeedback({
           type: 'success',
-          message: `Escrow released for order #${selectedOrder.id}. 95% net transferred to merchant.`
+          message: `Payout released for order #${selectedOrder.id}. Net funds disbursed to merchant connected account via Stripe Connect.`
         });
         setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, ...res.order } : o));
         setSelectedOrder(prev => ({ ...prev, ...res.order }));
@@ -85,13 +86,13 @@ export default function AdminOrdersPage() {
       } else {
         setActionFeedback({
           type: 'error',
-          message: res?.error || 'Failed to release escrow funds.'
+          message: res?.error || 'Failed to release payout funds.'
         });
       }
     } catch (err) {
       setActionFeedback({
         type: 'error',
-        message: err.message || 'Error executing escrow release.'
+        message: err.message || 'Error executing payout release.'
       });
     } finally {
       setActionLoading(false);
@@ -110,7 +111,7 @@ export default function AdminOrdersPage() {
       if (res && res.success) {
         setActionFeedback({
           type: 'success',
-          message: `Order #${selectedOrder.id} cancelled. $${Number(selectedOrder.amount).toFixed(2)} refunded in full.`
+          message: `Order #${selectedOrder.id} cancelled. $${Number(selectedOrder.amount).toFixed(2)} refunded in full to customer payment card.`
         });
         setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, ...res.order } : o));
         setSelectedOrder(prev => ({ ...prev, ...res.order }));
@@ -135,8 +136,8 @@ export default function AdminOrdersPage() {
 
   const tabs = [
     { id: 'all', label: 'All Orders', count: summary.totalCount },
-    { id: 'held', label: 'Held in Vault', count: summary.heldCount },
-    { id: 'released', label: 'Escrow Released', count: summary.releasedCount },
+    { id: 'held', label: 'Held Pending Delivery', count: summary.heldCount },
+    { id: 'released', label: 'Payout Disbursed', count: summary.releasedCount },
     { id: 'refunded', label: 'Refunded', count: summary.refundedCount },
     { id: 'disputed', label: 'Disputed', count: summary.disputedCount },
   ];
@@ -144,8 +145,8 @@ export default function AdminOrdersPage() {
   return (
     <>
       <AdminTopBar
-        title="Orders & Escrow Vault"
-        subtitle="Supervise platform sales, monitor escrow custody balances across merchant ateliers, and administer payouts or refunds"
+        title="Orders & Payments"
+        subtitle="Supervise marketplace transactions, monitor carrier delivery verification, and release or refund order payouts via Stripe Connect"
         onRefresh={loadOrders}
         refreshing={loading}
       />

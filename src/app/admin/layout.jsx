@@ -11,7 +11,7 @@ import './AdminPanel.css';
 const NAV_ITEMS = [
   { section: 'ADMINISTRATION' },
   { label: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
-  { label: 'Orders & Escrow Vault', icon: ShoppingBag, href: '/admin/orders' },
+  { label: 'Orders & Payments', icon: ShoppingBag, href: '/admin/orders' },
   { label: 'Product Approvals', icon: Package, href: '/admin/products' },
   { label: 'Vendors', icon: Users, href: '/admin/vendors' },
   { label: 'Disputes & Order Payments', icon: AlertTriangle, href: '/admin/disputes' },

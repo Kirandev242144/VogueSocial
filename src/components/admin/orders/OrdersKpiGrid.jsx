@@ -23,7 +23,7 @@ export default function OrdersKpiGrid({ summary }) {
       />
 
       <AdminKpiCard
-        label="Escrow Held in Vault"
+        label="Funds in Settlement"
         value={`$${held.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
         sub={`${summary?.heldCount || 0} orders awaiting delivery`}
         icon={Lock}
@@ -34,9 +34,9 @@ export default function OrdersKpiGrid({ summary }) {
       />
 
       <AdminKpiCard
-        label="Escrow Released to Ateliers"
+        label="Disbursed to Merchants"
         value={`$${released.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-        sub={`${summary?.releasedCount || 0} orders settled (95% net)`}
+        sub={`${summary?.releasedCount || 0} orders settled via Stripe Connect`}
         icon={CheckCircle}
         trend="up"
         trendLabel="Disbursed"
@@ -45,9 +45,9 @@ export default function OrdersKpiGrid({ summary }) {
       />
 
       <AdminKpiCard
-        label="Platform Commission (5%)"
+        label="Platform Commission Earned"
         value={`$${fee.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-        sub="5% protocol take-rate retained on settlements"
+        sub="Marketplace take-rate retained on settlements"
         icon={ShieldCheck}
         trend="up"
         trendLabel="Retained"
