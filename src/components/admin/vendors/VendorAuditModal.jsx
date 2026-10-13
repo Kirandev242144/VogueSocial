@@ -112,12 +112,12 @@ export default function VendorAuditModal({
     <AdminModal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Merchant Dossier: ${vendor.store_name}`}
-      maxWidth="840px"
+      title={vendor.store_name || "Merchant Details"}
+      maxWidth="780px"
       footer={
         <div className="vam-footer">
           <div className="vam-footer-id">
-            <span>Merchant ID:</span>
+            <span>ID:</span>
             <code className="vam-footer-code">{vendor.id}</code>
           </div>
 
@@ -136,7 +136,7 @@ export default function VendorAuditModal({
               rel="noreferrer"
               className="admin-btn admin-btn-secondary admin-btn-sm"
             >
-              <span>Public Storefront</span>
+              <span>View Storefront</span>
               <ExternalLink size={12} />
             </a>
           </div>
@@ -165,27 +165,27 @@ export default function VendorAuditModal({
         onOpenReleaseModal={() => setShowReleaseModal(true)}
       />
 
-      {/* Streamlined 3-Tab Navigation */}
-      <div className="admin-tab-nav vam-tab-nav">
+      {/* Minimalist Tab Navigation */}
+      <div className="vam-tab-nav">
         {[
           { id: 'business', label: 'Business & Addresses' },
           { id: 'documents', label: 'Compliance Documents', count: docs.length },
-          { id: 'financials', label: 'Financials & Commercials', alert: payoutEligibility === 'administrative_hold' }
+          { id: 'financials', label: 'Financials & Terms', alert: payoutEligibility === 'administrative_hold' }
         ].map(t => {
           const isActive = activeTab === t.id;
           return (
             <button
               key={t.id}
               type="button"
-              className={`admin-tab-nav-btn ${isActive ? 'active' : ''}`}
+              className={`vam-tab-btn ${isActive ? 'active' : ''}`}
               onClick={() => setActiveTab(t.id)}
             >
               <span>{t.label}</span>
               {t.count !== undefined && (
-                <span className="vam-tab-badge">{t.count}</span>
+                <span className="vam-tab-count">{t.count}</span>
               )}
               {t.alert && (
-                <span className="vam-tab-alert" />
+                <span className="vam-tab-dot" />
               )}
             </button>
           );

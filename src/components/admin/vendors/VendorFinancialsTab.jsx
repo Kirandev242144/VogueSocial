@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { CreditCard, ExternalLink, ShieldCheck, Unlock, Lock, AlertCircle, FileSignature, History, Layers } from 'lucide-react';
+import { ExternalLink, ShieldCheck, Unlock, Lock, AlertCircle } from 'lucide-react';
 
 export default function VendorFinancialsTab({
   vendor,
@@ -18,7 +18,7 @@ export default function VendorFinancialsTab({
     commission_rate_pct: vendor.commercial_terms?.take_rate_pct || 5.0,
     protocol_fees_desc: 'Standard payment processing passed at cost',
     fulfillment_model: 'Merchant Self-Fulfill',
-    return_policy: '14-Day Customer Window • Escrow released 48h post carrier delivery (POD)',
+    return_policy: '14-Day Customer Window',
     payout_conditions: 'Automated delivery verification confirmed'
   };
 
@@ -42,24 +42,13 @@ export default function VendorFinancialsTab({
 
   const payoutEligibility = vendor.payout_eligibility || (vendor.commercial_terms?.payout_hold || vendor.payout_hold_details?.active ? 'administrative_hold' : 'eligible');
 
-  const agreementHistory = vendor.agreement_history || [
-    {
-      version: currentAgreement.version || 'v2.4',
-      rate_pct: currentAgreement.commission_rate_pct || 5.0,
-      effective_date: currentAgreement.effective_date || '2026-08-15',
-      reason: 'Standard merchant agreement',
-      updated_by: currentAgreement.accepted_by || 'Camille Laurent',
-      updated_at: currentAgreement.accepted_at || '2026-08-15T10:14:22Z'
-    }
-  ];
-
   const auditTrail = vendor.audit_trail || [
     {
       id: 'aud_1',
       timestamp: vendor.created_at || '2026-08-15T10:00:00Z',
       actor: 'Platform Administrator',
       action: 'Account Approved',
-      note: 'Initial boutique onboarding completed.'
+      note: 'Initial merchant onboarding completed.'
     }
   ];
 
@@ -72,61 +61,56 @@ export default function VendorFinancialsTab({
         effectiveDate: rateForm.effectiveDate,
         adminName: 'Commercial Director'
       });
-      showFeedback(`Commission rate amended to ${rateForm.newRate}%.`);
+      showFeedback(`Commission rate updated to ${rateForm.newRate}%.`);
       setRateForm(prev => ({ ...prev, reason: '' }));
     }
   };
 
   return (
-    <div className="vam-stack">
-      {/* Separation of Concerns Callout */}
-      <div className="vam-separation-card">
-        <div className="vam-separation-header">
-          <Layers size={14} className="vam-icon-accent" />
-          <span className="vam-separation-title">Separation of Governance: Platform Approval vs. Payment Provider</span>
-        </div>
-        <div className="vam-separation-grid">
-          <div className="vam-separation-item">
-            <div className="vam-separation-badge platform">VogueSocial Merchant Approval</div>
-            <p className="vam-separation-desc">
-              Verifies legal existence, verified premises/return hub, and brand authenticity. Governs public storefront visibility and catalog access.
-            </p>
+    <div className="vam-tab-body">
+      {/* Payout Hold Alert if active */}
+      {payoutEligibility === 'administrative_hold' && (
+        <div className="vam-hold-banner">
+          <div className="vam-hold-banner-left">
+            <AlertCircle size={15} className="vam-icon-danger" />
+            <div>
+              <div className="vam-hold-banner-title">Administrative Payout Hold Active</div>
+              <div className="vam-hold-banner-desc">
+                {vendor.payout_hold_details?.reason || 'Compliance review in progress.'}
+                {vendor.payout_hold_details?.placed_by && ` • Placed by ${vendor.payout_hold_details.placed_by}`}
+              </div>
+            </div>
           </div>
-          <div className="vam-separation-item">
-            <div className="vam-separation-badge provider">Stripe Connect Settlement Rails</div>
-            <p className="vam-separation-desc">
-              Governs bank settlement routing, automated transfers, and AML identity. Payment screening runs asynchronously from marketplace listing approval.
-            </p>
-          </div>
+          <button
+            type="button"
+            className="admin-btn admin-btn-primary admin-btn-sm"
+            onClick={onOpenReleaseModal}
+          >
+            <Unlock size={12} /> Resume Payouts
+          </button>
         </div>
-      </div>
+      )}
 
-      {/* Payment Provider (Stripe Connect) */}
-      <div className="vam-card">
-        <div className="vam-card-header">
-          <div className="vam-card-title">
-            <CreditCard size={13} color="#38bdf8" /> Payment Provider (Stripe Connect)
-          </div>
-          <span className={`vam-doc-badge ${paymentProvider.charges_enabled ? 'verified' : 'rejected'}`}>
-            {paymentProvider.charges_enabled ? 'Charges Enabled' : 'Charges Disabled'}
+      {/* Section 1: Payment Provider */}
+      <div className="vam-section">
+        <div className="vam-section-header">
+          <div className="vam-section-title">Payment Provider (Stripe Connect)</div>
+          <span className={`vam-status-pill ${paymentProvider.charges_enabled ? 'active' : 'suspended'}`}>
+            <span className="vam-status-dot" />
+            {paymentProvider.charges_enabled ? 'Charges Enabled' : 'Disabled'}
           </span>
         </div>
 
-        <div className="vam-finance-grid">
-          <div className="vam-info-box">
-            <div className="vam-info-label">Connected Account ID</div>
-            <div className="vam-stripe-row">
-              <input
-                type="text"
-                readOnly
-                className="admin-input vam-stripe-input"
-                value={paymentProvider.account_id}
-              />
+        <div className="vam-grid-2">
+          <div className="vam-kv-item">
+            <span className="vam-kv-label">Connected Account</span>
+            <div className="vam-kv-val-row">
+              <code className="vam-kv-code">{paymentProvider.account_id}</code>
               <a
                 href={`https://dashboard.stripe.com/test/connect/accounts/${paymentProvider.account_id}`}
                 target="_blank"
                 rel="noreferrer"
-                className="admin-btn admin-btn-ghost admin-btn-sm"
+                className="vam-link-subtle"
                 title="View in Stripe Dashboard"
               >
                 <ExternalLink size={12} />
@@ -134,188 +118,133 @@ export default function VendorFinancialsTab({
             </div>
           </div>
 
-          <div className="vam-info-box">
-            <div className="vam-info-label">Settlement Bank Rails</div>
-            <div className="vam-info-val-md">
+          <div className="vam-kv-item">
+            <span className="vam-kv-label">Settlement Bank</span>
+            <div className="vam-kv-val">
               {paymentProvider.bank_name} •••• {paymentProvider.account_last4}
+              <span className="vam-kv-hint">({paymentProvider.currency || 'EUR'})</span>
             </div>
-            <div className="vam-info-sub">
-              Currency: {paymentProvider.currency || 'EUR'}
+          </div>
+
+          <div className="vam-kv-item">
+            <span className="vam-kv-label">Payout Schedule</span>
+            <div className="vam-kv-val">
+              Rolling automated (48h post delivery POD)
+            </div>
+          </div>
+
+          <div className="vam-kv-item">
+            <span className="vam-kv-label">Disbursement Status</span>
+            <div className="vam-kv-val-row">
+              <span>{payoutEligibility === 'administrative_hold' ? 'Paused (Hold)' : 'Active (Disbursing)'}</span>
+              {payoutEligibility !== 'administrative_hold' && (
+                <button
+                  type="button"
+                  className="vam-text-btn-danger"
+                  onClick={onOpenHoldModal}
+                >
+                  <Lock size={11} /> Pause
+                </button>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Payout Governance & Settlement Status */}
-      <div className={`vam-card ${payoutEligibility === 'administrative_hold' ? 'alert-border' : ''}`}>
-        <div className="vam-card-header">
-          <div className="vam-card-title">
-            <ShieldCheck size={13} color={payoutEligibility === 'administrative_hold' ? '#ef4444' : '#10b981'} />
-            <span>Payout Settlement Status</span>
-          </div>
-
-          {payoutEligibility === 'administrative_hold' ? (
-            <button
-              type="button"
-              className="admin-btn admin-btn-primary admin-btn-sm"
-              onClick={onOpenReleaseModal}
-            >
-              <Unlock size={12} /> Resume Payouts
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="admin-btn admin-btn-danger admin-btn-sm"
-              onClick={onOpenHoldModal}
-            >
-              <Lock size={12} /> Pause Payouts
-            </button>
-          )}
+      {/* Section 2: Commercial Agreement */}
+      <div className="vam-section">
+        <div className="vam-section-header">
+          <div className="vam-section-title">Commercial Agreement ({currentAgreement.version || 'v2.4'})</div>
+          <span className="vam-kv-hint">Effective: {currentAgreement.effective_date || '2026-08-15'}</span>
         </div>
 
-        {payoutEligibility === 'administrative_hold' ? (
-          <div className="vam-hold-alert">
-            <div className="vam-hold-header">
-              <AlertCircle size={14} />
-              <span>Administrative Payout Hold Active — Outgoing settlements paused</span>
-            </div>
-            <div className="vam-hold-content">
-              <strong>Reason:</strong> {vendor.payout_hold_details?.reason || 'Compliance documentation under review.'}
-            </div>
-            <div className="vam-hold-meta">
-              Placed by {vendor.payout_hold_details?.placed_by || 'Platform Admin'} on {new Date(vendor.payout_hold_details?.placed_at || Date.now()).toLocaleDateString()}
-            </div>
-          </div>
-        ) : (
-          <div className="vam-info-box">
-            <div className="vam-info-label">Current Payout Schedule</div>
-            <div className="vam-info-val-md">
-              Rolling Automated Disbursements Active
-            </div>
-            <div className="vam-info-sub">
-              Orders settle 48 hours post verified delivery (POD).
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Commercial Terms & Commission Rate */}
-      <div className="vam-card">
-        <div className="vam-card-header">
-          <div className="vam-card-title">
-            <FileSignature size={13} color="#38bdf8" /> Commercial Agreement ({currentAgreement.version || 'v2.4'})
-          </div>
-          <div className="vam-info-sub">
-            Effective: {currentAgreement.effective_date || '2026-08-15'}
-          </div>
-        </div>
-
-        <div className="vam-finance-grid">
-          <div className="vam-info-box">
-            <div className="vam-info-label">Commission Take-Rate</div>
-            <div className="vam-info-val-lg">
+        <div className="vam-grid-2">
+          <div className="vam-kv-item">
+            <span className="vam-kv-label">Commission Take-Rate</span>
+            <div className="vam-kv-val vam-kv-highlight">
               {(currentAgreement.commission_rate_pct ?? 5.0).toFixed(1)}%
             </div>
-            <div className="vam-info-sub">
-              Applied to settled order GMV
-            </div>
           </div>
 
-          <div className="vam-info-box">
-            <div className="vam-info-label">Fulfillment Model</div>
-            <div className="vam-info-val-md">
+          <div className="vam-kv-item">
+            <span className="vam-kv-label">Fulfillment Model</span>
+            <div className="vam-kv-val">
               {(currentAgreement.fulfillment_model || 'Merchant Self-Fulfill').replace(/Atelier\s*/gi, '')}
             </div>
-            <div className="vam-info-sub">
-              Tracking required within 72h
+          </div>
+        </div>
+
+        {/* Rate Amendment Inline Form */}
+        <form onSubmit={handleExecuteRateAmendment} className="vam-rate-form">
+          <div className="vam-rate-form-grid">
+            <div>
+              <label className="vam-field-label">New Rate (%)</label>
+              <input
+                type="number"
+                step="0.1"
+                min="1"
+                max="30"
+                className="admin-input"
+                value={rateForm.newRate}
+                onChange={(e) => setRateForm({ ...rateForm, newRate: e.target.value })}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="vam-field-label">Effective Date</label>
+              <input
+                type="date"
+                className="admin-input"
+                value={rateForm.effectiveDate}
+                onChange={(e) => setRateForm({ ...rateForm, effectiveDate: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="vam-rate-reason-col">
+              <label className="vam-field-label">Reason for Amendment</label>
+              <input
+                type="text"
+                className="admin-input"
+                placeholder="e.g. Volume milestone incentive"
+                value={rateForm.reason}
+                onChange={(e) => setRateForm({ ...rateForm, reason: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="vam-rate-action-col">
+              <button
+                type="submit"
+                className="admin-btn admin-btn-secondary admin-btn-sm"
+                disabled={loading}
+              >
+                Update Rate
+              </button>
             </div>
           </div>
-        </div>
-
-        {/* Rate Revision Form */}
-        <form onSubmit={handleExecuteRateAmendment} className="vam-rate-inline-form">
-          <div>
-            <label className="vam-field-label">New Rate (%)</label>
-            <input
-              type="number"
-              step="0.1"
-              min="1"
-              max="30"
-              className="admin-input"
-              value={rateForm.newRate}
-              onChange={(e) => setRateForm({ ...rateForm, newRate: e.target.value })}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="vam-field-label">Effective Date</label>
-            <input
-              type="date"
-              className="admin-input"
-              value={rateForm.effectiveDate}
-              onChange={(e) => setRateForm({ ...rateForm, effectiveDate: e.target.value })}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="vam-field-label">Revision Reason</label>
-            <input
-              type="text"
-              className="admin-input"
-              placeholder="e.g. Volume milestone incentive..."
-              value={rateForm.reason}
-              onChange={(e) => setRateForm({ ...rateForm, reason: e.target.value })}
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="admin-btn admin-btn-primary admin-btn-sm vam-rate-btn"
-            disabled={loading}
-          >
-            Update Rate
-          </button>
         </form>
-
-        {/* Agreement History */}
-        {agreementHistory.length > 0 && (
-          <div className="vam-history-list">
-            {agreementHistory.map((h, i) => (
-              <div key={i} className="vam-history-item">
-                <div className="vam-history-left">
-                  <span className="vam-history-version">{h.version}</span>
-                  <span className="vam-history-rate">{h.rate_pct}% Rate</span>
-                  <span>• {h.reason}</span>
-                </div>
-                <div className="vam-history-meta">
-                  {h.effective_date} • {h.updated_by}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* Activity Audit Trail */}
-      <div className="vam-card">
-        <div className="vam-card-header">
-          <div className="vam-card-title">
-            <History size={13} color="#38bdf8" /> Activity Audit Trail
-          </div>
+      {/* Section 3: Activity Log */}
+      <div className="vam-section">
+        <div className="vam-section-header">
+          <div className="vam-section-title">Audit Log</div>
         </div>
 
-        <div className="vam-audit-scroll">
+        <div className="vam-audit-list">
           {auditTrail.map((aud) => (
-            <div key={aud.id} className="vam-audit-item">
-              <div className="vam-audit-item-top">
+            <div key={aud.id} className="vam-audit-row">
+              <div className="vam-audit-main">
                 <span className="vam-audit-action">{aud.action}</span>
-                <span className="vam-audit-time">{new Date(aud.timestamp).toLocaleString()}</span>
+                <span className="vam-audit-note">{aud.note}</span>
               </div>
-              <div className="vam-audit-note">{aud.note}</div>
-              <div className="vam-audit-actor">{aud.actor}</div>
+              <div className="vam-audit-meta">
+                <span>{aud.actor}</span>
+                <span className="vam-sep">•</span>
+                <span>{new Date(aud.timestamp).toLocaleDateString()}</span>
+              </div>
             </div>
           ))}
         </div>

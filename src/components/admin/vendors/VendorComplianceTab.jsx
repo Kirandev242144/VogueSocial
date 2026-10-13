@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { FileText, Eye, Check, X, FileCheck, Info, MinusCircle, RotateCcw } from 'lucide-react';
+import { FileText, Eye, Check, X, FileCheck, MinusCircle, RotateCcw } from 'lucide-react';
 import { AdminModal } from '../index';
 
 export default function VendorComplianceTab({
@@ -34,97 +34,19 @@ export default function VendorComplianceTab({
     }
   };
 
-  // Helper to determine country and entity-specific guidance
-  const getDocTypeGuidance = (docType) => {
-    if (docType === 'incorporation' || docType === 'business_registration') {
-      if (country === 'France') {
-        return isSoleProprietor
-          ? 'France: Not Applicable for Auto-entrepreneurs (Avis SIRENE used instead of Kbis/RNE)'
-          : 'France: Extrait Kbis (Tribunal de Commerce) or Extrait RNE (Registre National des Entreprises)';
-      }
-      if (country === 'United States') {
-        return isSoleProprietor
-          ? 'United States: Not Applicable for Sole Proprietors (DBA or Local Business License)'
-          : 'United States: Articles of Organization / Certificate of Formation (State DOS)';
-      }
-      if (country === 'United Kingdom') {
-        return isSoleProprietor
-          ? 'United Kingdom: Not Applicable for Sole Traders (HMRC UTR Self-Assessment)'
-          : 'United Kingdom: Companies House Certificate of Incorporation';
-      }
-      if (country === 'Italy') {
-        return 'Italy: Camera di Commercio (Visura Camerale ordinaria)';
-      }
-      if (country === 'Germany') {
-        return 'Germany: Handelsregisterauszug (Registergericht)';
-      }
-      return isSoleProprietor
-        ? 'Global: Not Applicable for Sole Proprietorships (No corporate charter required)'
-        : 'Global: Commercial Registry Extract or Certificate of Good Standing';
-    }
-
-    if (docType === 'address_proof') {
-      return 'Valid within 90 days (Commercial lease deed, utility bill, bank settlement confirmation)';
-    }
-
-    if (docType === 'owner_id') {
-      return 'Government-issued passport or national ID of authorized beneficial owner / representative';
-    }
-
-    if (docType === 'trademark') {
-      return 'Registered trademark filing or certified brand authorization / distribution agreement';
-    }
-
-    return null;
-  };
-
   return (
-    <div className="vam-stack">
-      {/* Compliance Policy & Jurisdiction Callout */}
-      <div className="vam-compliance-guidance-card">
-        <div className="vam-compliance-guidance-header">
-          <div className="vam-compliance-guidance-title">
-            <Info size={14} className="vam-icon-info" />
-            <span>Jurisdiction Policy & Verification Framework</span>
-          </div>
-          <span className="vam-guidance-badge">
-            {country} • {businessType}
-          </span>
+    <div className="vam-tab-body">
+      {/* Sole Proprietor Quiet Notice */}
+      {isSoleProprietor && (
+        <div className="vam-notice-subtle">
+          <span>Sole Proprietorship ({country})</span>
+          <span className="vam-sep">•</span>
+          <span>Corporate charters and certificates of incorporation are not applicable for this entity.</span>
         </div>
+      )}
 
-        <div className="vam-guidance-grid">
-          <div className="vam-guidance-item">
-            <div className="vam-guidance-label">Business Registration Proof</div>
-            <div className="vam-guidance-val">
-              {isSoleProprietor ? 'Exempt / Not Applicable (Sole Proprietor)' : 'Required (Country Commercial Register)'}
-            </div>
-            <div className="vam-guidance-sub">
-              {country === 'France'
-                ? (isSoleProprietor ? 'Avis de situation SIRENE accepted; no Kbis/RNE required' : 'Kbis or RNE excerpt valid within 90 days')
-                : (isSoleProprietor ? 'Sole proprietorships do not require incorporation deeds' : 'Official state/country formation certificate')}
-            </div>
-          </div>
-
-          <div className="vam-guidance-item">
-            <div className="vam-guidance-label">Beneficial Owner / Rep ID</div>
-            <div className="vam-guidance-val">Required (KYC Screening)</div>
-            <div className="vam-guidance-sub">
-              Government photo ID matching legal representative on file
-            </div>
-          </div>
-
-          <div className="vam-guidance-item">
-            <div className="vam-guidance-label">Physical Address Proof</div>
-            <div className="vam-guidance-val">Required (Premises Verification)</div>
-            <div className="vam-guidance-sub">
-              Utility statement or commercial lease deed matching return hub
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Documents List */}
-      <div className="vam-docs-list">
+      {/* Clean Document Rows */}
+      <div className="vam-doc-list">
         {docs.map((doc) => {
           const isVerified = doc.status === 'verified';
           const isRejected = doc.status === 'rejected';
@@ -148,54 +70,48 @@ export default function VendorComplianceTab({
             badgeText = 'Action Required';
           }
 
-          const guidance = getDocTypeGuidance(doc.type);
-          const isDocSoleProprietorExempt = (doc.type === 'incorporation' || doc.type === 'business_registration') && isSoleProprietor;
-
           return (
-            <div
-              key={doc.id}
-              className={`vam-doc-item ${isRejected ? 'rejected' : ''} ${isNA ? 'na' : ''}`}
-            >
-              <div className="vam-doc-row">
-                <div className="vam-doc-left">
-                  <div className="vam-doc-icon">
-                    <FileText size={16} />
+            <div key={doc.id} className="vam-doc-item">
+              <div className="vam-doc-main">
+                <div className="vam-doc-icon">
+                  <FileText size={15} />
+                </div>
+
+                <div className="vam-doc-content">
+                  <div className="vam-doc-title-line">
+                    <span className="vam-doc-title">{doc.title}</span>
+                    <span className={`vam-doc-pill ${badgeClass}`}>{badgeText}</span>
                   </div>
-                  <div className="vam-doc-info">
-                    <div className="vam-doc-title-row">
-                      <span className="vam-doc-title">{doc.title}</span>
-                      {isDocSoleProprietorExempt && !isNA && (
-                        <span className="vam-doc-pill-hint">Sole Proprietor Exempt</span>
-                      )}
-                    </div>
-                    <div className="vam-doc-meta">
-                      <span className="vam-doc-filename">{doc.filename}</span> • {doc.size} • Expiry: {doc.expiry_date || 'N/A'}
-                    </div>
-                    {guidance && (
-                      <div className="vam-doc-guidance-text">
-                        {guidance}
-                      </div>
-                    )}
+
+                  <div className="vam-doc-meta">
+                    <span className="vam-doc-filename">{doc.filename}</span>
+                    <span className="vam-sep">•</span>
+                    <span>{doc.size}</span>
+                    <span className="vam-sep">•</span>
+                    <span>Expiry: {doc.expiry_date || 'N/A'}</span>
                   </div>
+
+                  {doc.notes && (
+                    <div className="vam-doc-note">
+                      {doc.notes}
+                    </div>
+                  )}
                 </div>
 
                 <div className="vam-doc-actions">
-                  <span className={`vam-doc-badge ${badgeClass}`}>
-                    {badgeText}
-                  </span>
-
                   <button
                     type="button"
-                    className="admin-btn admin-btn-ghost admin-btn-sm vam-btn-compact"
+                    className="admin-btn admin-btn-ghost admin-btn-sm vam-btn-subtle"
                     onClick={() => setPreviewDoc(doc)}
+                    title="Inspect document"
                   >
                     <Eye size={12} /> View
                   </button>
 
-                  {!isVerified && (
+                  {!isVerified && !isNA && (
                     <button
                       type="button"
-                      className="admin-btn admin-btn-primary admin-btn-sm vam-btn-compact"
+                      className="admin-btn admin-btn-ghost admin-btn-sm vam-btn-success-subtle"
                       onClick={() => handleDocAction(doc.id, 'verified')}
                     >
                       <Check size={12} /> Verify
@@ -205,18 +121,18 @@ export default function VendorComplianceTab({
                   {!isNA && (doc.type === 'incorporation' || isSoleProprietor) && (
                     <button
                       type="button"
-                      className="admin-btn admin-btn-secondary admin-btn-sm vam-btn-compact"
+                      className="admin-btn admin-btn-ghost admin-btn-sm vam-btn-subtle"
                       onClick={() => setExemptingDocId(doc.id)}
-                      title="Mark document as not applicable for this business structure"
+                      title="Exempt this requirement"
                     >
-                      <MinusCircle size={12} /> Mark N/A
+                      <MinusCircle size={12} /> N/A
                     </button>
                   )}
 
-                  {!isRejected && (
+                  {!isRejected && !isNA && (
                     <button
                       type="button"
-                      className="admin-btn admin-btn-danger admin-btn-sm vam-btn-compact"
+                      className="admin-btn admin-btn-ghost admin-btn-sm vam-btn-danger-subtle"
                       onClick={() => setRejectingDocId(doc.id)}
                     >
                       <X size={12} /> Reject
@@ -226,9 +142,9 @@ export default function VendorComplianceTab({
                   {(isVerified || isRejected || isNA) && (
                     <button
                       type="button"
-                      className="admin-btn admin-btn-ghost admin-btn-sm vam-btn-compact"
-                      onClick={() => handleDocAction(doc.id, 'required', 'Reopened for merchant re-submission.')}
-                      title="Reset status and request updated submission"
+                      className="admin-btn admin-btn-ghost admin-btn-sm vam-btn-subtle"
+                      onClick={() => handleDocAction(doc.id, 'required', 'Reopened for resubmission.')}
+                      title="Reset requirement"
                     >
                       <RotateCcw size={12} /> Reopen
                     </button>
@@ -236,37 +152,18 @@ export default function VendorComplianceTab({
                 </div>
               </div>
 
-              {/* Informational N/A banner for sole proprietors */}
-              {isNA && (
-                <div className="vam-doc-na-banner">
-                  <MinusCircle size={13} className="vam-icon-muted" />
-                  <span>
-                    Marked Not Applicable for this merchant: {doc.notes || 'Sole proprietorship / individual merchant without incorporation requirement.'}
-                  </span>
-                </div>
-              )}
-
-              {doc.notes && !isNA && (
-                <div className={`vam-doc-notes ${isRejected ? 'rejected' : ''}`}>
-                  <strong>Review Note:</strong> {doc.notes}
-                  {doc.reviewed_by && <span> — {doc.reviewed_by}</span>}
-                </div>
-              )}
-
-              {/* Reject note dialog */}
+              {/* Inline Reject Form */}
               {rejectingDocId === doc.id && (
-                <div className="vam-reject-dialog">
-                  <div className="vam-reject-title">
-                    Reason for rejecting {doc.title}:
-                  </div>
+                <div className="vam-inline-form-box">
+                  <label className="vam-field-label">Reason for Rejection</label>
                   <input
                     type="text"
-                    className="admin-input vam-reject-input"
-                    placeholder="e.g. Utility bill is older than 90 days, or document extract is unreadable..."
+                    className="admin-input"
+                    placeholder="e.g. Utility bill dated over 90 days ago or document illegible..."
                     value={rejectReason}
                     onChange={(e) => setRejectReason(e.target.value)}
                   />
-                  <div className="vam-reject-actions">
+                  <div className="vam-inline-form-actions">
                     <button
                       type="button"
                       className="admin-btn admin-btn-ghost admin-btn-sm"
@@ -277,7 +174,7 @@ export default function VendorComplianceTab({
                     <button
                       type="button"
                       className="admin-btn admin-btn-danger admin-btn-sm"
-                      onClick={() => handleDocAction(doc.id, 'rejected', rejectReason || 'Rejected by compliance auditor')}
+                      onClick={() => handleDocAction(doc.id, 'rejected', rejectReason || 'Document rejected.')}
                     >
                       Confirm Rejection
                     </button>
@@ -285,20 +182,18 @@ export default function VendorComplianceTab({
                 </div>
               )}
 
-              {/* Mark as N/A dialog */}
+              {/* Inline Exemption (N/A) Form */}
               {exemptingDocId === doc.id && (
-                <div className="vam-exempt-dialog">
-                  <div className="vam-exempt-title">
-                    Reason for marking {doc.title} as Not Applicable:
-                  </div>
+                <div className="vam-inline-form-box">
+                  <label className="vam-field-label">Exemption Note</label>
                   <input
                     type="text"
-                    className="admin-input vam-exempt-input"
-                    placeholder="e.g. Auto-entrepreneur / Sole proprietor: Certified via personal tax ID and photo identity."
+                    className="admin-input"
+                    placeholder="e.g. Sole proprietorship / Individual artisan exemption..."
                     value={exemptReason}
                     onChange={(e) => setExemptReason(e.target.value)}
                   />
-                  <div className="vam-reject-actions">
+                  <div className="vam-inline-form-actions">
                     <button
                       type="button"
                       className="admin-btn admin-btn-ghost admin-btn-sm"
@@ -309,7 +204,7 @@ export default function VendorComplianceTab({
                     <button
                       type="button"
                       className="admin-btn admin-btn-secondary admin-btn-sm"
-                      onClick={() => handleDocAction(doc.id, 'na', exemptReason || 'Not Applicable: Sole proprietorship / individual merchant exemption.')}
+                      onClick={() => handleDocAction(doc.id, 'na', exemptReason || 'Exempt for sole proprietorship.')}
                     >
                       Confirm Exemption
                     </button>
@@ -327,32 +222,54 @@ export default function VendorComplianceTab({
           isOpen={Boolean(previewDoc)}
           onClose={() => setPreviewDoc(null)}
           title={`Document: ${previewDoc.title}`}
-          maxWidth="500px"
+          maxWidth="460px"
           footer={
-            <div className="vam-submodal-footer">
+            <div className="vam-preview-footer">
               <button
                 type="button"
-                className="admin-btn admin-btn-ghost admin-btn-sm"
+                className="admin-btn admin-btn-secondary admin-btn-sm"
                 onClick={() => setPreviewDoc(null)}
               >
-                Close
+                Done
               </button>
             </div>
           }
         >
           <div className="vam-preview-body">
-            <FileCheck size={40} className="vam-preview-icon vam-icon-accent" />
-            <div className="vam-preview-filename">
-              {previewDoc.filename}
-            </div>
-            <div className="vam-preview-meta-list">
-              <div><strong>Document:</strong> {previewDoc.title}</div>
-              <div><strong>Type:</strong> <span className="vam-preview-code">{previewDoc.type}</span></div>
-              <div><strong>Status:</strong> {previewDoc.status}</div>
-              <div><strong>Jurisdiction:</strong> {country}</div>
-              <div><strong>Expiry Date:</strong> {previewDoc.expiry_date || 'Permanent / N/A'}</div>
-              <div><strong>Uploaded:</strong> {new Date(previewDoc.uploaded_at).toLocaleDateString()}</div>
-              {previewDoc.notes && <div><strong>Audit Note:</strong> {previewDoc.notes}</div>}
+            <FileCheck size={36} className="vam-preview-icon" />
+            <div className="vam-preview-filename">{previewDoc.filename}</div>
+
+            <div className="vam-preview-table">
+              <div className="vam-preview-row">
+                <span className="vam-preview-lbl">Document</span>
+                <span>{previewDoc.title}</span>
+              </div>
+              <div className="vam-preview-row">
+                <span className="vam-preview-lbl">Type</span>
+                <code>{previewDoc.type}</code>
+              </div>
+              <div className="vam-preview-row">
+                <span className="vam-preview-lbl">Status</span>
+                <span className="vam-capitalize">{previewDoc.status}</span>
+              </div>
+              <div className="vam-preview-row">
+                <span className="vam-preview-lbl">Jurisdiction</span>
+                <span>{country}</span>
+              </div>
+              <div className="vam-preview-row">
+                <span className="vam-preview-lbl">Expiry Date</span>
+                <span>{previewDoc.expiry_date || 'N/A'}</span>
+              </div>
+              <div className="vam-preview-row">
+                <span className="vam-preview-lbl">Uploaded</span>
+                <span>{new Date(previewDoc.uploaded_at).toLocaleDateString()}</span>
+              </div>
+              {previewDoc.notes && (
+                <div className="vam-preview-row">
+                  <span className="vam-preview-lbl">Review Note</span>
+                  <span>{previewDoc.notes}</span>
+                </div>
+              )}
             </div>
           </div>
         </AdminModal>

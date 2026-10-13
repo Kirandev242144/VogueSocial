@@ -1,9 +1,12 @@
 /* ==========================================================================
-   VendorAuditModal - Realistic Luxury Marketplace Merchant Dossier
-   Minimalist Stripe/Linear Style adhering to design tokens (--adm-*)
+   VendorAuditModal - Minimalist Luxury Merchant Management
+   Clean, quiet Stripe/Linear-style administration interface
+   Adheres to design tokens (--adm-*) with zero visual clutter
    ========================================================================== */
 
-/* Modal Root & Footer */
+/* --------------------------------------------------------------------------
+   Modal Root & Footer
+   -------------------------------------------------------------------------- */
 .vam-footer {
   display: flex;
   align-items: center;
@@ -16,19 +19,18 @@
 .vam-footer-id {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.74rem;
-  color: var(--adm-text-sub);
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--adm-text-muted);
 }
 
 .vam-footer-code {
   font-family: monospace;
-  font-size: 0.75rem;
-  color: var(--adm-text-main);
+  font-size: 0.72rem;
+  color: var(--adm-text-sub);
   background: var(--adm-panel-hover);
-  padding: 2px 6px;
+  padding: 1px 5px;
   border-radius: 4px;
-  border: 1px solid var(--adm-border-subtle);
 }
 
 .vam-footer-actions {
@@ -36,514 +38,544 @@
   gap: 0.5rem;
 }
 
-/* Feedback Notification */
+/* Toast Notification */
 .vam-toast {
-  padding: 0.65rem 0.9rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 6px;
-  margin-bottom: 1rem;
-  font-size: 0.75rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.73rem;
   font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   animation: vamFadeIn 0.15s ease-out;
 }
 
 .vam-toast-success {
-  background: rgba(16, 185, 129, 0.12);
+  background: rgba(16, 185, 129, 0.08);
   color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .vam-toast-error {
-  background: rgba(239, 68, 68, 0.12);
+  background: rgba(239, 68, 68, 0.08);
   color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 @keyframes vamFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-3px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-2px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* --------------------------------------------------------------------------
-   Header Summary & Status Bar
+   Merchant Identity Header (Minimalist)
    -------------------------------------------------------------------------- */
 .vam-header {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  padding: 1rem 1.15rem;
-  border-radius: 8px;
-  background: var(--adm-panel-hover);
-  border: 1px solid var(--adm-border);
-  margin-bottom: 1.25rem;
-}
-
-.vam-header-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.vam-header-left {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-}
-
-.vam-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  background: var(--adm-bg);
-  border: 1px solid var(--adm-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1.15rem;
-  color: var(--adm-accent);
-  flex-shrink: 0;
-}
-
-.vam-header-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.vam-title-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.vam-store-name {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--adm-text-main);
-}
-
-.vam-subtitle {
-  font-size: 0.72rem;
-  color: var(--adm-text-sub);
-  margin-top: 2px;
-}
-
-.vam-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-/* Compact Status Bar */
-.vam-status-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--adm-border-subtle);
-  flex-wrap: wrap;
-}
-
-.vam-status-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 6px;
-  background: var(--adm-bg);
-  border: 1px solid var(--adm-border);
-  font-size: 0.72rem;
-}
-
-.vam-chip-label {
-  color: var(--adm-text-sub);
-  font-weight: 500;
-}
-
-.vam-chip-val {
-  font-weight: 600;
-  color: var(--adm-text-main);
-}
-
-.vam-chip-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.vam-chip-dot.active,
-.vam-chip-dot.verified,
-.vam-chip-dot.eligible {
-  background: #10b981;
-}
-
-.vam-chip-dot.suspended,
-.vam-chip-dot.rejected,
-.vam-chip-dot.hold {
-  background: #ef4444;
-}
-
-.vam-chip-dot.review,
-.vam-chip-dot.pending {
-  background: #f59e0b;
-}
-
-/* --------------------------------------------------------------------------
-   Tab Navigation
-   -------------------------------------------------------------------------- */
-.vam-tab-nav {
-  margin-bottom: 1.25rem;
-}
-
-.vam-tab-badge {
-  font-size: 0.62rem;
-  padding: 1px 6px;
-  border-radius: 10px;
-  background: var(--adm-panel-hover);
-  color: var(--adm-text-sub);
-  font-weight: 600;
-}
-
-.vam-tab-alert {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #ef4444;
-}
-
-/* --------------------------------------------------------------------------
-   Layout Stacks & Cards
-   -------------------------------------------------------------------------- */
-.vam-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.vam-card {
-  padding: 1rem 1.15rem;
-  border-radius: 8px;
-  border: 1px solid var(--adm-border);
-  background: var(--adm-bg);
-}
-
-.vam-card.alert-border {
-  border-color: rgba(239, 68, 68, 0.4);
-}
-
-.vam-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.85rem;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.vam-card-title {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: var(--adm-text-main);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.vam-grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.85rem;
-}
-
-.vam-field-label {
-  display: block;
-  font-size: 0.7rem;
-  color: var(--adm-text-sub);
-  margin-bottom: 4px;
-}
-
-.vam-sublabel {
-  display: block;
-  font-size: 0.68rem;
-  color: var(--adm-text-sub);
-  margin-bottom: 3px;
-}
-
-.vam-form-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 0.5rem;
-}
-
-.vam-sole-proprietor-notice {
-  margin-top: 0.85rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: 6px;
-  background: rgba(56, 189, 248, 0.08);
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-size: 0.72rem;
-}
-
-.vam-notice-title {
-  font-weight: 600;
-  color: #38bdf8;
-}
-
-.vam-notice-text {
-  color: var(--adm-text-sub);
-  line-height: 1.4;
-}
-
-/* --------------------------------------------------------------------------
-   Tab 1: Addresses
-   -------------------------------------------------------------------------- */
-.vam-addresses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1rem;
-}
-
-.vam-address-card {
-  padding: 1rem 1.15rem;
-  border-radius: 8px;
-  border: 1px solid var(--adm-border);
-  background: var(--adm-bg);
-  display: flex;
-  flex-direction: column;
-}
-
-.vam-address-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.vam-address-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--adm-text-main);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.vam-checkbox-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-size: 0.7rem;
-  color: var(--adm-text-sub);
-  user-select: none;
-}
-
-.vam-checkbox-input {
-  accent-color: var(--adm-accent);
-  cursor: pointer;
-}
-
-.vam-address-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-  flex: 1;
-}
-
-.vam-grid-city-postal {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 0.55rem;
-}
-
-.vam-same-address-box {
-  flex: 1;
-  padding: 0.85rem;
-  border-radius: 6px;
-  background: var(--adm-panel-hover);
-  border: 1px dashed var(--adm-border);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
-  font-size: 0.74rem;
-}
-
-.vam-same-address-heading {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--adm-text-main);
-  font-weight: 600;
-  font-size: 0.75rem;
-}
-
-.vam-same-address-code {
-  font-family: monospace;
-  font-size: 0.74rem;
-  color: var(--adm-text-main);
-  background: var(--adm-bg);
-  padding: 0.5rem 0.65rem;
-  border-radius: 4px;
-  border: 1px solid var(--adm-border-subtle);
-  line-height: 1.45;
-}
-
-/* --------------------------------------------------------------------------
-   Tab 2: Compliance Documents
-   -------------------------------------------------------------------------- */
-.vam-compliance-guidance-card {
-  padding: 0.9rem 1.1rem;
-  border-radius: 8px;
-  background: var(--adm-panel-hover);
-  border: 1px solid var(--adm-border);
-  display: flex;
-  flex-direction: column;
   gap: 0.65rem;
-  margin-bottom: 0.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--adm-border-subtle);
+  margin-bottom: 0.5rem;
 }
 
-.vam-compliance-guidance-header {
+.vam-header-main {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.vam-compliance-guidance-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--adm-text-main);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.vam-guidance-badge {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--adm-accent);
-  background: var(--adm-bg);
-  padding: 3px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--adm-border-subtle);
-}
-
-.vam-guidance-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 0.75rem;
-  margin-top: 2px;
 }
 
-.vam-guidance-item {
+.vam-header-meta {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.vam-guidance-label {
-  font-size: 0.66rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--adm-text-sub);
-  font-weight: 600;
+.vam-header-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.vam-guidance-val {
-  font-size: 0.74rem;
+.vam-store-title {
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--adm-text-main);
+  letter-spacing: -0.01em;
+  margin: 0;
 }
 
-.vam-guidance-sub {
-  font-size: 0.67rem;
+.vam-store-handle {
+  font-size: 0.76rem;
   color: var(--adm-text-muted);
-  line-height: 1.35;
 }
 
-.vam-docs-list {
+.vam-store-sub {
+  font-size: 0.72rem;
+  color: var(--adm-text-sub);
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
-.vam-doc-item {
-  padding: 0.85rem 1rem;
-  border-radius: 8px;
-  border: 1px solid var(--adm-border);
-  background: var(--adm-bg);
-  transition: border-color 0.15s ease;
+.vam-sep {
+  color: var(--adm-border);
+  font-size: 0.65rem;
 }
 
-.vam-doc-item.rejected {
-  border-color: rgba(239, 68, 68, 0.35);
+.vam-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-.vam-doc-item.na {
-  opacity: 0.88;
-  border-style: dashed;
+.vam-btn-subtle {
+  font-size: 0.7rem !important;
+  padding: 3px 8px !important;
+  color: var(--adm-text-sub) !important;
+}
+
+.vam-btn-subtle:hover {
+  color: var(--adm-text-main) !important;
+}
+
+.vam-btn-danger-subtle {
+  font-size: 0.7rem !important;
+  padding: 3px 8px !important;
+  color: #ef4444 !important;
+}
+
+.vam-btn-danger-subtle:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+
+.vam-btn-success-subtle {
+  font-size: 0.7rem !important;
+  padding: 3px 8px !important;
+  color: #10b981 !important;
+}
+
+.vam-btn-success-subtle:hover {
+  background: rgba(16, 185, 129, 0.08) !important;
+}
+
+/* Minimalist Status Row */
+.vam-status-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.vam-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.69rem;
+  color: var(--adm-text-sub);
   background: var(--adm-panel-hover);
 }
 
-.vam-doc-row {
+.vam-status-pill strong {
+  color: var(--adm-text-main);
+  font-weight: 600;
+}
+
+.vam-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.vam-status-pill.active .vam-status-dot {
+  background: #10b981;
+}
+
+.vam-status-pill.suspended .vam-status-dot,
+.vam-status-pill.hold .vam-status-dot {
+  background: #ef4444;
+}
+
+.vam-status-pill.pending .vam-status-dot,
+.vam-status-pill.review .vam-status-dot {
+  background: #f59e0b;
+}
+
+/* --------------------------------------------------------------------------
+   Minimalist Tab Navigation
+   -------------------------------------------------------------------------- */
+.vam-tab-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--adm-border-subtle);
+  margin-bottom: 1.15rem;
+}
+
+.vam-tab-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 0;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--adm-text-muted);
+  cursor: pointer;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s ease;
+}
+
+.vam-tab-btn:hover {
+  color: var(--adm-text-main);
+}
+
+.vam-tab-btn.active {
+  color: var(--adm-text-main);
+  font-weight: 600;
+}
+
+.vam-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--adm-accent, #38bdf8);
+  border-radius: 1px;
+}
+
+.vam-tab-count {
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 10px;
+  background: var(--adm-panel-hover);
+  color: var(--adm-text-muted);
+}
+
+.vam-tab-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ef4444;
+}
+
+/* --------------------------------------------------------------------------
+   Tab Body & Grouped Sections
+   -------------------------------------------------------------------------- */
+.vam-tab-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.vam-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-bottom: 1.15rem;
+  border-bottom: 1px solid var(--adm-border-subtle);
+}
+
+.vam-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.vam-section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.vam-section-title {
+  font-size: 0.77rem;
+  font-weight: 600;
+  color: var(--adm-text-main);
+  letter-spacing: 0.01em;
+}
+
+.vam-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.65rem;
 }
 
-.vam-doc-left {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
+.vam-field-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--adm-text-sub);
+  margin-bottom: 3px;
 }
 
-.vam-doc-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 6px;
-  background: var(--adm-panel-hover);
+/* Key-Value Display Items */
+.vam-kv-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vam-kv-label {
+  font-size: 0.66rem;
+  font-weight: 500;
+  color: var(--adm-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.vam-kv-val {
+  font-size: 0.76rem;
+  color: var(--adm-text-main);
+  font-weight: 500;
+}
+
+.vam-kv-val-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: var(--adm-accent);
-  flex-shrink: 0;
-  margin-top: 2px;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--adm-text-main);
 }
 
-.vam-doc-info {
+.vam-kv-code {
+  font-family: monospace;
+  font-size: 0.74rem;
+  color: var(--adm-text-main);
+  background: var(--adm-panel-hover);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.vam-kv-hint {
+  font-size: 0.68rem;
+  color: var(--adm-text-muted);
+  margin-left: 4px;
+}
+
+.vam-kv-highlight {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--adm-text-main);
+}
+
+.vam-link-subtle {
+  color: var(--adm-text-muted);
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.15s ease;
+}
+
+.vam-link-subtle:hover {
+  color: var(--adm-accent, #38bdf8);
+}
+
+.vam-text-btn-danger {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 0.68rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0;
+  margin-left: 6px;
+}
+
+.vam-text-btn-danger:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   Addresses Subgroup
+   -------------------------------------------------------------------------- */
+.vam-subgroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.vam-subgroup-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--adm-text-sub);
+}
+
+.vam-subgroup-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.vam-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 0.69rem;
+  color: var(--adm-text-sub);
+  user-select: none;
+}
+
+.vam-checkbox-input {
+  accent-color: var(--adm-accent, #38bdf8);
+  cursor: pointer;
+}
+
+.vam-same-addr-msg {
+  padding: 0.6rem 0.75rem;
+  border-radius: 4px;
+  background: var(--adm-panel-hover);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.72rem;
+  color: var(--adm-text-sub);
+}
+
+.vam-same-addr-preview {
+  font-size: 0.68rem;
+  color: var(--adm-text-muted);
+}
+
+.vam-footer-btn-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Notices & Payout Hold Banners
+   -------------------------------------------------------------------------- */
+.vam-notice-subtle {
+  font-size: 0.71rem;
+  color: var(--adm-text-sub);
+  background: var(--adm-panel-hover);
+  padding: 0.45rem 0.65rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.4;
+}
+
+.vam-hold-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  flex-wrap: wrap;
+}
+
+.vam-hold-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vam-hold-banner-title {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #ef4444;
+}
+
+.vam-hold-banner-desc {
+  font-size: 0.68rem;
+  color: var(--adm-text-sub);
+  margin-top: 1px;
+}
+
+.vam-icon-danger {
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Commercial Rate Form
+   -------------------------------------------------------------------------- */
+.vam-rate-form {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--adm-border-subtle);
+}
+
+.vam-rate-form-grid {
+  display: grid;
+  grid-template-columns: 85px 125px 1fr auto;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.vam-rate-reason-col {
+  flex: 1;
+}
+
+.vam-rate-action-col {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* --------------------------------------------------------------------------
+   Document List (Compliance Tab)
+   -------------------------------------------------------------------------- */
+.vam-doc-list {
   display: flex;
   flex-direction: column;
 }
 
-.vam-doc-title-row {
+.vam-doc-item {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--adm-border-subtle);
+}
+
+.vam-doc-item:last-child {
+  border-bottom: none;
+}
+
+.vam-doc-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.vam-doc-icon {
+  color: var(--adm-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vam-doc-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.vam-doc-title-line {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -551,439 +583,115 @@
 }
 
 .vam-doc-title {
+  font-size: 0.78rem;
   font-weight: 600;
-  font-size: 0.82rem;
   color: var(--adm-text-main);
 }
 
-.vam-doc-pill-hint {
+.vam-doc-pill {
   font-size: 0.64rem;
+  font-weight: 500;
   padding: 1px 6px;
   border-radius: 4px;
-  background: rgba(56, 189, 248, 0.1);
-  color: #38bdf8;
-  font-weight: 500;
+}
+
+.vam-doc-pill.verified {
+  background: rgba(16, 185, 129, 0.09);
+  color: #10b981;
+}
+
+.vam-doc-pill.pending {
+  background: rgba(245, 158, 11, 0.09);
+  color: #d97706;
+}
+
+.vam-doc-pill.required {
+  background: rgba(56, 189, 248, 0.09);
+  color: #0284c7;
+}
+
+.vam-doc-pill.rejected {
+  background: rgba(239, 68, 68, 0.09);
+  color: #ef4444;
+}
+
+.vam-doc-pill.na {
+  background: rgba(148, 163, 184, 0.12);
+  color: #64748b;
 }
 
 .vam-doc-meta {
-  font-size: 0.7rem;
-  color: var(--adm-text-sub);
-  margin-top: 2px;
-}
-
-.vam-doc-guidance-text {
   font-size: 0.68rem;
-  color: var(--adm-accent);
-  margin-top: 3px;
-  font-style: normal;
+  color: var(--adm-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
 }
 
 .vam-doc-filename {
   font-family: monospace;
-  color: var(--adm-text-main);
+}
+
+.vam-doc-note {
+  font-size: 0.69rem;
+  color: var(--adm-text-sub);
+  margin-top: 2px;
 }
 
 .vam-doc-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 4px;
   flex-wrap: wrap;
 }
 
-.vam-doc-badge {
-  font-size: 0.68rem;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 4px;
-}
-
-.vam-doc-badge.verified {
-  background: rgba(16, 185, 129, 0.12);
-  color: #10b981;
-}
-
-.vam-doc-badge.pending {
-  background: rgba(245, 158, 11, 0.12);
-  color: #f59e0b;
-}
-
-.vam-doc-badge.required {
-  background: rgba(56, 189, 248, 0.12);
-  color: #38bdf8;
-}
-
-.vam-doc-badge.rejected {
-  background: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
-}
-
-.vam-doc-badge.na {
-  background: rgba(148, 163, 184, 0.15);
-  color: #94a3b8;
-}
-
-.vam-btn-compact {
-  padding: 3px 8px !important;
-  font-size: 0.7rem !important;
-}
-
-.vam-doc-notes {
+/* Inline Prompt Box */
+.vam-inline-form-box {
   margin-top: 0.5rem;
-  font-size: 0.72rem;
-  color: var(--adm-text-muted);
+  padding: 0.55rem 0.7rem;
   background: var(--adm-panel-hover);
-  padding: 0.45rem 0.75rem;
   border-radius: 4px;
-}
-
-.vam-doc-notes.rejected {
-  color: #ef4444;
-}
-
-.vam-doc-na-banner {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.72rem;
-  color: var(--adm-text-sub);
-  background: var(--adm-panel-hover);
-  padding: 0.45rem 0.75rem;
-  border-radius: 4px;
-  margin-top: 0.5rem;
-}
-
-/* Document Rejection Prompt */
-.vam-reject-dialog {
-  margin-top: 0.75rem;
-  padding: 0.75rem;
-  border-radius: 6px;
-  background: rgba(239, 68, 68, 0.05);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.vam-reject-title {
-  font-size: 0.74rem;
-  font-weight: 600;
-  color: #ef4444;
-  margin-bottom: 5px;
-}
-
-.vam-reject-input {
-  width: 100%;
-  margin-bottom: 6px;
-}
-
-.vam-reject-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-}
-
-/* Document Exemption (N/A) Prompt */
-.vam-exempt-dialog {
-  margin-top: 0.75rem;
-  padding: 0.75rem;
-  border-radius: 6px;
-  background: rgba(148, 163, 184, 0.08);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-}
-
-.vam-exempt-title {
-  font-size: 0.74rem;
-  font-weight: 600;
-  color: var(--adm-text-main);
-  margin-bottom: 5px;
-}
-
-.vam-exempt-input {
-  width: 100%;
-  margin-bottom: 6px;
-}
-
-/* Document Inspection Modal */
-.vam-preview-body {
-  padding: 1.25rem;
-  text-align: center;
-  background: var(--adm-bg);
-  border-radius: 8px;
-  border: 1px solid var(--adm-border);
-}
-
-.vam-preview-icon {
-  margin: 0 auto 0.75rem;
-  display: block;
-}
-
-.vam-preview-filename {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--adm-text-main);
-}
-
-.vam-preview-meta-list {
-  margin-top: 1rem;
-  padding: 0.75rem 0.9rem;
-  border-radius: 6px;
-  background: var(--adm-panel-hover);
-  font-size: 0.74rem;
-  color: var(--adm-text-main);
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.vam-preview-code {
-  font-family: monospace;
-}
-
-/* --------------------------------------------------------------------------
-   Tab 3: Financials & Commercials
-   -------------------------------------------------------------------------- */
-.vam-separation-card {
-  padding: 0.9rem 1.1rem;
-  border-radius: 8px;
-  background: var(--adm-panel-hover);
-  border: 1px solid var(--adm-border);
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  margin-bottom: 0.25rem;
-}
-
-.vam-separation-header {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.vam-separation-title {
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--adm-text-main);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.vam-separation-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 0.75rem;
-}
-
-.vam-separation-item {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 0.65rem 0.85rem;
-  border-radius: 6px;
-  background: var(--adm-bg);
-  border: 1px solid var(--adm-border-subtle);
 }
 
-.vam-separation-badge {
-  display: inline-block;
-  font-size: 0.68rem;
-  font-weight: 700;
-  width: fit-content;
-  padding: 2px 7px;
-  border-radius: 4px;
-  margin-bottom: 2px;
-}
-
-.vam-separation-badge.platform {
-  background: rgba(16, 185, 129, 0.12);
-  color: #10b981;
-}
-
-.vam-separation-badge.provider {
-  background: rgba(56, 189, 248, 0.12);
-  color: #38bdf8;
-}
-
-.vam-separation-desc {
-  font-size: 0.71rem;
-  color: var(--adm-text-sub);
-  line-height: 1.4;
-  margin: 0;
-}
-
-/* Icon Utilities */
-.vam-icon-info {
-  color: #38bdf8;
-}
-
-.vam-icon-accent {
-  color: var(--adm-accent);
-}
-
-.vam-icon-muted {
-  color: var(--adm-text-muted);
-}
-
-.vam-finance-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 0.85rem;
-}
-
-.vam-info-box {
-  padding: 0.75rem 0.9rem;
-  border-radius: 6px;
-  background: var(--adm-panel-hover);
-  border: 1px solid var(--adm-border-subtle);
-}
-
-.vam-info-label {
-  font-size: 0.66rem;
-  color: var(--adm-text-sub);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 3px;
-}
-
-.vam-info-val-lg {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--adm-text-main);
-}
-
-.vam-info-val-md {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--adm-text-main);
-}
-
-.vam-info-sub {
-  font-size: 0.68rem;
-  color: var(--adm-text-sub);
-  margin-top: 2px;
-}
-
-/* Stripe Account Row */
-.vam-stripe-row {
+.vam-inline-form-actions {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.vam-stripe-id-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.vam-stripe-input {
-  font-family: monospace;
-  font-size: 0.78rem;
-  background: var(--adm-panel-hover) !important;
-}
-
-/* Payout Hold Alert */
-.vam-hold-alert {
-  padding: 0.75rem 0.9rem;
-  border-radius: 6px;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  font-size: 0.74rem;
-}
-
-.vam-hold-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #ef4444;
-  font-weight: 600;
-  margin-bottom: 3px;
-}
-
-.vam-hold-content {
-  color: var(--adm-text-main);
-}
-
-.vam-hold-meta {
-  font-size: 0.68rem;
-  color: var(--adm-text-sub);
+  justify-content: flex-end;
+  gap: 5px;
   margin-top: 4px;
 }
 
-/* Commission Rate Form */
-.vam-rate-inline-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1.5fr auto;
-  gap: 0.75rem;
-  align-items: flex-end;
-  margin-top: 0.75rem;
-}
-
-.vam-rate-btn {
-  height: 34px !important;
-}
-
-.vam-history-list {
+/* --------------------------------------------------------------------------
+   Audit Log
+   -------------------------------------------------------------------------- */
+.vam-audit-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.65rem;
+  gap: 0.35rem;
 }
 
-.vam-history-item {
+.vam-audit-row {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0.55rem 0.75rem;
-  border-radius: 6px;
-  background: var(--adm-panel-hover);
-  border: 1px solid var(--adm-border-subtle);
-  font-size: 0.72rem;
-}
-
-.vam-history-left {
-  display: flex;
   align-items: center;
-  gap: 8px;
+  font-size: 0.72rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--adm-border-subtle);
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 
-.vam-history-version {
-  font-weight: 700;
-  color: var(--adm-accent);
+.vam-audit-row:last-child {
+  border-bottom: none;
 }
 
-.vam-history-rate {
-  font-weight: 600;
-  color: var(--adm-text-main);
-}
-
-.vam-history-meta {
-  font-size: 0.68rem;
-  color: var(--adm-text-muted);
-}
-
-/* Audit Activity Timeline */
-.vam-audit-scroll {
+.vam-audit-main {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  max-height: 180px;
-  overflow-y: auto;
-  margin-top: 0.5rem;
-}
-
-.vam-audit-item {
-  padding: 0.55rem 0.75rem;
-  border-radius: 6px;
-  background: var(--adm-panel-hover);
-  border: 1px solid var(--adm-border-subtle);
-  font-size: 0.72rem;
-}
-
-.vam-audit-item-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2px;
+  gap: 1px;
 }
 
 .vam-audit-action {
@@ -991,23 +699,74 @@
   color: var(--adm-text-main);
 }
 
-.vam-audit-time {
-  font-size: 0.66rem;
-  color: var(--adm-text-muted);
-}
-
 .vam-audit-note {
   color: var(--adm-text-sub);
+  font-size: 0.68rem;
 }
 
-.vam-audit-actor {
-  font-size: 0.66rem;
-  color: var(--adm-accent);
-  margin-top: 2px;
+.vam-audit-meta {
+  font-size: 0.67rem;
+  color: var(--adm-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* --------------------------------------------------------------------------
-   Sub-Dialog Modals
+   Document Inspection Modal
+   -------------------------------------------------------------------------- */
+.vam-preview-body {
+  padding: 1rem 0.5rem;
+  text-align: center;
+}
+
+.vam-preview-icon {
+  margin: 0 auto 0.65rem;
+  color: var(--adm-accent, #38bdf8);
+  display: block;
+}
+
+.vam-preview-filename {
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--adm-text-main);
+}
+
+.vam-preview-table {
+  margin-top: 0.85rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 6px;
+  background: var(--adm-panel-hover);
+  font-size: 0.72rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vam-preview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vam-preview-lbl {
+  color: var(--adm-text-muted);
+  font-weight: 500;
+}
+
+.vam-capitalize {
+  text-transform: capitalize;
+}
+
+.vam-preview-footer {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Sub-Dialog Modals (Hold & Status)
    -------------------------------------------------------------------------- */
 .vam-submodal-stack {
   display: flex;
@@ -1016,7 +775,7 @@
 }
 
 .vam-submodal-desc {
-  font-size: 0.74rem;
+  font-size: 0.73rem;
   color: var(--adm-text-sub);
   line-height: 1.45;
 }
@@ -1042,11 +801,7 @@
     grid-template-columns: 1fr;
   }
 
-  .vam-addresses-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .vam-rate-inline-form {
+  .vam-rate-form-grid {
     grid-template-columns: 1fr;
   }
 }

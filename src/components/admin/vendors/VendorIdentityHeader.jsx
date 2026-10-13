@@ -13,20 +13,18 @@ export default function VendorIdentityHeader({
 }) {
   return (
     <div className="vam-header">
-      <div className="vam-header-top">
-        <div className="vam-header-left">
-          <div className="vam-avatar">
-            {(vendor.store_name || 'V').charAt(0).toUpperCase()}
+      <div className="vam-header-main">
+        <div className="vam-header-meta">
+          <div className="vam-header-title-row">
+            <h3 className="vam-store-title">{vendor.store_name}</h3>
+            <span className="vam-store-handle">@{vendor.store_handle}</span>
           </div>
-          <div className="vam-header-info">
-            <div className="vam-title-row">
-              <span className="vam-store-name">
-                {vendor.store_name}
-              </span>
-            </div>
-            <div className="vam-subtitle">
-              @{vendor.store_handle} • {vendor.country || 'Global'} • {vendor.products_count ?? 0} active products
-            </div>
+          <div className="vam-store-sub">
+            <span>{vendor.legal_business_name || vendor.store_name}</span>
+            <span className="vam-sep">•</span>
+            <span>{vendor.country || 'Global'}</span>
+            <span className="vam-sep">•</span>
+            <span>{vendor.products_count ?? 0} active products</span>
           </div>
         </div>
 
@@ -34,18 +32,21 @@ export default function VendorIdentityHeader({
           {storefrontStatus === 'active' ? (
             <button
               type="button"
-              className="admin-btn admin-btn-ghost admin-btn-sm"
+              className="admin-btn admin-btn-ghost admin-btn-sm vam-btn-subtle"
               onClick={() => onOpenStorefrontModal('suspended')}
+              title="Suspend public storefront"
             >
-              <ShieldAlert size={12} /> Suspend Storefront
+              <ShieldAlert size={13} />
+              <span>Suspend</span>
             </button>
           ) : (
             <button
               type="button"
-              className="admin-btn admin-btn-primary admin-btn-sm"
+              className="admin-btn admin-btn-secondary admin-btn-sm"
               onClick={() => onOpenStorefrontModal('active')}
             >
-              <CheckCircle size={12} /> Reactivate Storefront
+              <CheckCircle size={13} />
+              <span>Reactivate</span>
             </button>
           )}
 
@@ -55,44 +56,38 @@ export default function VendorIdentityHeader({
               className="admin-btn admin-btn-primary admin-btn-sm"
               onClick={onOpenReleaseModal}
             >
-              <Unlock size={12} /> Resume Payouts
+              <Unlock size={13} />
+              <span>Resume Payouts</span>
             </button>
           ) : (
             <button
               type="button"
-              className="admin-btn admin-btn-danger admin-btn-sm"
+              className="admin-btn admin-btn-ghost admin-btn-sm vam-btn-danger-subtle"
               onClick={onOpenHoldModal}
+              title="Pause payout disbursements"
             >
-              <Lock size={12} /> Pause Payouts
+              <Lock size={13} />
+              <span>Pause Payouts</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Compact Operational Status Bar */}
-      <div className="vam-status-bar">
-        <div className="vam-status-chip">
-          <span className="vam-chip-label">Storefront:</span>
-          <div className={`vam-chip-dot ${storefrontStatus === 'active' ? 'active' : (storefrontStatus === 'suspended' ? 'suspended' : 'review')}`} />
-          <span className="vam-chip-val">
-            {storefrontStatus === 'active' ? 'Live' : (storefrontStatus === 'suspended' ? 'Suspended' : 'Under Review')}
-          </span>
+      {/* Minimalist Status Bar */}
+      <div className="vam-status-row">
+        <div className={`vam-status-pill ${storefrontStatus === 'active' ? 'active' : 'suspended'}`}>
+          <span className="vam-status-dot" />
+          <span>Storefront: <strong>{storefrontStatus === 'active' ? 'Live' : (storefrontStatus === 'suspended' ? 'Suspended' : 'Review')}</strong></span>
         </div>
 
-        <div className="vam-status-chip">
-          <span className="vam-chip-label">KYB Verification:</span>
-          <div className={`vam-chip-dot ${kybStatus === 'verified' ? 'verified' : (kybStatus === 'rejected' ? 'rejected' : 'review')}`} />
-          <span className="vam-chip-val">
-            {kybStatus === 'verified' ? 'Verified' : (kybStatus === 'rejected' ? 'Rejected' : 'Review Required')}
-          </span>
+        <div className={`vam-status-pill ${kybStatus === 'verified' ? 'active' : (kybStatus === 'rejected' ? 'suspended' : 'pending')}`}>
+          <span className="vam-status-dot" />
+          <span>KYB: <strong>{kybStatus === 'verified' ? 'Verified' : (kybStatus === 'rejected' ? 'Rejected' : 'Action Required')}</strong></span>
         </div>
 
-        <div className="vam-status-chip">
-          <span className="vam-chip-label">Payouts:</span>
-          <div className={`vam-chip-dot ${payoutEligibility === 'eligible' ? 'eligible' : 'hold'}`} />
-          <span className="vam-chip-val">
-            {payoutEligibility === 'eligible' ? 'Active' : 'Paused (On Hold)'}
-          </span>
+        <div className={`vam-status-pill ${payoutEligibility === 'eligible' ? 'active' : 'hold'}`}>
+          <span className="vam-status-dot" />
+          <span>Payouts: <strong>{payoutEligibility === 'eligible' ? 'Active' : 'On Hold'}</strong></span>
         </div>
       </div>
     </div>
