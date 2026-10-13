@@ -468,7 +468,7 @@ export const mockAdminAdapter = {
     const products = storageEngine.getItem(STORAGE_KEYS.PRODUCTS, []);
 
     // Ensure fallback stores exist or are upgraded with full compliance schema
-    if (!stores || stores.length < 5 || !stores[0]?.marketplace_agreement) {
+    if (!stores || stores.length < 6 || !stores[0]?.marketplace_agreement) {
       stores = INITIAL_VENDORS_DATA;
       storageEngine.setItem(STORAGE_KEYS.STORES, stores);
     }
@@ -517,7 +517,7 @@ export const mockAdminAdapter = {
   async getVendorById(vendorId) {
     await delay();
     let stores = storageEngine.getItem(STORAGE_KEYS.STORES, []);
-    if (!stores || stores.length < 5 || !stores[0]?.marketplace_agreement) {
+    if (!stores || stores.length < 6 || !stores[0]?.marketplace_agreement) {
       stores = INITIAL_VENDORS_DATA;
       storageEngine.setItem(STORAGE_KEYS.STORES, stores);
     }
@@ -539,6 +539,26 @@ export const mockAdminAdapter = {
       return { success: false, error: 'Vendor not found' };
     }
 
+    const isNowSoleProprietor = Boolean(
+      (businessData.business_type || '').toLowerCase().includes('sole') ||
+      (businessData.business_type || '').toLowerCase().includes('individual') ||
+      (businessData.business_type || '').toLowerCase().includes('auto-entrepreneur')
+    );
+
+    let docs = stores[idx].documents || [];
+    if (isNowSoleProprietor) {
+      docs = docs.map(d => {
+        if (d.type === 'incorporation' && d.status !== 'verified') {
+          return {
+            ...d,
+            status: 'na',
+            notes: 'Not Applicable: Merchant operates as Sole Proprietorship / Individual entity (Exempt from corporate charter).'
+          };
+        }
+        return d;
+      });
+    }
+
     stores[idx] = {
       ...stores[idx],
       legal_business_name: businessData.legal_business_name || stores[idx].legal_business_name,
@@ -547,6 +567,7 @@ export const mockAdminAdapter = {
       registration_number: businessData.registration_number || stores[idx].registration_number,
       phone: businessData.phone || stores[idx].phone,
       country: businessData.country || stores[idx].country,
+      documents: docs,
       legal_address: {
         ...(stores[idx].legal_address || {}),
         ...(businessData.legal_address || {})
@@ -587,15 +608,21 @@ export const mockAdminAdapter = {
         reviewed_by: adminName
       };
 
+      let actionLabel = `Document Status Updated: ${docTitle} (${status})`;
+      if (status === 'verified') actionLabel = `Document Approved: ${docTitle}`;
+      else if (status === 'rejected') actionLabel = `Document Rejected: ${docTitle}`;
+      else if (status === 'na') actionLabel = `Document Marked N/A: ${docTitle}`;
+      else if (status === 'required') actionLabel = `Document Action Requested: ${docTitle}`;
+
       const auditEntry = {
         id: 'aud_' + Math.floor(1000 + Math.random() * 9000),
         timestamp: new Date().toISOString(),
         actor: adminName,
-        action: `Document ${status === 'verified' ? 'Approved' : 'Rejected'}: ${docTitle}`,
-        note: notes || (status === 'verified' ? 'Document verified against compliance standards.' : 'Document rejected.')
+        action: actionLabel,
+        note: notes || (status === 'verified' ? 'Document verified against compliance standards.' : (status === 'na' ? 'Marked Not Applicable for this business entity structure.' : 'Document updated.'))
       };
 
-      const allVerified = docs.every(d => d.status === 'verified');
+      const allVerified = docs.every(d => d.status === 'verified' || d.status === 'na');
       const anyRejected = docs.some(d => d.status === 'rejected');
       let nextKyb = 'verified';
       if (anyRejected) nextKyb = 'documents_required';
@@ -1470,7 +1497,7 @@ const INITIAL_VENDORS_DATA = [
     },
     documents: [
       { id: 'doc_101', type: 'address_proof', title: 'Proof of Business Address', filename: 'commercial_lease_faubourg.pdf', size: '2.4 MB', uploaded_at: '2026-08-10T12:00:00Z', expiry_date: '2027-08-10', status: 'verified', notes: 'Verified against Paris commercial property registry.' },
-      { id: 'doc_102', type: 'incorporation', title: 'Certificate of Incorporation (Kbis)', filename: 'kbis_extract_2026.pdf', size: '1.1 MB', uploaded_at: '2026-08-10T12:00:00Z', expiry_date: '2026-11-10', status: 'verified', notes: 'Active in Paris Registry of Commerce (within 90-day validity window).' },
+      { id: 'doc_102', type: 'incorporation', title: 'Business Registration Certificate (Extrait Kbis / RNE)', filename: 'kbis_extract_2026.pdf', size: '1.1 MB', uploaded_at: '2026-08-10T12:00:00Z', expiry_date: '2026-11-10', status: 'verified', notes: 'Active in Paris Registry of Commerce & RNE (within 90-day validity window).' },
       { id: 'doc_103', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'passport_c_laurent.pdf', size: '3.8 MB', uploaded_at: '2026-08-10T12:00:00Z', expiry_date: '2031-06-15', status: 'verified', notes: 'Passport identity confirmed.' },
       { id: 'doc_104', type: 'trademark', title: 'Brand Trademark Registration', filename: 'euipo_trademark_01829.pdf', size: '940 KB', uploaded_at: '2026-08-10T12:00:00Z', expiry_date: '2034-01-20', status: 'verified', notes: 'EUIPO registered brand owner in fashion classes 25 & 35.' }
     ],
@@ -1546,7 +1573,7 @@ const INITIAL_VENDORS_DATA = [
     },
     documents: [
       { id: 'doc_201', type: 'address_proof', title: 'Proof of Business Address', filename: 'telecom_italia_utility_bill.pdf', size: '1.8 MB', uploaded_at: '2026-08-28T09:30:00Z', expiry_date: '2026-11-28', status: 'verified', notes: 'Matches Montenapoleone commercial registry.' },
-      { id: 'doc_202', type: 'incorporation', title: 'Certificate of Incorporation', filename: 'camera_commercio_milano.pdf', size: '2.1 MB', uploaded_at: '2026-08-28T09:30:00Z', expiry_date: '2026-11-28', status: 'verified', notes: 'Milan Chamber of Commerce certified.' },
+      { id: 'doc_202', type: 'incorporation', title: 'Business Registration Certificate (Visura Camerale)', filename: 'camera_commercio_milano.pdf', size: '2.1 MB', uploaded_at: '2026-08-28T09:30:00Z', expiry_date: '2026-11-28', status: 'verified', notes: 'Milan Chamber of Commerce (Visura Camerale) certified.' },
       { id: 'doc_203', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'carta_identita_rossi.pdf', size: '2.9 MB', uploaded_at: '2026-08-28T09:30:00Z', expiry_date: '2030-04-12', status: 'verified', notes: 'Italian national identity verified.' },
       { id: 'doc_204', type: 'trademark', title: 'Brand Trademark Registration', filename: 'uibm_marchio_elena.pdf', size: '1.2 MB', uploaded_at: '2026-08-28T09:30:00Z', expiry_date: '2035-09-01', status: 'verified', notes: 'Italian Patent and Trademark Office registered.' }
     ],
@@ -1621,7 +1648,7 @@ const INITIAL_VENDORS_DATA = [
     },
     documents: [
       { id: 'doc_301', type: 'address_proof', title: 'Proof of Business Address', filename: 'edf_electricity_bill_july2026.pdf', size: '1.4 MB', uploaded_at: '2026-10-08T15:20:00Z', expiry_date: '2026-10-31', status: 'pending', notes: 'Awaiting admin verification against Charonne commercial lease.' },
-      { id: 'doc_302', type: 'incorporation', title: 'Certificate of Incorporation (Kbis)', filename: 'kbis_extrait_ombre.pdf', size: '890 KB', uploaded_at: '2026-10-08T15:20:00Z', expiry_date: '2027-01-08', status: 'verified', notes: 'Validated with Infogreffe database.' },
+      { id: 'doc_302', type: 'incorporation', title: 'Business Registration Certificate (Extrait RNE / Kbis)', filename: 'rne_extrait_ombre.pdf', size: '890 KB', uploaded_at: '2026-10-08T15:20:00Z', expiry_date: '2027-01-08', status: 'verified', notes: 'Validated with Registre National des Entreprises (RNE) database.' },
       { id: 'doc_303', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'passeport_vaneau.pdf', size: '3.1 MB', uploaded_at: '2026-10-08T15:20:00Z', expiry_date: '2032-11-20', status: 'verified', notes: 'Passport verified via Stripe Identity check.' },
       { id: 'doc_304', type: 'trademark', title: 'Brand Trademark Registration', filename: 'inpi_marque_depot_ombre.pdf', size: '1.5 MB', uploaded_at: '2026-10-08T15:20:00Z', expiry_date: '2036-10-01', status: 'pending', notes: 'French INPI application pending final publication review.' }
     ],
@@ -1702,7 +1729,7 @@ const INITIAL_VENDORS_DATA = [
     },
     documents: [
       { id: 'doc_401', type: 'address_proof', title: 'Proof of Business Address', filename: 'conedison_bill_unclear.pdf', size: '720 KB', uploaded_at: '2026-09-20T11:00:00Z', expiry_date: '2026-03-15', status: 'rejected', notes: 'Rejected: Bill is dated over 6 months ago. Upload utility bill from last 90 days or signed Soho lease.' },
-      { id: 'doc_402', type: 'incorporation', title: 'Certificate of Formation', filename: 'ny_articles_of_organization.pdf', size: '1.3 MB', uploaded_at: '2026-09-20T11:00:00Z', expiry_date: 'Permanent', status: 'verified', notes: 'New York Department of State verified.' },
+      { id: 'doc_402', type: 'incorporation', title: 'Business Registration Certificate (Articles of Organization)', filename: 'ny_articles_of_organization.pdf', size: '1.3 MB', uploaded_at: '2026-09-20T11:00:00Z', expiry_date: 'Permanent', status: 'verified', notes: 'New York Department of State (Division of Corporations) verified.' },
       { id: 'doc_403', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'ny_driver_license_vance.pdf', size: '2.5 MB', uploaded_at: '2026-09-20T11:00:00Z', expiry_date: '2028-10-14', status: 'verified', notes: 'Driver license valid through 2028.' },
       { id: 'doc_404', type: 'trademark', title: 'USPTO Trademark Filing', filename: 'uspto_sn_97812903.pdf', size: '1.1 MB', uploaded_at: '2026-09-20T11:00:00Z', expiry_date: '2033-05-22', status: 'verified', notes: 'USPTO Principal Register active.' }
     ],
@@ -1784,7 +1811,7 @@ const INITIAL_VENDORS_DATA = [
     },
     documents: [
       { id: 'doc_501', type: 'address_proof', title: 'Proof of Business Address', filename: 'shoreditch_lease_deed.pdf', size: '3.1 MB', uploaded_at: '2026-07-15T08:00:00Z', expiry_date: '2028-06-30', status: 'verified', notes: 'Verified commercial lease.' },
-      { id: 'doc_502', type: 'incorporation', title: 'Certificate of Incorporation', filename: 'companies_house_extract.pdf', size: '1.4 MB', uploaded_at: '2026-07-15T08:00:00Z', expiry_date: 'Permanent', status: 'verified', notes: 'Companies House registered.' },
+      { id: 'doc_502', type: 'incorporation', title: 'Business Registration Certificate (Companies House Extract)', filename: 'companies_house_extract.pdf', size: '1.4 MB', uploaded_at: '2026-07-15T08:00:00Z', expiry_date: 'Permanent', status: 'verified', notes: 'Companies House Registrar of Companies certified.' },
       { id: 'doc_503', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'uk_passport_sterling.pdf', size: '2.8 MB', uploaded_at: '2026-07-15T08:00:00Z', expiry_date: '2029-02-18', status: 'verified', notes: 'UK passport verified.' },
       { id: 'doc_504', type: 'trademark', title: 'Brand Trademark Registration', filename: 'uk_ipo_trademark.pdf', size: '1.0 MB', uploaded_at: '2026-07-15T08:00:00Z', expiry_date: 'Disputed', status: 'rejected', notes: 'Flagged: Active trademark dispute filed by third party rights holder.' }
     ],
@@ -1818,5 +1845,80 @@ const INITIAL_VENDORS_DATA = [
       { id: 'aud_502', timestamp: '2026-07-15T08:00:00Z', actor: 'Onboarding System', action: 'Boutique Onboarded', note: 'Initial agreement v2.3 executed.' }
     ],
     admin_notes: 'Account suspended on Oct 2nd following trademark infringement notice. Storefront unlisted and payouts locked.'
+  },
+  {
+    id: 'mch_claire_06',
+    vendor_id: 'mch_claire_06',
+    store_name: 'Claire Delacroix Studio',
+    store_handle: 'clairedelacroix',
+    is_demo_sandbox: true,
+    email: 'claire@delacroix-studio.fr',
+    phone: '+33 6 44 55 66 77',
+    custom_domain: 'delacroix-studio.fr',
+    vendor_status: 'approved',
+    storefront_status: 'active',
+    kyb_status: 'verified',
+    payout_eligibility: 'eligible',
+    payout_hold_details: null,
+    legal_business_name: 'Claire Delacroix (Entreprise Individuelle)',
+    business_type: 'Sole Proprietorship / Auto-entrepreneur',
+    tax_id: 'FR-DEMO-5592810394',
+    registration_number: 'SIREN-DEMO-982173921',
+    country: 'France',
+    products_count: 3,
+    created_at: '2026-09-10T12:00:00Z',
+    legal_address: {
+      street: '24 Rue Vieille-du-Temple',
+      city: 'Paris',
+      postal_code: '75004',
+      country: 'France'
+    },
+    return_warehouse_address: {
+      street: '24 Rue Vieille-du-Temple',
+      city: 'Paris',
+      postal_code: '75004',
+      country: 'France'
+    },
+    representative: {
+      name: 'Claire Delacroix',
+      title: 'Proprietor & Master Tailor',
+      email: 'claire@delacroix-studio.fr',
+      phone: '+33 6 44 55 66 77'
+    },
+    documents: [
+      { id: 'doc_601', type: 'address_proof', title: 'Proof of Business Address', filename: 'quittance_loyer_marais.pdf', size: '1.2 MB', uploaded_at: '2026-09-10T12:00:00Z', expiry_date: '2026-12-10', status: 'verified', notes: 'Residential-studio lease receipt authenticated.' },
+      { id: 'doc_602', type: 'incorporation', title: 'Business Registration (Corporate Extract)', filename: 'exempt_sole_proprietor.pdf', size: '120 KB', uploaded_at: '2026-09-10T12:00:00Z', expiry_date: 'N/A', status: 'na', notes: 'Not Applicable: French Auto-entrepreneur / Individual artisan without incorporation charter. Verified via SIRENE certificate.' },
+      { id: 'doc_603', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'passeport_delacroix.pdf', size: '2.4 MB', uploaded_at: '2026-09-10T12:00:00Z', expiry_date: '2033-04-18', status: 'verified', notes: 'French national passport identity confirmed.' },
+      { id: 'doc_604', type: 'trademark', title: 'Brand Trademark Registration', filename: 'inpi_delacroix_couture.pdf', size: '890 KB', uploaded_at: '2026-09-10T12:00:00Z', expiry_date: '2036-08-15', status: 'verified', notes: 'INPI registered brand class 25.' }
+    ],
+    payment_provider: {
+      provider: 'Stripe Connect (Custom)',
+      account_id: 'acct_1N9z88F',
+      onboarding_status: 'completed',
+      charges_enabled: true,
+      payouts_enabled: true,
+      bank_name: 'Crédit Mutuel (Marais)',
+      account_last4: '6721',
+      currency: 'EUR',
+      source: 'provider_synced'
+    },
+    marketplace_agreement: {
+      version: 'v2.4',
+      effective_date: '2026-09-10',
+      accepted_by: 'Claire Delacroix',
+      accepted_at: '2026-09-10T12:00:00Z',
+      commission_rate_pct: 5.0,
+      protocol_fees_desc: '0.0% listing fee • Standard payment processing passed at cost',
+      fulfillment_model: 'Merchant Self-Fulfill (La Poste Colissimo)',
+      return_policy: '14-Day Boutique Window • Escrow released 48h post verified delivery (POD)',
+      payout_conditions: '5-step automated eligibility protocol verified'
+    },
+    agreement_history: [
+      { version: 'v2.4', rate_pct: 5.0, effective_date: '2026-09-10', reason: 'Artisan boutique standard terms', updated_by: 'Platform Root Admin', updated_at: '2026-09-10T12:00:00Z' }
+    ],
+    audit_trail: [
+      { id: 'aud_601', timestamp: '2026-09-10T12:00:00Z', actor: 'Platform Root Admin', action: 'Boutique Onboarding Approved', note: 'Sole proprietorship verified with SIRENE notice and passport. Corporate charter marked Not Applicable.' }
+    ],
+    admin_notes: 'Artisan sole proprietor approved via SIRENE registry and ID verification.'
   }
 ];

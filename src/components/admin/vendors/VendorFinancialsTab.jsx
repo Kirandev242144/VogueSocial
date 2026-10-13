@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { CreditCard, ExternalLink, ShieldCheck, Unlock, Lock, AlertCircle, FileSignature, History } from 'lucide-react';
+import { CreditCard, ExternalLink, ShieldCheck, Unlock, Lock, AlertCircle, FileSignature, History, Layers } from 'lucide-react';
 
 export default function VendorFinancialsTab({
   vendor,
@@ -79,6 +79,28 @@ export default function VendorFinancialsTab({
 
   return (
     <div className="vam-stack">
+      {/* Separation of Concerns Callout */}
+      <div className="vam-separation-card">
+        <div className="vam-separation-header">
+          <Layers size={14} className="vam-icon-accent" />
+          <span className="vam-separation-title">Separation of Governance: Platform Approval vs. Payment Provider</span>
+        </div>
+        <div className="vam-separation-grid">
+          <div className="vam-separation-item">
+            <div className="vam-separation-badge platform">VogueSocial Merchant Approval</div>
+            <p className="vam-separation-desc">
+              Verifies legal existence, verified premises/return hub, and brand authenticity. Governs public storefront visibility and catalog access.
+            </p>
+          </div>
+          <div className="vam-separation-item">
+            <div className="vam-separation-badge provider">Stripe Connect Settlement Rails</div>
+            <p className="vam-separation-desc">
+              Governs bank settlement routing, automated transfers, and AML identity. Payment screening runs asynchronously from marketplace listing approval.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Payment Provider (Stripe Connect) */}
       <div className="vam-card">
         <div className="vam-card-header">

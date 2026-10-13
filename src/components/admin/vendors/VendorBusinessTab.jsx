@@ -129,14 +129,44 @@ export default function VendorBusinessTab({
             </div>
 
             <div>
-              <label className="vam-field-label">Entity Type</label>
-              <input
-                type="text"
+              <label className="vam-field-label">Country of Registration</label>
+              <select
+                className="admin-input"
+                value={bizForm.country}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setBizForm(prev => ({
+                    ...prev,
+                    country: val,
+                    legal_address: {
+                      ...prev.legal_address,
+                      country: prev.legal_address.country ? val : prev.legal_address.country
+                    }
+                  }));
+                }}
+              >
+                <option value="France">France</option>
+                <option value="United States">United States</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="Italy">Italy</option>
+                <option value="Germany">Germany</option>
+                <option value="Spain">Spain</option>
+                <option value="Other / Global">Other / Global</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="vam-field-label">Entity Structure</label>
+              <select
                 className="admin-input"
                 value={bizForm.business_type}
                 onChange={(e) => setBizForm({ ...bizForm, business_type: e.target.value })}
-                placeholder="e.g. S.A.S., LLC, S.r.l."
-              />
+              >
+                <option value="Corporation / S.A.S. / Inc.">Corporation (S.A.S., S.A., Inc.)</option>
+                <option value="Limited Liability Company (LLC / SARL / S.r.l.)">Limited Liability Company (LLC / SARL / S.r.l.)</option>
+                <option value="Sole Proprietorship / Auto-entrepreneur">Sole Proprietorship / Auto-entrepreneur (Individual)</option>
+                <option value="Partnership">Partnership</option>
+              </select>
             </div>
 
             <div>
@@ -146,21 +176,41 @@ export default function VendorBusinessTab({
                 className="admin-input"
                 value={bizForm.tax_id}
                 onChange={(e) => setBizForm({ ...bizForm, tax_id: e.target.value })}
-                placeholder="e.g. FR892938491"
+                placeholder="e.g. FR892938491 / US EIN / GB VAT"
               />
             </div>
 
             <div>
-              <label className="vam-field-label">Commercial Registry Number</label>
+              <label className="vam-field-label">Commercial Registry / Identifier</label>
               <input
                 type="text"
                 className="admin-input"
                 value={bizForm.registration_number}
                 onChange={(e) => setBizForm({ ...bizForm, registration_number: e.target.value })}
-                placeholder="e.g. RCS Paris 892 938 491"
+                placeholder="e.g. RCS Paris 892 938 491 / NY DOS / CRN"
+              />
+            </div>
+
+            <div>
+              <label className="vam-field-label">Business Contact Phone</label>
+              <input
+                type="text"
+                className="admin-input"
+                value={bizForm.phone}
+                onChange={(e) => setBizForm({ ...bizForm, phone: e.target.value })}
+                placeholder="+33 1 42 68 55 00"
               />
             </div>
           </div>
+
+          {bizForm.business_type.toLowerCase().includes('sole') && (
+            <div className="vam-sole-proprietor-notice">
+              <span className="vam-notice-title">Sole Proprietorship / Individual Merchant:</span>
+              <span className="vam-notice-text">
+                Commercial incorporation certificates are not applicable for this entity type. Business verification uses national identity and individual tax/registration proof.
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Addresses Grid */}

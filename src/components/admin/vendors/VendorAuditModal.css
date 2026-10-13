@@ -290,6 +290,28 @@
   margin-top: 0.5rem;
 }
 
+.vam-sole-proprietor-notice {
+  margin-top: 0.85rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.72rem;
+}
+
+.vam-notice-title {
+  font-weight: 600;
+  color: #38bdf8;
+}
+
+.vam-notice-text {
+  color: var(--adm-text-sub);
+  line-height: 1.4;
+}
+
 /* --------------------------------------------------------------------------
    Tab 1: Addresses
    -------------------------------------------------------------------------- */
@@ -392,6 +414,79 @@
 /* --------------------------------------------------------------------------
    Tab 2: Compliance Documents
    -------------------------------------------------------------------------- */
+.vam-compliance-guidance-card {
+  padding: 0.9rem 1.1rem;
+  border-radius: 8px;
+  background: var(--adm-panel-hover);
+  border: 1px solid var(--adm-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 0.25rem;
+}
+
+.vam-compliance-guidance-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.vam-compliance-guidance-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--adm-text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vam-guidance-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--adm-accent);
+  background: var(--adm-bg);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--adm-border-subtle);
+}
+
+.vam-guidance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.75rem;
+  margin-top: 2px;
+}
+
+.vam-guidance-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vam-guidance-label {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--adm-text-sub);
+  font-weight: 600;
+}
+
+.vam-guidance-val {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--adm-text-main);
+}
+
+.vam-guidance-sub {
+  font-size: 0.67rem;
+  color: var(--adm-text-muted);
+  line-height: 1.35;
+}
+
 .vam-docs-list {
   display: flex;
   flex-direction: column;
@@ -410,6 +505,12 @@
   border-color: rgba(239, 68, 68, 0.35);
 }
 
+.vam-doc-item.na {
+  opacity: 0.88;
+  border-style: dashed;
+  background: var(--adm-panel-hover);
+}
+
 .vam-doc-row {
   display: flex;
   align-items: center;
@@ -420,7 +521,7 @@
 
 .vam-doc-left {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.75rem;
 }
 
@@ -434,11 +535,19 @@
   justify-content: center;
   color: var(--adm-accent);
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .vam-doc-info {
   display: flex;
   flex-direction: column;
+}
+
+.vam-doc-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .vam-doc-title {
@@ -447,10 +556,26 @@
   color: var(--adm-text-main);
 }
 
+.vam-doc-pill-hint {
+  font-size: 0.64rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+  font-weight: 500;
+}
+
 .vam-doc-meta {
   font-size: 0.7rem;
   color: var(--adm-text-sub);
   margin-top: 2px;
+}
+
+.vam-doc-guidance-text {
+  font-size: 0.68rem;
+  color: var(--adm-accent);
+  margin-top: 3px;
+  font-style: normal;
 }
 
 .vam-doc-filename {
@@ -462,6 +587,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .vam-doc-badge {
@@ -481,9 +607,19 @@
   color: #f59e0b;
 }
 
+.vam-doc-badge.required {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+}
+
 .vam-doc-badge.rejected {
   background: rgba(239, 68, 68, 0.12);
   color: #ef4444;
+}
+
+.vam-doc-badge.na {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
 }
 
 .vam-btn-compact {
@@ -502,6 +638,18 @@
 
 .vam-doc-notes.rejected {
   color: #ef4444;
+}
+
+.vam-doc-na-banner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--adm-text-sub);
+  background: var(--adm-panel-hover);
+  padding: 0.45rem 0.75rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
 }
 
 /* Document Rejection Prompt */
@@ -529,6 +677,27 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
+}
+
+/* Document Exemption (N/A) Prompt */
+.vam-exempt-dialog {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.vam-exempt-title {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--adm-text-main);
+  margin-bottom: 5px;
+}
+
+.vam-exempt-input {
+  width: 100%;
+  margin-bottom: 6px;
 }
 
 /* Document Inspection Modal */
@@ -571,6 +740,87 @@
 /* --------------------------------------------------------------------------
    Tab 3: Financials & Commercials
    -------------------------------------------------------------------------- */
+.vam-separation-card {
+  padding: 0.9rem 1.1rem;
+  border-radius: 8px;
+  background: var(--adm-panel-hover);
+  border: 1px solid var(--adm-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 0.25rem;
+}
+
+.vam-separation-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.vam-separation-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--adm-text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vam-separation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.75rem;
+}
+
+.vam-separation-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  background: var(--adm-bg);
+  border: 1px solid var(--adm-border-subtle);
+}
+
+.vam-separation-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  width: fit-content;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+}
+
+.vam-separation-badge.platform {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+
+.vam-separation-badge.provider {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+}
+
+.vam-separation-desc {
+  font-size: 0.71rem;
+  color: var(--adm-text-sub);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Icon Utilities */
+.vam-icon-info {
+  color: #38bdf8;
+}
+
+.vam-icon-accent {
+  color: var(--adm-accent);
+}
+
+.vam-icon-muted {
+  color: var(--adm-text-muted);
+}
+
 .vam-finance-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
