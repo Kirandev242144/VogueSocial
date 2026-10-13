@@ -17,33 +17,170 @@ const INITIAL_DISPUTES = [
     id: 'disp-001',
     order_id: 'ORD-8241',
     reason: 'Damaged Item on Delivery',
-    description: 'The bespoke atelier suit arrived with a damaged seam on the left lapel. Replacement or partial escrow refund requested.',
+    description: 'The tailored blazer arrived with a torn seam on the left lapel. Customer requested a full return reimbursement.',
     evidence_url: '/Shop_images/1/basic2-500x750.jpeg',
     status: 'open',
     admin_notes: '',
-    created_at: new Date(Date.now() - 1 * 24 * 3600000).toISOString(),
+    created_at: new Date(Date.now() - 24 * 3600000).toISOString(),
+    updated_at: new Date(Date.now() - 14 * 3600000).toISOString(),
+    merchant_response: 'Workshop inspection certificate submitted. Atelier confirms garment passed pre-dispatch QC with intact seams. Courier transit damage suspected.',
     order: {
       id: 'ORD-8241',
       amount: 590.00,
-      customer: { full_name: 'Aisha Malik', email: 'aisha.m@voguesocial.com' },
-      vendor: { store_name: 'Studio Label Paris', store_handle: 'studiolabel' }
-    }
+      currency: 'USD',
+      created_at: new Date(Date.now() - 72 * 3600000).toISOString(),
+      customer: {
+        full_name: 'Aisha Malik',
+        email: 'aisha.m@voguesocial.com',
+        phone: '+971 50 123 4567',
+        shipping_address: { address: '14 Green St, Villa 4', city: 'Dubai', country: 'United Arab Emirates' }
+      },
+      vendor: {
+        store_name: 'Studio Label Paris',
+        store_handle: 'studiolabel',
+        country: 'France'
+      },
+      items: [
+        { id: 'gar-001', name: 'Structured Wool Atelier Blazer', sku: 'SLP-BLZ-001', size: 'M', color: 'Charcoal Noir', price: 590.00, qty: 1, image: '/Shop_images/1/basic2-500x750.jpeg' }
+      ],
+      payment: {
+        provider: 'Stripe Connect',
+        payment_intent_id: 'pi_3M9xV2K9QxVogueSocial01',
+        payment_method: 'Visa •••• 4242',
+        status: 'captured_under_dispute',
+        funds_held: true
+      },
+      tracking: {
+        carrier: 'DHL Express',
+        tracking_number: 'DHL-84920194',
+        status: 'Delivered',
+        delivered_at: new Date(Date.now() - 36 * 3600000).toISOString(),
+        signed_by: 'Aisha Malik',
+        verification_status: 'verified_carrier_pod',
+        events: [
+          { timestamp: new Date(Date.now() - 36 * 3600000).toISOString(), location: 'Dubai, UAE', status: 'Delivered — Resident signature captured' },
+          { timestamp: new Date(Date.now() - 44 * 3600000).toISOString(), location: 'Dubai Hub', status: 'Out for courier delivery' },
+          { timestamp: new Date(Date.now() - 56 * 3600000).toISOString(), location: 'Dubai International Gateway', status: 'Customs cleared' },
+          { timestamp: new Date(Date.now() - 70 * 3600000).toISOString(), location: 'Paris CDG Airport', status: 'Dispatched by merchant' }
+        ]
+      }
+    },
+    audit_history: [
+      { timestamp: new Date(Date.now() - 24 * 3600000).toISOString(), actor: 'Aisha Malik (Buyer)', action: 'Dispute Claim Filed', note: 'Customer initiated claim for damaged lapel seam with photo evidence.' },
+      { timestamp: new Date(Date.now() - 14 * 3600000).toISOString(), actor: 'Studio Label Paris (Seller)', action: 'Seller Statement Received', note: 'Merchant provided pre-dispatch inspection records.' }
+    ]
   },
   {
     id: 'disp-002',
     order_id: 'ORD-8240',
     reason: 'Delayed International Transit',
-    description: 'Tracking status indicates parcel in customs transit beyond estimated delivery window.',
+    description: 'Tracking status indicates shipment in customs clearance transit beyond estimated delivery window.',
     evidence_url: '',
     status: 'under_review',
-    admin_notes: 'DHL Express courier tracking check pending with logistics liaison.',
-    created_at: new Date(Date.now() - 3 * 24 * 3600000).toISOString(),
+    admin_notes: 'DHL Express tracking inquiry active with courier liaison.',
+    created_at: new Date(Date.now() - 48 * 3600000).toISOString(),
+    updated_at: new Date(Date.now() - 12 * 3600000).toISOString(),
+    merchant_response: 'Elena Couture submitted inquiry ticket #DHL-UK-91823 with European logistics desk. Carrier confirms parcel awaiting clearance.',
     order: {
       id: 'ORD-8240',
       amount: 145.00,
-      customer: { full_name: 'Riya Kapoor', email: 'riya.k@voguesocial.com' },
-      vendor: { store_name: 'Elena Couture', store_handle: 'elenacouture' }
-    }
+      currency: 'USD',
+      created_at: new Date(Date.now() - 96 * 3600000).toISOString(),
+      customer: {
+        full_name: 'Riya Kapoor',
+        email: 'riya.k@voguesocial.com',
+        phone: '+44 7911 123456',
+        shipping_address: { address: '5 Oak Avenue, Kensington', city: 'London', country: 'United Kingdom' }
+      },
+      vendor: {
+        store_name: 'Elena Couture',
+        store_handle: 'elenacouture',
+        country: 'Italy'
+      },
+      items: [
+        { id: 'gar-002', name: 'Silk Slip Cami Dress', sku: 'EC-DRS-002', size: 'S', color: 'Ivory Champagne', price: 145.00, qty: 1, image: '/Shop_images/2/cup1-500x750.jpeg' }
+      ],
+      payment: {
+        provider: 'Stripe Connect',
+        payment_intent_id: 'pi_3M9xV2K9QxVogueSocial02',
+        payment_method: 'Mastercard •••• 8821',
+        status: 'captured_pending_resolution',
+        funds_held: true
+      },
+      tracking: {
+        carrier: 'DHL Express',
+        tracking_number: 'LP-99201834FR',
+        status: 'In Transit (Customs Clearance)',
+        delivered_at: null,
+        signed_by: null,
+        verification_status: 'in_transit_delayed',
+        events: [
+          { timestamp: new Date(Date.now() - 16 * 3600000).toISOString(), location: 'London Heathrow Hub', status: 'Customs inspection backlog scan' },
+          { timestamp: new Date(Date.now() - 40 * 3600000).toISOString(), location: 'Milan Malpensa Airport', status: 'International linehaul departure' },
+          { timestamp: new Date(Date.now() - 72 * 3600000).toISOString(), location: 'Milan Center Hub', status: 'Parcel picked up from merchant' }
+        ]
+      }
+    },
+    audit_history: [
+      { timestamp: new Date(Date.now() - 48 * 3600000).toISOString(), actor: 'Riya Kapoor (Buyer)', action: 'Transit Delay Inquiry Filed', note: 'Customer reported non-receipt 4 days past delivery estimate.' },
+      { timestamp: new Date(Date.now() - 24 * 3600000).toISOString(), actor: 'Dispute Specialist', action: 'Case Marked Under Review', note: 'Contacted carrier European liaison for scan status update.' }
+    ]
+  },
+  {
+    id: 'disp-003',
+    order_id: 'ORD-8238',
+    reason: 'Incorrect Garment Size Dispatched',
+    description: 'Customer ordered size M (38 FR) but received size XL (42 FR).',
+    evidence_url: '/Shop_images/4/graphic1-500x750.jpg',
+    status: 'resolved_refunded',
+    admin_notes: 'Full refund of $320.00 processed to buyer. Return shipping prepaid by merchant.',
+    created_at: new Date(Date.now() - 120 * 3600000).toISOString(),
+    updated_at: new Date(Date.now() - 24 * 3600000).toISOString(),
+    resolved_at: new Date(Date.now() - 24 * 3600000).toISOString(),
+    merchant_response: 'Merchant acknowledged warehouse packing tag error and authorized full refund.',
+    order: {
+      id: 'ORD-8238',
+      amount: 320.00,
+      currency: 'USD',
+      created_at: new Date(Date.now() - 144 * 3600000).toISOString(),
+      customer: {
+        full_name: 'Priya Sharma',
+        email: 'priya.s@voguesocial.com',
+        phone: '+91 98201 12345',
+        shipping_address: { address: '9 Park Lane, Worli', city: 'Mumbai', country: 'India' }
+      },
+      vendor: {
+        store_name: 'Elena Couture',
+        store_handle: 'elenacouture',
+        country: 'Italy'
+      },
+      items: [
+        { id: 'gar-004', name: 'Embroidered Silk Palazzo Set', sku: 'EC-PLZ-004', size: 'XL', color: 'Dusty Rose', price: 320.00, qty: 1, image: '/Shop_images/4/graphic1-500x750.jpg' }
+      ],
+      payment: {
+        provider: 'Stripe Connect',
+        payment_intent_id: 'pi_3M9xV2K9QxVogueSocial03',
+        payment_method: 'Amex •••• 1004',
+        status: 'refunded',
+        funds_held: false
+      },
+      tracking: {
+        carrier: 'FedEx Priority',
+        tracking_number: 'FDX-7718294',
+        status: 'Delivered',
+        delivered_at: new Date(Date.now() - 48 * 3600000).toISOString(),
+        signed_by: 'P. Sharma',
+        verification_status: 'verified_carrier_pod',
+        events: [
+          { timestamp: new Date(Date.now() - 48 * 3600000).toISOString(), location: 'Mumbai, India', status: 'Delivered — Signature captured' },
+          { timestamp: new Date(Date.now() - 72 * 3600000).toISOString(), location: 'Dubai International Hub', status: 'Transit clearance' }
+        ]
+      }
+    },
+    audit_history: [
+      { timestamp: new Date(Date.now() - 120 * 3600000).toISOString(), actor: 'Priya Sharma (Buyer)', action: 'Incorrect Item Claim Filed', note: 'Customer uploaded photo of size XL tag on dress.' },
+      { timestamp: new Date(Date.now() - 24 * 3600000).toISOString(), actor: 'Platform Dispute Specialist', action: 'Full Refund Issued ($320.00)', note: 'Seller accepted responsibility; full refund processed back to buyer original card.' }
+    ]
   }
 ];
 
@@ -833,7 +970,7 @@ export const mockAdminAdapter = {
   async getDisputes() {
     await delay();
     let disputes = storageEngine.getItem(STORAGE_KEYS.ADMIN_DISPUTES, null);
-    if (!disputes) {
+    if (!disputes || disputes.length < 3 || !disputes[0]?.order?.tracking) {
       disputes = INITIAL_DISPUTES;
       storageEngine.setItem(STORAGE_KEYS.ADMIN_DISPUTES, disputes);
     }
@@ -843,8 +980,8 @@ export const mockAdminAdapter = {
     };
   },
 
-  async resolveDispute(disputeId, action, notes = '') {
-    await delay();
+  async resolveDispute(disputeId, action, notes = '', extraData = {}) {
+    await delay(300);
     let disputes = storageEngine.getItem(STORAGE_KEYS.ADMIN_DISPUTES, INITIAL_DISPUTES);
     const idx = disputes.findIndex(d => d.id === disputeId);
 
@@ -852,12 +989,37 @@ export const mockAdminAdapter = {
       return { success: false, error: 'Dispute record not found' };
     }
 
-    const nextStatus = action === 'release' ? 'resolved_released' : 'resolved_refunded';
+    let nextStatus = 'resolved_refunded';
+    let actionLabel = 'Full Refund Issued';
+    if (action === 'refund' || action === 'full_refund') {
+      nextStatus = 'resolved_refunded';
+      actionLabel = 'Full Refund Issued to Buyer';
+    } else if (action === 'partial_refund') {
+      nextStatus = 'resolved_partial_refund';
+      actionLabel = `Partial Refund Issued ($${extraData.partialAmount || '0.00'})`;
+    } else if (action === 'reject' || action === 'reject_claim' || action === 'release') {
+      nextStatus = 'resolved_rejected';
+      actionLabel = 'Claim Rejected (Seller Upheld)';
+    } else if (action === 'escalate') {
+      nextStatus = 'escalated';
+      actionLabel = 'Case Escalated for Senior Review';
+    }
+
+    const auditEntry = {
+      timestamp: new Date().toISOString(),
+      actor: extraData.adminName || 'Platform Dispute Specialist',
+      action: actionLabel,
+      note: notes || actionLabel
+    };
+
     disputes[idx] = {
       ...disputes[idx],
       status: nextStatus,
       admin_notes: notes || disputes[idx].admin_notes,
-      resolved_at: new Date().toISOString()
+      resolved_at: nextStatus.startsWith('resolved') ? new Date().toISOString() : disputes[idx].resolved_at,
+      partial_amount: extraData.partialAmount || disputes[idx].partial_amount || null,
+      updated_at: new Date().toISOString(),
+      audit_history: [auditEntry, ...(disputes[idx].audit_history || [])]
     };
 
     storageEngine.setItem(STORAGE_KEYS.ADMIN_DISPUTES, disputes);

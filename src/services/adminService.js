@@ -157,14 +157,14 @@ export const adminService = {
     return res.json();
   },
 
-  async resolveDispute(disputeId, action, notes = '') {
+  async resolveDispute(disputeId, action, notes = '', extraData = {}) {
     if (IS_MOCK_MODE) {
-      return mockAdminAdapter.resolveDispute(disputeId, action, notes);
+      return mockAdminAdapter.resolveDispute(disputeId, action, notes, extraData);
     }
     const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/disputes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ disputeId, action, admin_notes: notes })
+      body: JSON.stringify({ disputeId, action, admin_notes: notes, ...extraData })
     });
     return res.json();
   },

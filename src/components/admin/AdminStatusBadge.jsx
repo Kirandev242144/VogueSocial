@@ -49,10 +49,10 @@ export default function AdminStatusBadge({ status, type = 'general' }) {
     );
   }
 
-  if (norm === 'released' || norm === 'resolved_released') {
+  if (norm === 'released' || norm === 'resolved_released' || norm === 'resolved_rejected') {
     return (
       <span className="admin-badge badge-released">
-        <CheckCircle size={11} /> Escrow Released
+        <CheckCircle size={11} /> {norm === 'resolved_rejected' ? 'Claim Rejected' : 'Payment Released'}
       </span>
     );
   }
@@ -65,10 +65,26 @@ export default function AdminStatusBadge({ status, type = 'general' }) {
     );
   }
 
+  if (norm === 'resolved_partial_refund') {
+    return (
+      <span className="admin-badge badge-changes">
+        <CheckCircle size={11} /> Partial Refund
+      </span>
+    );
+  }
+
+  if (norm === 'escalated') {
+    return (
+      <span className="admin-badge badge-rejected">
+        <AlertTriangle size={11} /> Escalated
+      </span>
+    );
+  }
+
   if (norm === 'disputed' || norm === 'open') {
     return (
       <span className="admin-badge badge-disputed">
-        <AlertTriangle size={11} /> Disputed
+        <AlertTriangle size={11} /> Open Claim
       </span>
     );
   }
@@ -82,7 +98,7 @@ export default function AdminStatusBadge({ status, type = 'general' }) {
   }
 
   return (
-    <span className="admin-badge" style={{ background: 'var(--adm-panel-hover)', color: 'var(--adm-text-sub)' }}>
+    <span className="admin-badge badge-neutral">
       {status}
     </span>
   );

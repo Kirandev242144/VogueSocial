@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { label: 'Orders & Escrow Vault', icon: ShoppingBag, href: '/admin/orders' },
   { label: 'Product Approvals', icon: Package, href: '/admin/products' },
   { label: 'Vendors', icon: Users, href: '/admin/vendors' },
-  { label: 'Disputes & Escrow', icon: AlertTriangle, href: '/admin/disputes' },
+  { label: 'Disputes & Order Payments', icon: AlertTriangle, href: '/admin/disputes' },
   { label: 'Integrations & Gateways', icon: Webhook, href: '/admin/integrations' },
   { label: 'GPU Computing', icon: Cpu, href: '/admin/runpod' },
   { section: 'STOREFRONT' },
