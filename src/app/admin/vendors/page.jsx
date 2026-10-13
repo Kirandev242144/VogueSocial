@@ -9,6 +9,7 @@ import {
 import {
   AdminTopBar, AdminKpiCard, VendorAuditModal
 } from '@/components/admin';
+import './VendorsPage.css';
 
 export default function AdminVendorsPage() {
   const [vendors, setVendors] = useState([]);
@@ -269,7 +270,7 @@ export default function AdminVendorsPage() {
                     <th>Business KYB</th>
                     <th>Payout Eligibility</th>
                     <th>Contract Rate</th>
-                    <th style={{ textAlign: 'right' }}>Actions</th>
+                    <th className="vnd-th-actions">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -279,49 +280,44 @@ export default function AdminVendorsPage() {
                     const isPayoutHold = (v.payout_eligibility === 'administrative_hold' || v.commercial_terms?.payout_hold || v.payout_hold_details?.active);
                     const agreement = v.marketplace_agreement || { version: 'v2.4', commission_rate_pct: v.commercial_terms?.take_rate_pct || 5.0 };
 
-                    // Storefront badge styling
-                    let sfBadge = { text: 'Active Live', color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)' };
+                    let sfBadgeClass = 'vnd-gate-active';
+                    let sfBadgeText = 'Live';
                     if (sfStatus === 'suspended') {
-                      sfBadge = { text: 'Suspended', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.12)' };
+                      sfBadgeClass = 'vnd-gate-suspended';
+                      sfBadgeText = 'Suspended';
                     } else if (sfStatus === 'under_review' || sfStatus === 'pending_approval') {
-                      sfBadge = { text: 'Under Review', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)' };
+                      sfBadgeClass = 'vnd-gate-review';
+                      sfBadgeText = 'Under Review';
                     }
 
-                    // KYB badge styling
-                    let kybBadge = { text: 'Verified', color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)' };
+                    let kybBadgeClass = 'vnd-gate-active';
+                    let kybBadgeText = 'Verified';
                     if (kyb === 'rejected') {
-                      kybBadge = { text: 'Rejected', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.12)' };
+                      kybBadgeClass = 'vnd-gate-suspended';
+                      kybBadgeText = 'Rejected';
                     } else if (kyb === 'pending_documents' || kyb === 'documents_required' || kyb === 'under_review') {
-                      kybBadge = { text: 'Docs Required', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)' };
+                      kybBadgeClass = 'vnd-gate-review';
+                      kybBadgeText = 'Docs Required';
                     }
 
-                    // Payout badge styling
-                    let payoutBadge = isPayoutHold
-                      ? { text: 'Administrative Hold', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.12)' }
-                      : { text: 'Eligible', color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)' };
+                    let payoutBadgeClass = isPayoutHold ? 'vnd-gate-hold' : 'vnd-gate-active';
+                    let payoutBadgeText = isPayoutHold ? 'Hold' : 'Eligible';
 
                     return (
                       <tr key={v.id}>
                         {/* Merchant Atelier */}
                         <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                            <div style={{
-                              width: 36, height: 36, borderRadius: 8, background: 'var(--adm-panel-hover)',
-                              border: '1px solid var(--adm-border)', display: 'flex', alignItems: 'center',
-                              justifyContent: 'center', fontWeight: 700, fontSize: '0.85rem', color: 'var(--adm-accent)'
-                            }}>
+                          <div className="vnd-store-cell">
+                            <div className="vnd-store-avatar">
                               {(v.store_name || 'V').charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <span style={{ fontWeight: 600, color: 'var(--adm-text-main)', fontSize: '0.82rem' }}>
+                              <div className="vnd-store-name-row">
+                                <span className="vnd-store-name">
                                   {v.store_name}
                                 </span>
-                                <span style={{ fontSize: '0.62rem', color: '#818cf8', fontWeight: 500 }}>
-                                  [Demo]
-                                </span>
                               </div>
-                              <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', marginTop: '1px' }}>
+                              <div className="vnd-store-meta">
                                 {v.legal_business_name || v.store_name} • {v.country || 'Global'}
                               </div>
                             </div>
@@ -330,79 +326,43 @@ export default function AdminVendorsPage() {
 
                         {/* Storefront Access Gate */}
                         <td>
-                          <span
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '5px',
-                              fontSize: '0.66rem',
-                              fontWeight: 600,
-                              padding: '2px 7px',
-                              borderRadius: '4px',
-                              background: sfBadge.bg,
-                              color: sfBadge.color
-                            }}
-                          >
-                            <span style={{ width: 5, height: 5, borderRadius: '50%', background: sfBadge.color }} />
-                            {sfBadge.text}
+                          <span className={`vnd-gate-badge ${sfBadgeClass}`}>
+                            <span className="vnd-gate-dot" />
+                            {sfBadgeText}
                           </span>
                         </td>
 
                         {/* Business KYB Gate */}
                         <td>
-                          <span
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '5px',
-                              fontSize: '0.66rem',
-                              fontWeight: 600,
-                              padding: '2px 7px',
-                              borderRadius: '4px',
-                              background: kybBadge.bg,
-                              color: kybBadge.color
-                            }}
-                          >
-                            <span style={{ width: 5, height: 5, borderRadius: '50%', background: kybBadge.color }} />
-                            {kybBadge.text}
+                          <span className={`vnd-gate-badge ${kybBadgeClass}`}>
+                            <span className="vnd-gate-dot" />
+                            {kybBadgeText}
                           </span>
                         </td>
 
                         {/* Payout Eligibility Gate */}
                         <td>
-                          <span
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '5px',
-                              fontSize: '0.66rem',
-                              fontWeight: 600,
-                              padding: '2px 7px',
-                              borderRadius: '4px',
-                              background: payoutBadge.bg,
-                              color: payoutBadge.color
-                            }}
-                          >
-                            <span style={{ width: 5, height: 5, borderRadius: '50%', background: payoutBadge.color }} />
-                            {payoutBadge.text}
+                          <span className={`vnd-gate-badge ${payoutBadgeClass}`}>
+                            <span className="vnd-gate-dot" />
+                            {payoutBadgeText}
                           </span>
                         </td>
 
                         {/* Agreement Take-Rate */}
                         <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ fontWeight: 600, color: 'var(--adm-text-main)', fontSize: '0.78rem' }}>
+                          <div className="vnd-rate-cell">
+                            <span className="vnd-rate-val">
                               {(agreement.commission_rate_pct ?? 5.0).toFixed(1)}%
                             </span>
-                            <span style={{ fontSize: '0.64rem', padding: '1px 5px', borderRadius: '3px', background: 'var(--adm-panel-hover)', color: 'var(--adm-text-sub)', fontFamily: 'monospace' }}>
+                            <span className="vnd-rate-tag">
                               {agreement.version || 'v2.4'}
                             </span>
                           </div>
                         </td>
 
                         {/* Actions */}
-                        <td style={{ textAlign: 'right' }}>
-                          <div style={{ display: 'inline-flex', gap: '0.45rem', alignItems: 'center' }}>
+                        <td className="vnd-td-actions">
+                          <div className="vnd-actions-wrap">
                             <button
                               type="button"
                               className="admin-btn admin-btn-secondary admin-btn-sm"
@@ -415,9 +375,8 @@ export default function AdminVendorsPage() {
                               href={`/store/${v.store_handle}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="admin-btn admin-btn-ghost admin-btn-sm"
+                              className="admin-btn admin-btn-ghost admin-btn-sm vnd-action-link"
                               title="Visit public storefront"
-                              style={{ padding: '3px 7px' }}
                             >
                               <ExternalLink size={12} />
                             </a>
