@@ -1,0 +1,521 @@
+/* ==========================================================================
+   Merchant Portal - Payment Gateways Stylesheet
+   Minimalist Shopify Polaris Design System Aesthetic
+   Zero Inline Styles
+   ========================================================================== */
+
+.pg-shell {
+  font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  color: var(--d-t1, #0f172a);
+}
+
+.pg-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+/* ── Top Header ── */
+.pg-header {
+  margin-bottom: 0.5rem;
+}
+
+.pg-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+  letter-spacing: -0.015em;
+  font-family: inherit;
+}
+
+.pg-subtitle {
+  margin-top: 0.25rem;
+  font-size: 0.82rem;
+  color: var(--d-t3, #64748b);
+  line-height: 1.4;
+  font-family: inherit;
+}
+
+/* ── Polaris Card Surfaces ── */
+.pg-card {
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Card Header ── */
+.pg-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.pg-card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pg-gateway-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+  letter-spacing: -0.01em;
+}
+
+.pg-gateway-logo-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  background: #635bff;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+/* Status Pill */
+.pg-badge-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+.pg-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+/* Payment Chips */
+.pg-payment-chips {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.pg-chip {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--d-hover, #f8fafc);
+  border: 1px solid var(--d-border, #e2e8f0);
+  color: var(--d-t3, #64748b);
+  letter-spacing: 0.02em;
+}
+
+/* Polaris Buttons */
+.pg-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #d1d5db);
+  color: var(--d-t1, #1e293b);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.pg-btn-secondary:hover {
+  background: var(--d-hover, #f9fafb);
+  border-color: #9ca3af;
+  color: var(--d-t1, #0f172a);
+}
+
+/* ── Key-Value 4-Column Grid ── */
+.pg-kv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.25rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--d-border2, #f1f5f9);
+}
+
+.pg-kv-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pg-kv-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--d-t4, #94a3b8);
+}
+
+.pg-kv-val {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--d-t1, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pg-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.74rem;
+  background: var(--d-hover, #f8fafc);
+  border: 1px solid var(--d-border, #e2e8f0);
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: var(--d-t2, #334155);
+}
+
+/* ── Financial Metrics Summary ── */
+.pg-metrics-card {
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  divide-x: 1px solid var(--d-border2, #f1f5f9);
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .pg-metrics-card {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .pg-metrics-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pg-metric-cell {
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-right: 1px solid var(--d-border2, #f1f5f9);
+}
+
+.pg-metric-cell:last-child {
+  border-right: none;
+}
+
+.pg-metric-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--d-t3, #64748b);
+}
+
+.pg-metric-value {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+  letter-spacing: -0.02em;
+  font-family: inherit;
+  margin: 2px 0;
+}
+
+.pg-metric-sub {
+  font-size: 0.68rem;
+  color: var(--d-t4, #94a3b8);
+}
+
+/* ── Payouts Table ── */
+.pg-table-card {
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.pg-table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--d-border2, #f1f5f9);
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.pg-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pg-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--d-t3, #64748b);
+  font-size: 0.76rem;
+  font-weight: 500;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pg-tab:hover {
+  color: var(--d-t1, #0f172a);
+  background: var(--d-hover, #f8fafc);
+}
+
+.pg-tab-active {
+  color: var(--d-t1, #0f172a);
+  background: var(--d-hover, #f8fafc);
+  border-color: var(--d-border, #e2e8f0);
+  font-weight: 600;
+}
+
+.pg-tab-count {
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--d-t3, #64748b);
+  font-weight: 700;
+}
+
+.pg-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 220px;
+}
+
+.pg-search-icon {
+  position: absolute;
+  left: 0.65rem;
+  color: var(--d-t4, #94a3b8);
+  pointer-events: none;
+}
+
+.pg-search-input {
+  width: 100%;
+  padding: 0.4rem 0.65rem 0.4rem 2rem;
+  font-size: 0.78rem;
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 6px;
+  background: var(--d-panel, #ffffff);
+  color: var(--d-t1, #0f172a);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.pg-search-input:focus {
+  border-color: #2563eb;
+}
+
+.pg-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pg-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  font-family: inherit;
+}
+
+.pg-table th {
+  padding: 0.65rem 1rem;
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--d-t4, #94a3b8);
+  background: var(--d-hover, #f8fafc);
+  border-bottom: 1px solid var(--d-border2, #f1f5f9);
+}
+
+.pg-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--d-border2, #f1f5f9);
+  color: var(--d-t2, #334155);
+}
+
+.pg-table tr:last-child td {
+  border-bottom: none;
+}
+
+.pg-table tr:hover td {
+  background: var(--d-hover, #f8fafc);
+}
+
+.pg-table-empty {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--d-t4, #94a3b8);
+  font-size: 0.82rem;
+}
+
+.pg-cell-id {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 600;
+  color: var(--d-t1, #0f172a);
+  font-size: 0.78rem;
+}
+
+.pg-cell-order {
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.pg-cell-date {
+  font-size: 0.74rem;
+  color: var(--d-t3, #64748b);
+}
+
+.pg-cell-bank {
+  font-size: 0.76rem;
+  color: var(--d-t2, #334155);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pg-cell-gross {
+  font-weight: 500;
+  color: var(--d-t3, #64748b);
+}
+
+.pg-cell-fee {
+  font-size: 0.74rem;
+  color: var(--d-t4, #94a3b8);
+}
+
+.pg-cell-net {
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+  font-size: 0.84rem;
+}
+
+/* Polaris Status Pills */
+.pg-pill-paid {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+.pg-pill-transit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid rgba(29, 78, 216, 0.2);
+}
+
+/* ── Fraud & Gateway Security ── */
+.pg-security-card {
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+  padding: 1.15rem 1.25rem;
+}
+
+.pg-security-title {
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--d-t4, #94a3b8);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pg-security-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.pg-security-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.pg-security-icon-box {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--d-hover, #f8fafc);
+  border: 1px solid var(--d-border, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--d-t3, #64748b);
+  flex-shrink: 0;
+}
+
+.pg-security-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.pg-security-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--d-t1, #0f172a);
+}
+
+.pg-security-desc {
+  font-size: 0.7rem;
+  color: var(--d-t3, #64748b);
+  line-height: 1.4;
+}
