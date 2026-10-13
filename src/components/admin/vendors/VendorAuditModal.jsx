@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ExternalLink, CheckCircle, AlertCircle } from 'lucide-react';
 import { AdminModal } from '../index';
 import VendorIdentityHeader from './VendorIdentityHeader';
-import VendorAtelierTab from './VendorAtelierTab';
+import VendorBusinessTab from './VendorBusinessTab';
 import VendorComplianceTab from './VendorComplianceTab';
 import VendorFinancialsTab from './VendorFinancialsTab';
 import VendorPayoutHoldModal from './VendorPayoutHoldModal';
@@ -112,7 +112,7 @@ export default function VendorAuditModal({
     <AdminModal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Boutique Dossier: ${vendor.store_name}`}
+      title={`Merchant Dossier: ${vendor.store_name}`}
       maxWidth="840px"
       footer={
         <div className="vam-footer">
@@ -168,7 +168,7 @@ export default function VendorAuditModal({
       {/* Streamlined 3-Tab Navigation */}
       <div className="admin-tab-nav vam-tab-nav">
         {[
-          { id: 'business', label: 'Atelier & Addresses' },
+          { id: 'business', label: 'Business & Addresses' },
           { id: 'documents', label: 'Compliance Documents', count: docs.length },
           { id: 'financials', label: 'Financials & Commercials', alert: payoutEligibility === 'administrative_hold' }
         ].map(t => {
@@ -194,7 +194,7 @@ export default function VendorAuditModal({
 
       {/* Tab Panels */}
       {activeTab === 'business' && (
-        <VendorAtelierTab
+        <VendorBusinessTab
           vendor={vendor}
           onSaveBusiness={onSaveBusiness}
           loading={loading}

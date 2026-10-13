@@ -240,7 +240,7 @@ export default function AdminVendorsPage() {
               <input
                 type="text"
                 className="admin-search-input"
-                placeholder="Search atelier name, legal entity, handle, email..."
+                placeholder="Search store name, legal entity, handle, email..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -255,7 +255,7 @@ export default function AdminVendorsPage() {
           ) : filteredVendors.length === 0 ? (
             <div className="admin-empty-state">
               <Users size={32} className="admin-empty-icon" />
-              <div className="admin-empty-title">No Boutiques Found</div>
+              <div className="admin-empty-title">No Merchants Found</div>
               <p className="admin-empty-desc">
                 {search ? 'Try adjusting your search criteria.' : 'No vendors currently match this governance filter.'}
               </p>
@@ -265,7 +265,7 @@ export default function AdminVendorsPage() {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Merchant Atelier</th>
+                    <th>Merchant / Store</th>
                     <th>Storefront Access</th>
                     <th>Business KYB</th>
                     <th>Payout Eligibility</th>
@@ -305,7 +305,7 @@ export default function AdminVendorsPage() {
 
                     return (
                       <tr key={v.id}>
-                        {/* Merchant Atelier */}
+                        {/* Merchant Store */}
                         <td>
                           <div className="vnd-store-cell">
                             <div className="vnd-store-avatar">

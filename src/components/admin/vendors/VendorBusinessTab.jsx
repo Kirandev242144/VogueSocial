@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Building2, MapPin, CheckCircle, User } from 'lucide-react';
 
-export default function VendorAtelierTab({
+export default function VendorBusinessTab({
   vendor,
   onSaveBusiness,
   loading = false,
@@ -275,7 +275,7 @@ export default function VendorAtelierTab({
                       ...bizForm,
                       return_warehouse_address: { ...bizForm.return_warehouse_address, street: e.target.value }
                     })}
-                    placeholder="42 Rue de Paradis, Atelier 3B"
+                    placeholder="42 Rue de Paradis, Suite 3B"
                   />
                 </div>
 
@@ -399,7 +399,7 @@ export default function VendorAtelierTab({
             className="admin-btn admin-btn-primary admin-btn-sm"
             disabled={loading}
           >
-            Save Atelier Profile
+            Save Business Profile
           </button>
         </div>
       </div>

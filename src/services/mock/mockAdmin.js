@@ -1464,7 +1464,7 @@ const INITIAL_VENDORS_DATA = [
     },
     representative: {
       name: 'Camille Laurent',
-      title: 'Managing Director & Atelier Head',
+      title: 'Managing Director',
       email: 'camille@studiolabelparis.com',
       phone: '+33 6 12 34 56 78'
     },
@@ -1492,7 +1492,7 @@ const INITIAL_VENDORS_DATA = [
       accepted_at: '2026-08-15T10:14:22Z',
       commission_rate_pct: 5.0,
       protocol_fees_desc: '0.0% listing fee • Standard payment processing passed at cost',
-      fulfillment_model: 'Merchant Atelier Self-Fulfill (DHL Express / Negotiated Couriers)',
+      fulfillment_model: 'Merchant Self-Fulfill (DHL Express / Negotiated Couriers)',
       return_policy: '14-Day Boutique Window • Escrow released 48h post verified delivery (POD)',
       payout_conditions: '5-step automated eligibility verification passed'
     },
@@ -1503,7 +1503,7 @@ const INITIAL_VENDORS_DATA = [
       { id: 'aud_101', timestamp: '2026-08-15T10:14:22Z', actor: 'Platform Root Admin', action: 'Boutique Onboarding Approved', note: 'All 4 KYB documents verified. Agreement v2.4 accepted.' },
       { id: 'aud_102', timestamp: '2026-08-10T14:30:00Z', actor: 'Compliance Reviewer', action: 'KYB Identity Verification Completed', note: 'Address proof and Kbis excerpt authenticated.' }
     ],
-    admin_notes: 'Atelier verified during Paris Fashion Week intake.'
+    admin_notes: 'Merchant verified during Paris intake.'
   },
   {
     id: 'mch_elena_02',
@@ -1568,7 +1568,7 @@ const INITIAL_VENDORS_DATA = [
       accepted_at: '2026-09-01T14:30:00Z',
       commission_rate_pct: 4.5,
       protocol_fees_desc: '0.0% listing fee • Standard payment processing passed at cost',
-      fulfillment_model: 'Merchant Atelier Self-Fulfill (FedEx International)',
+      fulfillment_model: 'Merchant Self-Fulfill (FedEx International)',
       return_policy: '14-Day Boutique Window • Escrow released 48h post verified delivery (POD)',
       payout_conditions: '5-step automated eligibility verification passed'
     },
@@ -1643,7 +1643,7 @@ const INITIAL_VENDORS_DATA = [
       accepted_at: '2026-10-08T15:20:00Z',
       commission_rate_pct: 5.0,
       protocol_fees_desc: '0.0% listing fee • Standard payment processing passed at cost',
-      fulfillment_model: 'Merchant Atelier Self-Fulfill (DHL Express)',
+      fulfillment_model: 'Merchant Self-Fulfill (DHL Express)',
       return_policy: '14-Day Boutique Window • Escrow released 48h post verified delivery (POD)',
       payout_conditions: '5-step automated eligibility protocol verified'
     },
@@ -1724,7 +1724,7 @@ const INITIAL_VENDORS_DATA = [
       accepted_at: '2026-09-20T11:00:00Z',
       commission_rate_pct: 5.0,
       protocol_fees_desc: '0.0% listing fee • Standard payment processing passed at cost',
-      fulfillment_model: 'Merchant Atelier Self-Fulfill (UPS Worldwide)',
+      fulfillment_model: 'Merchant Self-Fulfill (UPS Worldwide)',
       return_policy: '14-Day Boutique Window • Escrow released 48h post verified delivery (POD)',
       payout_conditions: '5-step automated eligibility protocol verified'
     },
@@ -1806,7 +1806,7 @@ const INITIAL_VENDORS_DATA = [
       accepted_at: '2026-07-15T08:00:00Z',
       commission_rate_pct: 6.0,
       protocol_fees_desc: '0.0% listing fee • Standard payment processing passed at cost',
-      fulfillment_model: 'Merchant Atelier Self-Fulfill (Royal Mail Special Delivery)',
+      fulfillment_model: 'Merchant Self-Fulfill (Royal Mail Special Delivery)',
       return_policy: '14-Day Boutique Window • Escrow released 48h post verified delivery (POD)',
       payout_conditions: '5-step automated eligibility protocol verified'
     },

@@ -17,8 +17,8 @@ export default function VendorFinancialsTab({
     accepted_at: '2026-08-15T10:14:22Z',
     commission_rate_pct: vendor.commercial_terms?.take_rate_pct || 5.0,
     protocol_fees_desc: 'Standard payment processing passed at cost',
-    fulfillment_model: 'Merchant Atelier Self-Fulfill',
-    return_policy: '14-Day Boutique Window • Escrow released 48h post carrier delivery (POD)',
+    fulfillment_model: 'Merchant Self-Fulfill',
+    return_policy: '14-Day Customer Window • Escrow released 48h post carrier delivery (POD)',
     payout_conditions: 'Automated delivery verification confirmed'
   };
 
@@ -47,7 +47,7 @@ export default function VendorFinancialsTab({
       version: currentAgreement.version || 'v2.4',
       rate_pct: currentAgreement.commission_rate_pct || 5.0,
       effective_date: currentAgreement.effective_date || '2026-08-15',
-      reason: 'Standard atelier contract',
+      reason: 'Standard merchant agreement',
       updated_by: currentAgreement.accepted_by || 'Camille Laurent',
       updated_at: currentAgreement.accepted_at || '2026-08-15T10:14:22Z'
     }
@@ -202,7 +202,7 @@ export default function VendorFinancialsTab({
           <div className="vam-info-box">
             <div className="vam-info-label">Fulfillment Model</div>
             <div className="vam-info-val-md">
-              {currentAgreement.fulfillment_model || 'Merchant Atelier Self-Fulfill'}
+              {(currentAgreement.fulfillment_model || 'Merchant Self-Fulfill').replace(/Atelier\s*/gi, '')}
             </div>
             <div className="vam-info-sub">
               Tracking required within 72h

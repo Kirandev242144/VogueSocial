@@ -42,8 +42,8 @@ export default function VendorStorefrontStatusModal({
       <div className="vam-submodal-stack">
         <div className="vam-submodal-desc">
           {targetStorefrontStatus === 'active'
-            ? 'Reactivating makes this atelier live and restores its garments to marketplace search and checkout.'
-            : 'Suspending unlists the atelier from public discovery and disables checkout. Existing delivered orders remain eligible for settlement.'}
+            ? 'Reactivating makes this store live and restores its products to marketplace search and checkout.'
+            : 'Suspending unlists the store from public discovery and disables checkout. Existing delivered orders remain eligible for settlement.'}
         </div>
 
         <div>
