@@ -345,25 +345,45 @@ export const mockAdminAdapter = {
 
   async getProducts(filter = 'all', search = '') {
     await delay();
-    const allProducts = storageEngine.getItem(STORAGE_KEYS.PRODUCTS, []);
-    const stores = storageEngine.getItem(STORAGE_KEYS.STORES, []);
+    let allProducts = storageEngine.getItem(STORAGE_KEYS.PRODUCTS, []);
+    let stores = storageEngine.getItem(STORAGE_KEYS.STORES, []);
+
+    if (!stores || stores.length === 0 || !stores[0]?.store_name) {
+      stores = INITIAL_VENDORS_DATA;
+    }
+
+    if (!allProducts || allProducts.length === 0) {
+      allProducts = SEED_PRODUCTS;
+      storageEngine.setItem(STORAGE_KEYS.PRODUCTS, allProducts);
+    }
 
     const vendorMap = {};
     stores.forEach(s => {
-      vendorMap[s.vendor_id || s.vendorId] = s;
+      const vid = s.vendor_id || s.vendorId || s.id;
+      if (vid) vendorMap[vid] = s;
+      if (s.id) vendorMap[s.id] = s;
+      if (s.store_handle) vendorMap[s.store_handle] = s;
     });
 
     const enriched = allProducts.map(p => {
-      const v = vendorMap[p.vendorId || p.vendor_id] || {
-        store_name: 'Studio Label Paris',
-        store_handle: 'studiolabel'
-      };
+      const rawVendor = p.vendor || {};
+      const foundVendor = vendorMap[p.vendorId || p.vendor_id || p.vendor?.vendor_id || p.vendor?.id] || {};
+      
+      const storeName = foundVendor.store_name || foundVendor.storeName || rawVendor.store_name || (p.vendorId === 'mch_elena_02' ? 'Elena Couture' : 'Studio Label Paris');
+      const storeHandle = foundVendor.store_handle || foundVendor.storeHandle || rawVendor.store_handle || (p.vendorId === 'mch_elena_02' ? 'elenacouture' : 'studiolabel');
+      const vendorId = foundVendor.vendor_id || foundVendor.id || p.vendorId || 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c';
+      const country = foundVendor.country || 'France';
+
       return {
         ...p,
         status: p.status || 'live',
+        vendorId,
         vendor: {
-          store_name: v.store_name || v.storeName || 'Studio Label Paris',
-          store_handle: v.store_handle || v.storeHandle || 'studiolabel'
+          id: vendorId,
+          vendor_id: vendorId,
+          store_name: storeName,
+          store_handle: storeHandle,
+          country
         }
       };
     });
@@ -385,7 +405,7 @@ export const mockAdminAdapter = {
     };
   },
 
-  async updateProductStatus(productId, action, notes = '') {
+  async updateProductStatus(productId, action, decisionData = '') {
     await delay();
     const allProducts = storageEngine.getItem(STORAGE_KEYS.PRODUCTS, []);
     const idx = allProducts.findIndex(p => p.id === productId);
@@ -394,25 +414,51 @@ export const mockAdminAdapter = {
       return { success: false, error: 'Product not found' };
     }
 
+    const isString = typeof decisionData === 'string';
+    const internalNotes = isString ? decisionData : (decisionData.internalNotes || decisionData.admin_notes || '');
+    const merchantFeedback = !isString ? (decisionData.merchantFeedback || '') : '';
+    const rejectionReason = !isString ? (decisionData.rejectionReason || '') : '';
+    const checklistResults = !isString ? (decisionData.checklist || null) : null;
+    const reviewerName = !isString ? (decisionData.reviewerName || 'Senior Catalog Auditor') : 'Senior Catalog Auditor';
+
     let nextStatus = 'live';
     if (action === 'approve') nextStatus = 'live';
     else if (action === 'reject') nextStatus = 'rejected';
     else if (action === 'request_changes') nextStatus = 'changes_requested';
     else if (action === 'pending') nextStatus = 'pending_approval';
+    else if (action === 'delist') nextStatus = 'changes_requested';
 
     allProducts[idx] = {
       ...allProducts[idx],
       status: nextStatus,
-      admin_notes: notes || allProducts[idx].admin_notes,
+      admin_notes: internalNotes || allProducts[idx].admin_notes,
+      internal_notes: internalNotes || allProducts[idx].internal_notes,
+      merchant_feedback: merchantFeedback || allProducts[idx].merchant_feedback,
+      rejection_reason: rejectionReason || allProducts[idx].rejection_reason,
+      checklist_results: checklistResults || allProducts[idx].checklist_results,
+      reviewed_by: reviewerName,
       reviewed_at: new Date().toISOString()
     };
 
     storageEngine.setItem(STORAGE_KEYS.PRODUCTS, allProducts);
 
+    const stores = storageEngine.getItem(STORAGE_KEYS.STORES, INITIAL_VENDORS_DATA);
+    const store = (stores || []).find(s => (s.vendor_id === allProducts[idx].vendorId || s.id === allProducts[idx].vendorId)) || {};
+    const enrichedProduct = {
+      ...allProducts[idx],
+      vendor: {
+        id: allProducts[idx].vendorId,
+        vendor_id: allProducts[idx].vendorId,
+        store_name: store.store_name || allProducts[idx].vendor?.store_name || 'Studio Label Paris',
+        store_handle: store.store_handle || allProducts[idx].vendor?.store_handle || 'studiolabel',
+        country: store.country || 'France'
+      }
+    };
+
     return {
       success: true,
       status: nextStatus,
-      product: allProducts[idx]
+      product: enrichedProduct
     };
   },
 

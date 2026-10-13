@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { adminService } from '@/services/adminService';
 import {
   Package, Search, Eye, CheckCircle, ShieldAlert,
-  AlertTriangle, MessageSquare, Loader2, Sparkles
+  AlertTriangle, MessageSquare, Loader2, Sparkles, ExternalLink
 } from 'lucide-react';
 import {
-  AdminTopBar, AdminKpiCard, AdminStatusBadge, AdminModal
+  AdminTopBar, AdminKpiCard, AdminStatusBadge, ProductInspectionModal
 } from '@/components/admin';
 
 export default function AdminProductsPage() {
@@ -17,7 +17,6 @@ export default function AdminProductsPage() {
 
   // Inspection modal state
   const [inspectProduct, setInspectProduct] = useState(null);
-  const [adminNotesInput, setAdminNotesInput] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
 
   const loadProducts = async () => {
@@ -38,15 +37,14 @@ export default function AdminProductsPage() {
     loadProducts();
   }, [filter, search]);
 
-  const handleAdminDecision = async (action) => {
+  const handleAdminDecision = async (action, decisionData = {}) => {
     if (!inspectProduct) return;
     setActionLoading(true);
     try {
-      const res = await adminService.updateProductStatus(inspectProduct.id, action, adminNotesInput);
+      const res = await adminService.updateProductStatus(inspectProduct.id, action, decisionData);
       if (res && res.success) {
         setProducts(prev => prev.map(p => p.id === inspectProduct.id ? res.product : p));
         setInspectProduct(null);
-        setAdminNotesInput('');
       }
     } catch (err) {
       console.error('Failed to update product decision:', err);
@@ -57,7 +55,6 @@ export default function AdminProductsPage() {
 
   const openInspection = (prod) => {
     setInspectProduct(prod);
-    setAdminNotesInput(prod.admin_notes || '');
   };
 
   const pendingCount = products.filter(p => p.status === 'pending_approval').length;
@@ -68,7 +65,7 @@ export default function AdminProductsPage() {
   return (
     <>
       <AdminTopBar
-        title="Product Approvals"
+        title="Product Approvals & Curation"
         subtitle="Review, audit, and approve luxury merchant garments before they go live on VogueSocial"
         onRefresh={loadProducts}
         refreshing={loading}
@@ -180,6 +177,8 @@ export default function AdminProductsPage() {
                   {products.map(prod => {
                     const img = prod.imageUrl || prod.image_url || prod.image || '/Shop_images/1/basic2-500x750.jpeg';
                     const price = prod.salePrice || prod.sale_price || prod.price;
+                    const vName = prod.vendor?.store_name || (prod.vendorId === 'mch_elena_02' ? 'Elena Couture' : 'Studio Label Paris');
+                    const vHandle = prod.vendor?.store_handle || (prod.vendorId === 'mch_elena_02' ? 'elenacouture' : 'studiolabel');
 
                     return (
                       <tr key={prod.id}>
@@ -199,12 +198,27 @@ export default function AdminProductsPage() {
                           </div>
                         </td>
 
+                        {/* Merchant Atelier Column with Robust Fallbacks */}
                         <td>
                           <div style={{ fontWeight: 600, color: 'var(--adm-text-main)' }}>
-                            {prod.vendor?.store_name}
+                            {vName}
                           </div>
-                          <div style={{ fontSize: '0.7rem', color: 'var(--adm-text-sub)' }}>
-                            @{prod.vendor?.store_handle}
+                          <div style={{ fontSize: '0.7rem' }}>
+                            <a
+                              href={`/store/${vHandle}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{
+                                color: 'var(--adm-accent)',
+                                textDecoration: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '3px'
+                              }}
+                            >
+                              @{vHandle}
+                              <ExternalLink size={10} />
+                            </a>
                           </div>
                         </td>
 
@@ -249,96 +263,15 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Product Detail Inspection Modal */}
+      {/* Comprehensive Product Inspection & Quality Review Modal */}
       {inspectProduct && (
-        <AdminModal
+        <ProductInspectionModal
+          product={inspectProduct}
           isOpen={Boolean(inspectProduct)}
           onClose={() => setInspectProduct(null)}
-          title={`Inspect Garment: ${inspectProduct.name}`}
-          maxWidth="640px"
-          footer={
-            <>
-              <button
-                type="button"
-                className="admin-btn admin-btn-danger admin-btn-sm"
-                onClick={() => handleAdminDecision('reject')}
-                disabled={actionLoading}
-              >
-                Reject Listing
-              </button>
-              <button
-                type="button"
-                className="admin-btn admin-btn-secondary admin-btn-sm"
-                onClick={() => handleAdminDecision('request_changes')}
-                disabled={actionLoading}
-              >
-                Request Changes
-              </button>
-              <button
-                type="button"
-                className="admin-btn admin-btn-primary admin-btn-sm"
-                onClick={() => handleAdminDecision('approve')}
-                disabled={actionLoading}
-              >
-                ✓ Approve Live Market
-              </button>
-            </>
-          }
-        >
-          <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: '1.25rem' }}>
-            <div style={{ aspectRatio: '3/4', borderRadius: 8, overflow: 'hidden', background: '#f1f5f9' }}>
-              <img
-                src={inspectProduct.imageUrl || inspectProduct.image_url || inspectProduct.image || '/Shop_images/1/basic2-500x750.jpeg'}
-                alt=""
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-              <div>
-                <span className="admin-label">Product Name</span>
-                <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--adm-text-main)' }}>
-                  {inspectProduct.name}
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                <div>
-                  <span className="admin-label">Price</span>
-                  <div style={{ fontWeight: 600 }}>${inspectProduct.salePrice || inspectProduct.price}</div>
-                </div>
-                <div>
-                  <span className="admin-label">Category</span>
-                  <div style={{ fontWeight: 600 }}>{inspectProduct.category}</div>
-                </div>
-              </div>
-
-              <div>
-                <span className="admin-label">Merchant Atelier</span>
-                <div style={{ fontWeight: 600 }}>
-                  {inspectProduct.vendor?.store_name} (@{inspectProduct.vendor?.store_handle})
-                </div>
-              </div>
-
-              <div>
-                <span className="admin-label">Description</span>
-                <p style={{ fontSize: '0.78rem', color: 'var(--adm-text-muted)', margin: '2px 0 0', lineHeight: 1.5 }}>
-                  {inspectProduct.description || 'No description provided by merchant.'}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="admin-form-group" style={{ marginTop: '1rem' }}>
-            <label className="admin-label">Administrative Review Notes</label>
-            <textarea
-              className="admin-textarea"
-              placeholder="Add internal feedback or specify changes requested from the merchant..."
-              value={adminNotesInput}
-              onChange={(e) => setAdminNotesInput(e.target.value)}
-            />
-          </div>
-        </AdminModal>
+          onDecision={handleAdminDecision}
+          loading={actionLoading}
+        />
       )}
     </>
   );

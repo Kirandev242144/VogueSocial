@@ -22,14 +22,17 @@ export const adminService = {
     return res.json();
   },
 
-  async updateProductStatus(productId, action, notes = '') {
+  async updateProductStatus(productId, action, decisionData = '') {
     if (IS_MOCK_MODE) {
-      return mockAdminAdapter.updateProductStatus(productId, action, notes);
+      return mockAdminAdapter.updateProductStatus(productId, action, decisionData);
     }
+    const payload = typeof decisionData === 'string'
+      ? { productId, action, admin_notes: decisionData }
+      : { productId, action, ...decisionData };
     const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/products`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productId, action, admin_notes: notes })
+      body: JSON.stringify(payload)
     });
     return res.json();
   },
