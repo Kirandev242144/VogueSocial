@@ -7,6 +7,7 @@ import {
   Lock, Unlock, FileSignature, History, Info, AlertCircle, Shield
 } from 'lucide-react';
 import { AdminModal } from '../index';
+import './VendorAuditModal.css';
 
 export default function VendorAuditModal({
   vendor,
@@ -305,15 +306,15 @@ export default function VendorAuditModal({
       title={`Boutique Audit Dossier: ${vendor.store_name}`}
       maxWidth="860px"
       footer={
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: '0.75rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.72rem', color: 'var(--adm-text-sub)' }}>
+        <div className="vam-footer">
+          <div className="vam-footer-id">
             <span>Merchant ID:</span>
-            <code style={{ fontFamily: 'monospace', color: 'var(--adm-text-main)' }}>{vendor.id}</code>
-            <span style={{ color: 'var(--adm-border)' }}>•</span>
-            <span style={{ color: '#818cf8', fontWeight: 500 }}>Fictional Demo Entity</span>
+            <code className="vam-footer-code">{vendor.id}</code>
+            <span className="vam-footer-sep">•</span>
+            <span className="vam-footer-demo">Fictional Demo Entity</span>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className="vam-footer-actions">
             <button
               type="button"
               className="admin-btn admin-btn-ghost admin-btn-sm"
@@ -337,76 +338,28 @@ export default function VendorAuditModal({
     >
       {/* Toast Feedback */}
       {feedback && (
-        <div
-          style={{
-            padding: '0.65rem 0.85rem',
-            borderRadius: '6px',
-            marginBottom: '1rem',
-            fontSize: '0.75rem',
-            fontWeight: 500,
-            background: feedback.type === 'success' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-            color: feedback.type === 'success' ? '#10b981' : '#ef4444',
-            border: `1px solid ${feedback.type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
-          }}
-        >
+        <div className={`vam-toast ${feedback.type === 'success' ? 'vam-toast-success' : 'vam-toast-error'}`}>
           {feedback.msg}
         </div>
       )}
 
       {/* Header Summary Banner with 3 Separated Governance Gates & Demo Watermark */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.75rem',
-          padding: '0.95rem 1.1rem',
-          borderRadius: '8px',
-          background: 'var(--adm-panel-hover)',
-          border: '1px solid var(--adm-border)',
-          marginBottom: '1.25rem'
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div
-              style={{
-                width: 42,
-                height: 42,
-                borderRadius: 8,
-                background: 'var(--adm-bg)',
-                border: '1px solid var(--adm-border)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 700,
-                fontSize: '1.05rem',
-                color: 'var(--adm-accent)'
-              }}
-            >
+      <div className="vam-header">
+        <div className="vam-header-top">
+          <div className="vam-header-left">
+            <div className="vam-avatar">
               {(vendor.store_name || 'V').charAt(0).toUpperCase()}
             </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--adm-text-main)' }}>
+            <div className="vam-header-info">
+              <div className="vam-title-row">
+                <span className="vam-store-name">
                   {vendor.store_name}
                 </span>
-                <span
-                  style={{
-                    fontSize: '0.62rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.04em',
-                    textTransform: 'uppercase',
-                    padding: '2px 6px',
-                    borderRadius: '4px',
-                    background: 'rgba(99, 102, 241, 0.12)',
-                    color: '#818cf8',
-                    border: '1px solid rgba(99, 102, 241, 0.25)'
-                  }}
-                >
+                <span className="vam-demo-pill">
                   Fictional Sandbox Record • Demo Data Only
                 </span>
               </div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+              <div className="vam-subtitle">
                 @{vendor.store_handle} • {vendor.country || 'Global'} • {vendor.products_count ?? 0} active garments
               </div>
             </div>
@@ -416,15 +369,7 @@ export default function VendorAuditModal({
             href={`/store/${vendor.store_handle}`}
             target="_blank"
             rel="noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              fontSize: '0.72rem',
-              color: 'var(--adm-accent)',
-              textDecoration: 'none',
-              fontWeight: 600
-            }}
+            className="vam-preview-link"
           >
             <span>Preview Boutique</span>
             <ExternalLink size={11} />
@@ -432,43 +377,35 @@ export default function VendorAuditModal({
         </div>
 
         {/* 3 Separated Governance Gates */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-            gap: '0.6rem',
-            paddingTop: '0.65rem',
-            borderTop: '1px solid var(--adm-border-subtle)'
-          }}
-        >
+        <div className="vam-gates-grid">
           {/* Gate 1: Storefront Access */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--adm-bg)', padding: '0.45rem 0.65rem', borderRadius: '6px', border: '1px solid var(--adm-border)' }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: storefrontStatus === 'active' ? '#10b981' : (storefrontStatus === 'suspended' ? '#ef4444' : '#f59e0b') }} />
+          <div className="vam-gate-card">
+            <div className={`vam-gate-dot ${storefrontStatus === 'active' ? 'status-active' : (storefrontStatus === 'suspended' ? 'status-suspended' : 'status-review')}`} />
             <div>
-              <div style={{ fontSize: '0.62rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Storefront Access</div>
-              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--adm-text-main)', textTransform: 'capitalize' }}>
+              <div className="vam-gate-label">Storefront Access</div>
+              <div className="vam-gate-value">
                 {storefrontStatus === 'active' ? 'Active Live' : (storefrontStatus === 'suspended' ? 'Suspended (Unlisted)' : 'Under Review')}
               </div>
             </div>
           </div>
 
           {/* Gate 2: Business KYB */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--adm-bg)', padding: '0.45rem 0.65rem', borderRadius: '6px', border: '1px solid var(--adm-border)' }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: kybStatus === 'verified' ? '#10b981' : (kybStatus === 'rejected' ? '#ef4444' : '#f59e0b') }} />
+          <div className="vam-gate-card">
+            <div className={`vam-gate-dot ${kybStatus === 'verified' ? 'status-verified' : (kybStatus === 'rejected' ? 'status-rejected' : 'status-review')}`} />
             <div>
-              <div style={{ fontSize: '0.62rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Business KYB</div>
-              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--adm-text-main)', textTransform: 'capitalize' }}>
+              <div className="vam-gate-label">Business KYB</div>
+              <div className="vam-gate-value">
                 {kybStatus === 'verified' ? 'Verified' : (kybStatus === 'rejected' ? 'Rejected / Non-Compliant' : 'Documents Required')}
               </div>
             </div>
           </div>
 
           {/* Gate 3: Payout Eligibility */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--adm-bg)', padding: '0.45rem 0.65rem', borderRadius: '6px', border: '1px solid var(--adm-border)' }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: payoutEligibility === 'eligible' ? '#10b981' : '#ef4444' }} />
+          <div className="vam-gate-card">
+            <div className={`vam-gate-dot ${payoutEligibility === 'eligible' ? 'status-eligible' : 'status-hold'}`} />
             <div>
-              <div style={{ fontSize: '0.62rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Payout Eligibility</div>
-              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: payoutEligibility === 'eligible' ? 'var(--adm-text-main)' : '#ef4444' }}>
+              <div className="vam-gate-label">Payout Eligibility</div>
+              <div className={`vam-gate-value ${payoutEligibility === 'eligible' ? '' : 'status-hold'}`}>
                 {payoutEligibility === 'eligible' ? 'Eligible (Rolling Payouts)' : 'Administrative Payout Hold'}
               </div>
             </div>
@@ -477,7 +414,7 @@ export default function VendorAuditModal({
       </div>
 
       {/* Modal Tab Navigation */}
-      <div className="admin-tab-nav" style={{ marginBottom: '1.25rem' }}>
+      <div className="admin-tab-nav vam-tab-nav">
         {[
           { id: 'business', label: 'Business & Legal Entity' },
           { id: 'documents', label: 'Verification & Documents', count: docs.length },
@@ -497,10 +434,10 @@ export default function VendorAuditModal({
                 <span className="admin-tab-badge">{t.count}</span>
               )}
               {t.tag && (
-                <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: '3px', background: 'var(--adm-panel-hover)', color: 'var(--adm-text-sub)' }}>{t.tag}</span>
+                <span className="vam-tab-tag">{t.tag}</span>
               )}
               {t.alert && (
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444' }} />
+                <span className="vam-tab-alert-dot" />
               )}
             </button>
           );
@@ -510,19 +447,19 @@ export default function VendorAuditModal({
       {/* Tab 1: Business Profile & Legal Info */}
       {activeTab === 'business' && (
         <form onSubmit={handleSaveBusinessInfo}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="vam-stack">
             {/* Entity Details Card */}
-            <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
-              <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div className="vam-card">
+              <div className="vam-card-header">
+                <div className="vam-card-title">
                   <Building2 size={13} color="#38bdf8" /> Corporate Legal Registration
                 </div>
-                <span style={{ fontSize: '0.62rem', color: '#818cf8', fontWeight: 500 }}>Demo Registry Sandbox</span>
+                <span className="vam-card-tag">Demo Registry Sandbox</span>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
+              <div className="vam-grid-2">
                 <div>
-                  <label className="admin-settings-title" style={{ display: 'block', marginBottom: '4px' }}>
+                  <label className="admin-settings-title vam-field-label">
                     Legal Entity Name
                   </label>
                   <input
@@ -536,7 +473,7 @@ export default function VendorAuditModal({
                 </div>
 
                 <div>
-                  <label className="admin-settings-title" style={{ display: 'block', marginBottom: '4px' }}>
+                  <label className="admin-settings-title vam-field-label">
                     Business Entity Type
                   </label>
                   <input
@@ -549,11 +486,11 @@ export default function VendorAuditModal({
                 </div>
 
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <label className="admin-settings-title" style={{ margin: 0 }}>
+                  <div className="vam-field-label-row">
+                    <label className="admin-settings-title vam-field-label-text">
                       Tax / VAT Identification
                     </label>
-                    <span style={{ fontSize: '0.62rem', color: 'var(--adm-text-muted)' }}>[Demo VAT ID]</span>
+                    <span className="vam-field-hint">[Demo VAT ID]</span>
                   </div>
                   <input
                     type="text"
@@ -565,11 +502,11 @@ export default function VendorAuditModal({
                 </div>
 
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <label className="admin-settings-title" style={{ margin: 0 }}>
+                  <div className="vam-field-label-row">
+                    <label className="admin-settings-title vam-field-label-text">
                       Company Registry Number
                     </label>
-                    <span style={{ fontSize: '0.62rem', color: 'var(--adm-text-muted)' }}>[Demo Registry #]</span>
+                    <span className="vam-field-hint">[Demo Registry #]</span>
                   </div>
                   <input
                     type="text"
@@ -583,16 +520,16 @@ export default function VendorAuditModal({
             </div>
 
             {/* Addresses Card */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
+            <div className="vam-grid-addresses">
               {/* Registered Business Address */}
-              <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', lineHeight: 1.35 }}>
+              <div className="vam-address-card">
+                <div className="vam-address-title">
                   <MapPin size={12} color="#38bdf8" /> Registered Business Address
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+                <div className="vam-address-fields">
                   <div>
-                    <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Street Address</label>
+                    <label className="vam-sublabel">Street Address</label>
                     <input
                       type="text"
                       className="admin-input"
@@ -605,9 +542,9 @@ export default function VendorAuditModal({
                     />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '0.5rem' }}>
+                  <div className="vam-grid-city-postal">
                     <div>
-                      <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>City</label>
+                      <label className="vam-sublabel">City</label>
                       <input
                         type="text"
                         className="admin-input"
@@ -620,7 +557,7 @@ export default function VendorAuditModal({
                       />
                     </div>
                     <div>
-                      <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Postal Code</label>
+                      <label className="vam-sublabel">Postal Code</label>
                       <input
                         type="text"
                         className="admin-input"
@@ -635,7 +572,7 @@ export default function VendorAuditModal({
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Country</label>
+                    <label className="vam-sublabel">Country</label>
                     <input
                       type="text"
                       className="admin-input"
@@ -651,59 +588,45 @@ export default function VendorAuditModal({
               </div>
 
               {/* Shipping & Returns Address */}
-              <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px', lineHeight: 1.35 }}>
+              <div className="vam-address-card">
+                <div className="vam-address-header">
+                  <div className="vam-address-title">
                     <MapPin size={12} color="#10b981" /> Shipping & Returns Address
                   </div>
 
-                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', cursor: 'pointer', fontSize: '0.68rem', color: 'var(--adm-text-sub)', userSelect: 'none' }}>
+                  <label className="vam-checkbox-label">
                     <input
                       type="checkbox"
                       checked={sameAsRegistered}
                       onChange={handleSameAddressToggle}
-                      style={{ accentColor: 'var(--adm-accent)', cursor: 'pointer' }}
+                      className="vam-checkbox-input"
                     />
                     <span>Same as registered address</span>
                   </label>
                 </div>
 
                 {sameAsRegistered ? (
-                  <div
-                    style={{
-                      flex: 1,
-                      padding: '0.85rem',
-                      borderRadius: '6px',
-                      background: 'var(--adm-panel-hover)',
-                      border: '1px dashed var(--adm-border)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'center',
-                      gap: '5px',
-                      fontSize: '0.72rem',
-                      color: 'var(--adm-text-muted)'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--adm-text-main)', fontWeight: 600 }}>
+                  <div className="vam-same-address-box">
+                    <div className="vam-same-address-heading">
                       <CheckCircle size={13} color="#10b981" />
                       <span>Same as registered business address</span>
                     </div>
-                    <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)' }}>
+                    <div className="vam-same-address-desc">
                       Customer dispatches and returns route to the corporate address on file:
                     </div>
-                    <div style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: 'var(--adm-text-main)', background: 'var(--adm-bg)', padding: '0.45rem 0.65rem', borderRadius: '4px', border: '1px solid var(--adm-border-subtle)', marginTop: '2px' }}>
+                    <div className="vam-same-address-code">
                       {bizForm.legal_address.street || 'Address on file'}
                       <br />
                       {bizForm.legal_address.city || ''} {bizForm.legal_address.postal_code || ''} {bizForm.legal_address.country ? `• ${bizForm.legal_address.country}` : ''}
                     </div>
-                    <div style={{ marginTop: '4px', fontSize: '0.66rem', color: 'var(--adm-text-sub)' }}>
+                    <div className="vam-same-address-hint">
                       Uncheck "Same as registered address" above to specify a separate dispatch facility or return warehouse.
                     </div>
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+                  <div className="vam-address-fields">
                     <div>
-                      <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Street / Unit</label>
+                      <label className="vam-sublabel">Street / Unit</label>
                       <input
                         type="text"
                         className="admin-input"
@@ -716,9 +639,9 @@ export default function VendorAuditModal({
                       />
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '0.5rem' }}>
+                    <div className="vam-grid-city-postal">
                       <div>
-                        <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>City</label>
+                        <label className="vam-sublabel">City</label>
                         <input
                           type="text"
                           className="admin-input"
@@ -731,7 +654,7 @@ export default function VendorAuditModal({
                         />
                       </div>
                       <div>
-                        <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Postal Code</label>
+                        <label className="vam-sublabel">Postal Code</label>
                         <input
                           type="text"
                           className="admin-input"
@@ -746,7 +669,7 @@ export default function VendorAuditModal({
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Country</label>
+                      <label className="vam-sublabel">Country</label>
                       <input
                         type="text"
                         className="admin-input"
@@ -764,14 +687,16 @@ export default function VendorAuditModal({
             </div>
 
             {/* Representative Card */}
-            <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
-              <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <User size={13} color="#38bdf8" /> Authorized Signer & Business Representative
+            <div className="vam-card">
+              <div className="vam-card-header">
+                <div className="vam-card-title">
+                  <User size={13} color="#38bdf8" /> Authorized Signer & Business Representative
+                </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
+              <div className="vam-grid-2">
                 <div>
-                  <label className="admin-settings-title" style={{ display: 'block', marginBottom: '4px' }}>
+                  <label className="admin-settings-title vam-field-label">
                     Representative Full Name
                   </label>
                   <input
@@ -787,7 +712,7 @@ export default function VendorAuditModal({
                 </div>
 
                 <div>
-                  <label className="admin-settings-title" style={{ display: 'block', marginBottom: '4px' }}>
+                  <label className="admin-settings-title vam-field-label">
                     Corporate Title
                   </label>
                   <input
@@ -803,7 +728,7 @@ export default function VendorAuditModal({
                 </div>
 
                 <div>
-                  <label className="admin-settings-title" style={{ display: 'block', marginBottom: '4px' }}>
+                  <label className="admin-settings-title vam-field-label">
                     Verified Email
                   </label>
                   <input
@@ -819,7 +744,7 @@ export default function VendorAuditModal({
                 </div>
 
                 <div>
-                  <label className="admin-settings-title" style={{ display: 'block', marginBottom: '4px' }}>
+                  <label className="admin-settings-title vam-field-label">
                     Direct Telephone
                   </label>
                   <input
@@ -836,7 +761,7 @@ export default function VendorAuditModal({
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+            <div className="vam-form-actions">
               <button
                 type="submit"
                 className="admin-btn admin-btn-primary admin-btn-sm"
@@ -852,92 +777,63 @@ export default function VendorAuditModal({
       {/* Tab 2: Address Proof & Compliance Documents */}
       {activeTab === 'documents' && (
         <div>
-          <div style={{ marginBottom: '1rem', fontSize: '0.74rem', color: 'var(--adm-text-sub)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div className="vam-docs-header">
             <span>Inspect legal incorporation extracts, address proof bills, and brand trademark authorizations.</span>
-            <span style={{ fontSize: '0.64rem', color: '#818cf8', fontWeight: 500 }}>
+            <span className="vam-docs-sandbox-note">
               All documents are cryptographically simulated sandbox files
             </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div className="vam-docs-list">
             {docs.map((doc) => {
               const isVerified = doc.status === 'verified';
               const isRejected = doc.status === 'rejected';
 
-              let badgeBg = 'rgba(245, 158, 11, 0.12)';
-              let badgeColor = '#f59e0b';
+              let badgeClass = 'pending';
               let badgeText = 'Pending Review';
 
               if (isVerified) {
-                badgeBg = 'rgba(16, 185, 129, 0.12)';
-                badgeColor = '#10b981';
+                badgeClass = 'verified';
                 badgeText = 'Verified';
               } else if (isRejected) {
-                badgeBg = 'rgba(239, 68, 68, 0.12)';
-                badgeColor = '#ef4444';
+                badgeClass = 'rejected';
                 badgeText = 'Rejected / Incomplete';
               }
 
               return (
                 <div
                   key={doc.id}
-                  style={{
-                    padding: '0.9rem',
-                    borderRadius: '8px',
-                    border: `1px solid ${isRejected ? 'rgba(239, 68, 68, 0.3)' : 'var(--adm-border)'}`,
-                    background: 'var(--adm-bg)'
-                  }}
+                  className={`vam-doc-item ${isRejected ? 'rejected' : ''}`}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                      <div
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: 6,
-                          background: 'var(--adm-panel-hover)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'var(--adm-accent)'
-                        }}
-                      >
+                  <div className="vam-doc-row">
+                    <div className="vam-doc-left">
+                      <div className="vam-doc-icon">
                         <FileText size={16} />
                       </div>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ fontWeight: 600, fontSize: '0.8rem', color: 'var(--adm-text-main)' }}>
+                      <div className="vam-doc-info">
+                        <div className="vam-doc-title-row">
+                          <span className="vam-doc-title">
                             {doc.title}
                           </span>
-                          <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: '3px', background: 'var(--adm-panel-hover)', color: 'var(--adm-text-sub)' }}>
+                          <span className="vam-doc-tag">
                             PDF Sandbox
                           </span>
                         </div>
-                        <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
-                          File: <span style={{ fontFamily: 'monospace' }}>{doc.filename}</span> • {doc.size} • Expiry: <strong>{doc.expiry_date || 'N/A'}</strong>
+                        <div className="vam-doc-meta">
+                          File: <span className="vam-doc-filename">{doc.filename}</span> • {doc.size} • Expiry: <strong>{doc.expiry_date || 'N/A'}</strong>
                         </div>
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span
-                        style={{
-                          fontSize: '0.66rem',
-                          fontWeight: 700,
-                          padding: '2px 7px',
-                          borderRadius: '4px',
-                          background: badgeBg,
-                          color: badgeColor
-                        }}
-                      >
+                    <div className="vam-doc-actions">
+                      <span className={`vam-doc-badge ${badgeClass}`}>
                         {badgeText}
                       </span>
 
                       <button
                         type="button"
-                        className="admin-btn admin-btn-ghost admin-btn-sm"
+                        className="admin-btn admin-btn-ghost admin-btn-sm vam-btn-compact"
                         onClick={() => setPreviewDoc(doc)}
-                        style={{ padding: '2px 7px', fontSize: '0.68rem' }}
                       >
                         <Eye size={11} /> View
                       </button>
@@ -945,9 +841,8 @@ export default function VendorAuditModal({
                       {!isVerified && (
                         <button
                           type="button"
-                          className="admin-btn admin-btn-primary admin-btn-sm"
+                          className="admin-btn admin-btn-primary admin-btn-sm vam-btn-compact-pad"
                           onClick={() => handleDocAction(doc.id, 'verified')}
-                          style={{ padding: '2px 8px', fontSize: '0.68rem' }}
                         >
                           <Check size={11} /> Verify
                         </button>
@@ -956,9 +851,8 @@ export default function VendorAuditModal({
                       {!isRejected && (
                         <button
                           type="button"
-                          className="admin-btn admin-btn-danger admin-btn-sm"
+                          className="admin-btn admin-btn-danger admin-btn-sm vam-btn-compact-pad"
                           onClick={() => setRejectingDocId(doc.id)}
-                          style={{ padding: '2px 8px', fontSize: '0.68rem' }}
                         >
                           <X size={11} /> Reject
                         </button>
@@ -967,27 +861,26 @@ export default function VendorAuditModal({
                   </div>
 
                   {doc.notes && (
-                    <div style={{ marginTop: '0.5rem', fontSize: '0.7rem', color: isRejected ? '#ef4444' : 'var(--adm-text-muted)', background: 'var(--adm-panel-hover)', padding: '0.4rem 0.65rem', borderRadius: '4px' }}>
+                    <div className={`vam-doc-notes ${isRejected ? 'rejected' : ''}`}>
                       <strong>Audit Note:</strong> {doc.notes}
-                      {doc.reviewed_by && <span style={{ marginLeft: '6px', color: 'var(--adm-text-sub)' }}>— {doc.reviewed_by}</span>}
+                      {doc.reviewed_by && <span className="vam-doc-reviewer">— {doc.reviewed_by}</span>}
                     </div>
                   )}
 
                   {/* Reject Note Dialog */}
                   {rejectingDocId === doc.id && (
-                    <div style={{ marginTop: '0.75rem', padding: '0.75rem', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.06)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                      <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#ef4444', marginBottom: '4px' }}>
+                    <div className="vam-reject-dialog">
+                      <div className="vam-reject-title">
                         Reason for rejecting {doc.title}:
                       </div>
                       <input
                         type="text"
-                        className="admin-input"
+                        className="admin-input vam-reject-input"
                         placeholder="e.g. Utility bill is over 90 days old or company registry is unverified..."
                         value={rejectReason}
                         onChange={(e) => setRejectReason(e.target.value)}
-                        style={{ width: '100%', marginBottom: '6px' }}
                       />
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                      <div className="vam-reject-actions">
                         <button
                           type="button"
                           className="admin-btn admin-btn-ghost admin-btn-sm"
@@ -1027,23 +920,23 @@ export default function VendorAuditModal({
                 </button>
               }
             >
-              <div style={{ padding: '1.25rem', textAlign: 'center', background: 'var(--adm-bg)', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
-                <FileCheck size={44} color="#38bdf8" style={{ margin: '0 auto 0.75rem' }} />
-                <div style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--adm-text-main)' }}>
+              <div className="vam-preview-body">
+                <FileCheck size={44} color="#38bdf8" className="vam-preview-icon" />
+                <div className="vam-preview-filename">
                   {previewDoc.filename}
                 </div>
-                <div style={{ fontSize: '0.7rem', color: '#818cf8', marginTop: '2px', fontWeight: 500 }}>
+                <div className="vam-preview-type">
                   Simulated Demo Document (PDF Sandbox) • {previewDoc.size}
                 </div>
-                <div style={{ marginTop: '1rem', padding: '0.75rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', fontSize: '0.72rem', color: 'var(--adm-text-main)', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <div className="vam-preview-meta-list">
                   <div><strong>Document Title:</strong> {previewDoc.title}</div>
-                  <div><strong>Type:</strong> <span style={{ fontFamily: 'monospace' }}>{previewDoc.type}</span></div>
-                  <div><strong>Status:</strong> <span style={{ textTransform: 'capitalize' }}>{previewDoc.status}</span></div>
+                  <div><strong>Type:</strong> <span className="vam-preview-code">{previewDoc.type}</span></div>
+                  <div><strong>Status:</strong> <span className="vam-preview-status">{previewDoc.status}</span></div>
                   <div><strong>Expiry Date:</strong> {previewDoc.expiry_date || 'Permanent / Not Applicable'}</div>
                   <div><strong>Uploaded:</strong> {new Date(previewDoc.uploaded_at).toLocaleString()}</div>
-                  {previewDoc.notes && <div style={{ marginTop: '4px', color: 'var(--adm-text-sub)' }}><strong>Audit Record:</strong> {previewDoc.notes}</div>}
+                  {previewDoc.notes && <div className="vam-preview-notes"><strong>Audit Record:</strong> {previewDoc.notes}</div>}
                 </div>
-                <div style={{ marginTop: '0.85rem', fontSize: '0.66rem', color: 'var(--adm-text-muted)' }}>
+                <div className="vam-preview-disclaimer">
                   This preview renders simulated file metadata for demonstration. In production, documents are verified via encrypted cloud storage and IDV providers.
                 </div>
               </div>
@@ -1054,55 +947,55 @@ export default function VendorAuditModal({
 
       {/* Tab 3: Marketplace Agreement & History */}
       {activeTab === 'agreement' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="vam-stack">
           {/* Active Agreement Record */}
-          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="vam-card">
+            <div className="vam-agreement-card-header">
+              <div className="vam-agreement-title-group">
                 <FileSignature size={16} color="#38bdf8" />
-                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--adm-text-main)' }}>
+                <span className="vam-agreement-title">
                   Marketplace Agreement {currentAgreement.version || 'v2.4'}
                 </span>
-                <span style={{ fontSize: '0.64rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.12)', color: '#10b981', fontWeight: 600 }}>
+                <span className="vam-agreement-badge">
                   Active Contract
                 </span>
               </div>
-              <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)' }}>
+              <div className="vam-agreement-effective">
                 Effective: <strong>{currentAgreement.effective_date || '2026-08-15'}</strong>
               </div>
             </div>
 
-            <div style={{ fontSize: '0.72rem', color: 'var(--adm-text-sub)', marginBottom: '0.75rem', lineHeight: 1.45 }}>
+            <div className="vam-agreement-desc">
               Accepted electronically by <strong>{currentAgreement.accepted_by || vendor.representative?.name || 'Camille Laurent'}</strong> on {new Date(currentAgreement.accepted_at || '2026-08-15T10:14:22Z').toLocaleString()}. Governs merchant listing standards, escrow release conditions, and dispute arbitration.
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem', marginTop: '0.5rem' }}>
-              <div style={{ padding: '0.65rem 0.85rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)' }}>
-                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Commission Take-Rate</div>
-                <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--adm-text-main)', marginTop: '2px' }}>
-                  {(currentAgreement.commission_rate_pct ?? 5.0).toFixed(1)}% <span style={{ fontSize: '0.68rem', fontWeight: 400, color: 'var(--adm-text-muted)' }}>of settled GMV</span>
+            <div className="vam-terms-grid">
+              <div className="vam-term-box">
+                <div className="vam-term-label">Commission Take-Rate</div>
+                <div className="vam-term-value-lg">
+                  {(currentAgreement.commission_rate_pct ?? 5.0).toFixed(1)}% <span className="vam-term-unit">of settled GMV</span>
                 </div>
-                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                <div className="vam-term-sub">
                   {currentAgreement.protocol_fees_desc || '0.0% listing fee • Standard payment processing passed at cost'}
                 </div>
               </div>
 
-              <div style={{ padding: '0.65rem 0.85rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)' }}>
-                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Fulfillment & Logistics</div>
-                <div style={{ fontSize: '0.76rem', fontWeight: 600, color: 'var(--adm-text-main)', marginTop: '2px' }}>
+              <div className="vam-term-box">
+                <div className="vam-term-label">Fulfillment & Logistics</div>
+                <div className="vam-term-value-md">
                   {currentAgreement.fulfillment_model || 'Merchant Atelier Self-Fulfill'}
                 </div>
-                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                <div className="vam-term-sub">
                   Tracking required within 72h of order placement
                 </div>
               </div>
 
-              <div style={{ padding: '0.65rem 0.85rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)' }}>
-                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Escrow & Return Policy</div>
-                <div style={{ fontSize: '0.76rem', fontWeight: 600, color: 'var(--adm-text-main)', marginTop: '2px' }}>
+              <div className="vam-term-box">
+                <div className="vam-term-label">Escrow & Return Policy</div>
+                <div className="vam-term-value-md">
                   14-Day Boutique Window
                 </div>
-                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                <div className="vam-term-sub">
                   Escrow released 48h post verified carrier delivery (POD)
                 </div>
               </div>
@@ -1110,14 +1003,16 @@ export default function VendorAuditModal({
           </div>
 
           {/* Negotiate / Amend Commission Rate */}
-          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
-            <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <History size={13} color="#38bdf8" /> Propose Commission Amendment
+          <div className="vam-card">
+            <div className="vam-card-header">
+              <div className="vam-card-title">
+                <History size={13} color="#38bdf8" /> Propose Commission Amendment
+              </div>
             </div>
 
-            <form onSubmit={handleExecuteRateAmendment} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.5fr auto', gap: '0.75rem', alignItems: 'flex-end' }}>
+            <form onSubmit={handleExecuteRateAmendment} className="vam-rate-form">
               <div>
-                <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+                <label className="vam-rate-label">
                   New Rate (%)
                 </label>
                 <input
@@ -1133,7 +1028,7 @@ export default function VendorAuditModal({
               </div>
 
               <div>
-                <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+                <label className="vam-rate-label">
                   Effective Date
                 </label>
                 <input
@@ -1146,7 +1041,7 @@ export default function VendorAuditModal({
               </div>
 
               <div>
-                <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+                <label className="vam-rate-label">
                   Amendment Justification
                 </label>
                 <input
@@ -1161,9 +1056,8 @@ export default function VendorAuditModal({
 
               <button
                 type="submit"
-                className="admin-btn admin-btn-primary admin-btn-sm"
+                className="admin-btn admin-btn-primary admin-btn-sm vam-rate-submit-btn"
                 disabled={loading}
-                style={{ height: '34px' }}
               >
                 Execute Amendment
               </button>
@@ -1171,32 +1065,23 @@ export default function VendorAuditModal({
           </div>
 
           {/* Chronological Agreement History */}
-          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
-            <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.6rem' }}>
+          <div className="vam-card">
+            <div className="vam-history-header">
               Agreement Amendment History
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div className="vam-history-list">
               {agreementHistory.map((h, i) => (
                 <div
                   key={i}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.55rem 0.75rem',
-                    borderRadius: '6px',
-                    background: 'var(--adm-panel-hover)',
-                    border: '1px solid var(--adm-border-subtle)',
-                    fontSize: '0.72rem'
-                  }}
+                  className="vam-history-item"
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <code style={{ fontWeight: 700, color: 'var(--adm-accent)' }}>{h.version}</code>
-                    <span style={{ fontWeight: 600, color: 'var(--adm-text-main)' }}>{h.rate_pct}% Take-Rate</span>
-                    <span style={{ color: 'var(--adm-text-sub)' }}>• {h.reason}</span>
+                  <div className="vam-history-left">
+                    <code className="vam-history-version">{h.version}</code>
+                    <span className="vam-history-rate">{h.rate_pct}% Take-Rate</span>
+                    <span className="vam-history-reason">• {h.reason}</span>
                   </div>
-                  <div style={{ fontSize: '0.66rem', color: 'var(--adm-text-muted)' }}>
+                  <div className="vam-history-meta">
                     Effective {h.effective_date} • By {h.updated_by}
                   </div>
                 </div>
@@ -1208,87 +1093,76 @@ export default function VendorAuditModal({
 
       {/* Tab 4: Audit & Account Status */}
       {activeTab === 'decision' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="vam-stack">
           {/* Executive Governance & Lifecycle Overview */}
-          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div className="vam-card">
+            <div className="vam-decision-header">
+              <div className="vam-decision-title">
                 <ShieldCheck size={14} color="#10b981" /> Executive Governance & Decision
               </div>
-              <div style={{ fontSize: '0.66rem', color: 'var(--adm-text-sub)' }}>
+              <div className="vam-decision-recorded">
                 Decision Recorded: <strong>{new Date(vendor.created_at || '2026-08-15T10:00:00Z').toLocaleDateString()}</strong> by <strong>Platform Root Admin</strong>
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.6rem', marginTop: '0.5rem' }}>
-              <div style={{ padding: '0.65rem 0.8rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)' }}>
-                <div style={{ fontSize: '0.62rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Marketplace Lifecycle</div>
-                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--adm-text-main)', marginTop: '2px', textTransform: 'capitalize' }}>
+            <div className="vam-decision-grid">
+              <div className="vam-decision-box">
+                <div className="vam-decision-box-label">Marketplace Lifecycle</div>
+                <div className="vam-decision-box-val">
                   {storefrontStatus === 'active' ? 'Approved & Fully Authorized' : (storefrontStatus === 'suspended' ? 'Suspended (Policy Hold)' : 'Application Under Review')}
                 </div>
-                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                <div className="vam-decision-box-sub">
                   Reviewer: Senior Compliance Auditor #4
                 </div>
               </div>
 
-              <div style={{ padding: '0.65rem 0.8rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)' }}>
-                <div style={{ fontSize: '0.62rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Compliance & Warnings</div>
-                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: kybStatus === 'rejected' || storefrontStatus === 'suspended' ? '#ef4444' : '#10b981', marginTop: '2px' }}>
+              <div className="vam-decision-box">
+                <div className="vam-decision-box-label">Compliance & Warnings</div>
+                <div className={`vam-decision-box-val ${kybStatus === 'rejected' || storefrontStatus === 'suspended' ? 'danger' : 'success'}`}>
                   {storefrontStatus === 'suspended' ? 'Trademark / Policy Hold Active' : (kybStatus === 'verified' ? 'Zero Policy Warnings Active' : 'Document Submission Required')}
                 </div>
-                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                <div className="vam-decision-box-sub">
                   {kybStatus === 'verified' ? 'Identity & address verified' : 'Auditor flagged missing items'}
                 </div>
               </div>
 
-              <div style={{ padding: '0.65rem 0.8rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)' }}>
-                <div style={{ fontSize: '0.62rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Payout Governance Gate</div>
-                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: payoutEligibility === 'eligible' ? '#10b981' : '#ef4444', marginTop: '2px' }}>
+              <div className="vam-decision-box">
+                <div className="vam-decision-box-label">Payout Governance Gate</div>
+                <div className={`vam-decision-box-val ${payoutEligibility === 'eligible' ? 'success' : 'danger'}`}>
                   {payoutEligibility === 'eligible' ? 'Rolling Payouts Active' : 'Administrative Payout Hold'}
                 </div>
-                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                <div className="vam-decision-box-sub">
                   {payoutEligibility === 'eligible' ? 'Disbursements verified per order' : 'Fund transfers paused by admin'}
                 </div>
               </div>
             </div>
 
             {/* Critical Business Detail Callout */}
-            <div
-              style={{
-                marginTop: '0.85rem',
-                padding: '0.65rem 0.85rem',
-                borderRadius: '6px',
-                background: 'rgba(56, 189, 248, 0.06)',
-                border: '1px solid rgba(56, 189, 248, 0.2)',
-                fontSize: '0.7rem',
-                color: 'var(--adm-text-main)',
-                lineHeight: 1.45
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#38bdf8', fontWeight: 600, marginBottom: '2px' }}>
+            <div className="vam-protocol-banner">
+              <div className="vam-protocol-header">
                 <Info size={13} />
                 <span>Order Fund Settlement Architecture (Delivery Verification Protocol)</span>
               </div>
               <div>
                 <strong>Workflow:</strong> Customer pays → Merchant ships → Carrier POD verified → 48-hour buyer inspection buffer → Payout eligible.
               </div>
-              <div style={{ fontSize: '0.66rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+              <div className="vam-protocol-subtext">
                 Merchant payout eligibility in this dossier grants permission for rolling automated transfers. Individual fund releases are evaluated on an order-by-order basis via tracking webhooks on the Orders Ledger, never released arbitrarily in bulk from this profile.
               </div>
             </div>
           </div>
 
           {/* Gate 1: Storefront Access Management */}
-          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div className="vam-card">
+            <div className="vam-gate-row">
               <div>
-                <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div className="vam-gate-row-title">
                   Storefront Access & Catalog Indexing
                 </div>
-                <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--adm-text-main)', marginTop: '2px' }}>
+                <div className="vam-gate-row-status">
                   Status: {storefrontStatus === 'active' ? 'Active (Public Storefront Live)' : 'Suspended (Catalog Hidden)'}
                 </div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--adm-text-sub)', marginTop: '2px', maxWidth: '520px' }}>
+                <div className="vam-gate-row-desc">
                   Suspension unlists the boutique from search and pauses purchases. Does not affect past order escrow releases.
                 </div>
               </div>
@@ -1322,37 +1196,33 @@ export default function VendorAuditModal({
           </div>
 
           {/* Gate 2: Payment Provider Account (Stripe Connect) */}
-          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div className="vam-card">
+            <div className="vam-provider-header">
+              <div className="vam-provider-title">
                 <CreditCard size={14} color="#38bdf8" />
-                <span style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Payment Provider Account (Stripe Connect)
-                </span>
+                <span>Payment Provider Account (Stripe Connect)</span>
               </div>
-              <span style={{ fontSize: '0.64rem', padding: '2px 6px', borderRadius: '4px', background: paymentProvider.charges_enabled ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)', color: paymentProvider.charges_enabled ? '#10b981' : '#ef4444', fontWeight: 600 }}>
+              <span className={`vam-provider-badge ${paymentProvider.charges_enabled ? 'enabled' : 'blocked'}`}>
                 {paymentProvider.charges_enabled ? 'Charges Enabled' : 'Charges Blocked'}
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
+            <div className="vam-provider-grid">
               <div>
-                <label style={{ fontSize: '0.66rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Connected Account ID</label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <label className="vam-field-sublabel">Connected Account ID</label>
+                <div className="vam-provider-acct-row">
                   <input
                     type="text"
                     readOnly
-                    className="admin-input"
+                    className="admin-input vam-acct-input"
                     value={paymentProvider.account_id}
-                    style={{ fontFamily: 'monospace', fontSize: '0.74rem', background: 'var(--adm-panel-hover)' }}
                   />
                   <a
                     href={`https://dashboard.stripe.com/test/connect/accounts/${paymentProvider.account_id}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="admin-btn admin-btn-ghost admin-btn-sm"
+                    className="admin-btn admin-btn-ghost admin-btn-sm vam-acct-btn"
                     title="Inspect in provider console"
-                    style={{ padding: '4px 7px' }}
                   >
                     <ExternalLink size={12} />
                   </a>
@@ -1360,30 +1230,30 @@ export default function VendorAuditModal({
               </div>
 
               <div>
-                <label style={{ fontSize: '0.66rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Settlement Bank Rails</label>
-                <div style={{ padding: '0.5rem 0.65rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)', fontSize: '0.72rem', color: 'var(--adm-text-main)' }}>
+                <label className="vam-field-sublabel">Settlement Bank Rails</label>
+                <div className="vam-bank-box">
                   {paymentProvider.bank_name} •••• {paymentProvider.account_last4}
-                  <span style={{ fontSize: '0.62rem', color: 'var(--adm-text-muted)', marginLeft: '6px' }}>(Synced from Provider Ledger)</span>
+                  <span className="vam-bank-synced">(Synced from Provider Ledger)</span>
                 </div>
               </div>
             </div>
 
-            <div style={{ fontSize: '0.66rem', color: 'var(--adm-text-sub)', marginTop: '0.6rem' }}>
+            <div className="vam-provider-notice">
               Connected account banking details are synced directly via Stripe Connect webhooks. Direct manual text edits are disallowed to prevent payment redirect exploits.
             </div>
           </div>
 
           {/* Gate 3: Controlled Administrative Payout Governance */}
-          <div style={{ padding: '1rem', borderRadius: '8px', border: `1px solid ${payoutEligibility === 'administrative_hold' ? 'rgba(239, 68, 68, 0.4)' : 'var(--adm-border)'}`, background: 'var(--adm-bg)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div className={`vam-card ${payoutEligibility === 'administrative_hold' ? 'hold-active' : ''}`}>
+            <div className="vam-gate-row">
               <div>
-                <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div className="vam-gate-row-title">
                   Administrative Payout Governance
                 </div>
-                <div style={{ fontSize: '0.82rem', fontWeight: 600, color: payoutEligibility === 'administrative_hold' ? '#ef4444' : '#10b981', marginTop: '2px' }}>
+                <div className={`vam-hold-status-val ${payoutEligibility === 'administrative_hold' ? 'hold' : 'eligible'}`}>
                   {payoutEligibility === 'administrative_hold' ? 'Administrative Payout Hold Active' : 'Rolling Payouts Eligible'}
                 </div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--adm-text-sub)', marginTop: '2px', maxWidth: '520px' }}>
+                <div className="vam-gate-row-desc">
                   A payout hold pauses release of transfer funds without unlisting the public storefront. Each hold requires a documented category and rationale.
                 </div>
               </div>
@@ -1411,15 +1281,15 @@ export default function VendorAuditModal({
 
             {/* Active Hold Details Box */}
             {payoutEligibility === 'administrative_hold' && (vendor.payout_hold_details || vendor.commercial_terms?.payout_hold) && (
-              <div style={{ marginTop: '0.85rem', padding: '0.75rem', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', fontSize: '0.72rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ef4444', fontWeight: 600, marginBottom: '3px' }}>
+              <div className="vam-hold-alert-box">
+                <div className="vam-hold-alert-header">
                   <AlertCircle size={13} />
                   <span>Category: {vendor.payout_hold_details?.category || 'Administrative Compliance Review'}</span>
                 </div>
-                <div style={{ color: 'var(--adm-text-main)' }}>
+                <div className="vam-hold-alert-content">
                   <strong>Justification:</strong> {vendor.payout_hold_details?.reason || 'Payout hold active pending compliance documentation.'}
                 </div>
-                <div style={{ fontSize: '0.66rem', color: 'var(--adm-text-sub)', marginTop: '4px' }}>
+                <div className="vam-hold-alert-placed">
                   Placed by {vendor.payout_hold_details?.placed_by || 'Platform Admin'} on {new Date(vendor.payout_hold_details?.placed_at || Date.now()).toLocaleDateString()}
                 </div>
               </div>
@@ -1427,29 +1297,23 @@ export default function VendorAuditModal({
           </div>
 
           {/* Unified Chronological Audit Trail */}
-          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
-            <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.65rem' }}>
+          <div className="vam-card">
+            <div className="vam-audit-header">
               Immutable Compliance Audit Trail
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '220px', overflowY: 'auto' }}>
+            <div className="vam-audit-trail-scroll">
               {auditTrail.map((aud) => (
                 <div
                   key={aud.id}
-                  style={{
-                    padding: '0.55rem 0.75rem',
-                    borderRadius: '6px',
-                    background: 'var(--adm-panel-hover)',
-                    border: '1px solid var(--adm-border-subtle)',
-                    fontSize: '0.72rem'
-                  }}
+                  className="vam-audit-entry"
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2px' }}>
-                    <span style={{ fontWeight: 600, color: 'var(--adm-text-main)' }}>{aud.action}</span>
-                    <span style={{ fontSize: '0.64rem', color: 'var(--adm-text-muted)' }}>{new Date(aud.timestamp).toLocaleString()}</span>
+                  <div className="vam-audit-entry-header">
+                    <span className="vam-audit-entry-action">{aud.action}</span>
+                    <span className="vam-audit-entry-time">{new Date(aud.timestamp).toLocaleString()}</span>
                   </div>
-                  <div style={{ color: 'var(--adm-text-sub)' }}>{aud.note}</div>
-                  <div style={{ fontSize: '0.64rem', color: 'var(--adm-accent)', marginTop: '2px' }}>Actor: {aud.actor}</div>
+                  <div className="vam-audit-entry-note">{aud.note}</div>
+                  <div className="vam-audit-entry-actor">Actor: {aud.actor}</div>
                 </div>
               ))}
             </div>
@@ -1465,7 +1329,7 @@ export default function VendorAuditModal({
           title="Place Administrative Payout Hold"
           maxWidth="500px"
           footer={
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', width: '100%' }}>
+            <div className="vam-submodal-footer">
               <button
                 type="button"
                 className="admin-btn admin-btn-ghost admin-btn-sm"
@@ -1484,13 +1348,13 @@ export default function VendorAuditModal({
             </div>
           }
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div style={{ fontSize: '0.72rem', color: 'var(--adm-text-sub)' }}>
+          <div className="vam-submodal-stack">
+            <div className="vam-submodal-desc">
               Placing an administrative payout hold freezes outgoing escrow settlements to this merchant's bank account while keeping their storefront public and available for customer purchases.
             </div>
 
             <div>
-              <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+              <label className="vam-submodal-label">
                 Hold Category
               </label>
               <select
@@ -1507,13 +1371,12 @@ export default function VendorAuditModal({
             </div>
 
             <div>
-              <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+              <label className="vam-submodal-label">
                 Formal Justification / Reason *
               </label>
               <textarea
                 rows={3}
-                className="admin-search-input"
-                style={{ width: '100%', height: 'auto', padding: '0.5rem 0.75rem' }}
+                className="admin-search-input vam-submodal-textarea"
                 placeholder="Detail the compliance violation or trigger reason..."
                 value={holdReason}
                 onChange={(e) => setHoldReason(e.target.value)}
@@ -1532,7 +1395,7 @@ export default function VendorAuditModal({
           title="Release Administrative Payout Hold"
           maxWidth="500px"
           footer={
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', width: '100%' }}>
+            <div className="vam-submodal-footer">
               <button
                 type="button"
                 className="admin-btn admin-btn-ghost admin-btn-sm"
@@ -1551,19 +1414,18 @@ export default function VendorAuditModal({
             </div>
           }
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div style={{ fontSize: '0.72rem', color: 'var(--adm-text-sub)' }}>
+          <div className="vam-submodal-stack">
+            <div className="vam-submodal-desc">
               Releasing this payout hold will restore rolling automated payouts for delivered orders meeting the 48-hour delivery verification window.
             </div>
 
             <div>
-              <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+              <label className="vam-submodal-label">
                 Resolution Note (Optional)
               </label>
               <textarea
                 rows={3}
-                className="admin-search-input"
-                style={{ width: '100%', height: 'auto', padding: '0.5rem 0.75rem' }}
+                className="admin-search-input vam-submodal-textarea"
                 placeholder="e.g. Valid address proof received and verified against commercial registry..."
                 value={releaseNote}
                 onChange={(e) => setReleaseNote(e.target.value)}
@@ -1581,7 +1443,7 @@ export default function VendorAuditModal({
           title={targetStorefrontStatus === 'active' ? 'Reactivate Boutique Storefront' : 'Suspend Boutique Storefront'}
           maxWidth="480px"
           footer={
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', width: '100%' }}>
+            <div className="vam-submodal-footer">
               <button
                 type="button"
                 className="admin-btn admin-btn-ghost admin-btn-sm"
@@ -1600,15 +1462,15 @@ export default function VendorAuditModal({
             </div>
           }
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div style={{ fontSize: '0.72rem', color: 'var(--adm-text-sub)' }}>
+          <div className="vam-submodal-stack">
+            <div className="vam-submodal-desc">
               {targetStorefrontStatus === 'active'
                 ? 'Reactivating will make this atelier public and re-enable garment indexing in marketplace catalogs.'
                 : 'Suspending will unlist this atelier from public search and disable customer checkout. Existing delivered orders remain eligible for settlement.'}
             </div>
 
             <div>
-              <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+              <label className="vam-submodal-label">
                 Action Reason
               </label>
               <input
