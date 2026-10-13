@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { adminService } from '@/services/adminService';
 import {
   Users, CheckCircle, ShieldAlert, AlertTriangle,
-  Search, ExternalLink, Loader2, Globe, Sliders, ShieldCheck, MapPin
+  Search, ExternalLink, Loader2, Globe, Sliders, ShieldCheck,
+  Lock, Unlock, FileText, ArrowRight
 } from 'lucide-react';
 import {
-  AdminTopBar, AdminKpiCard, AdminStatusBadge, VendorAuditModal
+  AdminTopBar, AdminKpiCard, VendorAuditModal
 } from '@/components/admin';
 
 export default function AdminVendorsPage() {
@@ -20,10 +21,9 @@ export default function AdminVendorsPage() {
   const loadVendors = async () => {
     setLoading(true);
     try {
-      const res = await adminService.getVendors(filter, search);
+      const res = await adminService.getVendors('all', '');
       if (res && res.success) {
         setVendors(res.vendors || []);
-        // If modal is open, refresh selected vendor
         if (selectedVendor) {
           const updatedSelected = (res.vendors || []).find(v => v.id === selectedVendor.id);
           if (updatedSelected) setSelectedVendor(updatedSelected);
@@ -38,7 +38,7 @@ export default function AdminVendorsPage() {
 
   useEffect(() => {
     loadVendors();
-  }, [filter, search]);
+  }, []);
 
   const handleOpenAudit = (vendor) => {
     setSelectedVendor(vendor);
@@ -78,101 +78,149 @@ export default function AdminVendorsPage() {
     }
   };
 
-  const handleUpdateTerms = async (vendorId, terms) => {
+  const handlePlacePayoutHold = async (vendorId, holdData) => {
     setActionLoading(true);
     try {
-      const res = await adminService.updateVendorCommercialTerms(vendorId, terms);
+      const res = await adminService.placeVendorPayoutHold(vendorId, holdData);
       if (res && res.success) {
         setVendors(prev => prev.map(v => v.id === vendorId ? { ...v, ...res.vendor } : v));
         setSelectedVendor(prev => prev && prev.id === vendorId ? { ...prev, ...res.vendor } : prev);
       }
     } catch (err) {
-      console.error('Failed to update commercial terms:', err);
+      console.error('Failed to place payout hold:', err);
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleUpdateStatus = async (vendorId, action, notes) => {
+  const handleReleasePayoutHold = async (vendorId, releaseData) => {
     setActionLoading(true);
     try {
-      const res = await adminService.updateVendorStatus(vendorId, action, notes);
+      const res = await adminService.releaseVendorPayoutHold(vendorId, releaseData);
       if (res && res.success) {
-        setVendors(prev => prev.map(v => v.id === vendorId ? { ...v, ...(res.vendor || { vendor_status: res.vendor_status }) } : v));
-        if (selectedVendor && selectedVendor.id === vendorId) {
-          setSelectedVendor(prev => ({ ...prev, ...(res.vendor || { vendor_status: res.vendor_status }) }));
-        }
+        setVendors(prev => prev.map(v => v.id === vendorId ? { ...v, ...res.vendor } : v));
+        setSelectedVendor(prev => prev && prev.id === vendorId ? { ...prev, ...res.vendor } : prev);
       }
     } catch (err) {
-      console.error('Failed to update status:', err);
+      console.error('Failed to release payout hold:', err);
     } finally {
       setActionLoading(false);
     }
   };
 
-  const approvedCount = vendors.filter(v => v.vendor_status === 'approved').length;
-  const pendingCount = vendors.filter(v => v.vendor_status === 'pending_approval').length;
-  const changesCount = vendors.filter(v => v.vendor_status === 'changes_requested').length;
-  const suspendedCount = vendors.filter(v => v.vendor_status === 'suspended').length;
+  const handleUpdateAgreementRate = async (vendorId, rateData) => {
+    setActionLoading(true);
+    try {
+      const res = await adminService.updateVendorAgreementRate(vendorId, rateData);
+      if (res && res.success) {
+        setVendors(prev => prev.map(v => v.id === vendorId ? { ...v, ...res.vendor } : v));
+        setSelectedVendor(prev => prev && prev.id === vendorId ? { ...prev, ...res.vendor } : prev);
+      }
+    } catch (err) {
+      console.error('Failed to update agreement rate:', err);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUpdateStorefrontStatus = async (vendorId, statusData) => {
+    setActionLoading(true);
+    try {
+      const res = await adminService.updateVendorStorefrontStatus(vendorId, statusData);
+      if (res && res.success) {
+        setVendors(prev => prev.map(v => v.id === vendorId ? { ...v, ...res.vendor } : v));
+        setSelectedVendor(prev => prev && prev.id === vendorId ? { ...prev, ...res.vendor } : prev);
+      }
+    } catch (err) {
+      console.error('Failed to update storefront status:', err);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // Status counters
+  const liveCount = vendors.filter(v => (v.storefront_status === 'active' || (v.vendor_status === 'approved' && !v.storefront_status))).length;
+  const kybPendingCount = vendors.filter(v => (v.kyb_status === 'pending_documents' || v.kyb_status === 'under_review' || (v.documents || []).some(d => d.status === 'pending'))).length;
+  const payoutHoldCount = vendors.filter(v => (v.payout_eligibility === 'administrative_hold' || v.commercial_terms?.payout_hold || v.payout_hold_details?.active)).length;
+  const suspendedCount = vendors.filter(v => (v.storefront_status === 'suspended' || v.vendor_status === 'suspended')).length;
+
+  // Filtered merchants
+  const filteredVendors = vendors.filter(v => {
+    const name = (v.store_name || '').toLowerCase();
+    const legal = (v.legal_business_name || '').toLowerCase();
+    const email = (v.email || '').toLowerCase();
+    const handle = (v.store_handle || '').toLowerCase();
+    const q = search.toLowerCase();
+    const matchesSearch = !q || name.includes(q) || legal.includes(q) || email.includes(q) || handle.includes(q);
+
+    let matchesFilter = true;
+    if (filter === 'all') matchesFilter = true;
+    else if (filter === 'active') matchesFilter = (v.storefront_status === 'active' || (v.vendor_status === 'approved' && !v.storefront_status));
+    else if (filter === 'kyb_pending') matchesFilter = (v.kyb_status === 'pending_documents' || v.kyb_status === 'under_review' || (v.documents || []).some(d => d.status === 'pending'));
+    else if (filter === 'payout_hold') matchesFilter = (v.payout_eligibility === 'administrative_hold' || v.commercial_terms?.payout_hold || v.payout_hold_details?.active);
+    else if (filter === 'suspended') matchesFilter = (v.storefront_status === 'suspended' || v.vendor_status === 'suspended');
+
+    return matchesSearch && matchesFilter;
+  });
 
   return (
     <>
       <AdminTopBar
-        title="Merchant Directory & Governance"
-        subtitle="Audit legal registration, verify proof of business address, inspect KYB documents, and manage marketplace access"
+        title="Merchant Governance & Directory"
+        subtitle="Three separated governance gates: Storefront Access, Business KYB, and Administrative Payout Eligibility"
         onRefresh={loadVendors}
         refreshing={loading}
       />
 
       <div className="admin-content">
-        {/* KPI Row */}
+        {/* Governance KPI Row */}
         <div className="admin-kpi-grid">
           <AdminKpiCard
-            label="Active Storefronts"
-            value={approvedCount}
-            sub="Approved luxury ateliers"
+            label="Live Storefronts"
+            value={liveCount}
+            sub="Public catalog live & shopping active"
             icon={CheckCircle}
             iconBg="rgba(16, 185, 129, 0.12)"
             iconColor="#10b981"
           />
 
           <AdminKpiCard
-            label="Pending Applications"
-            value={pendingCount}
-            sub="Awaiting identity & catalog audit"
+            label="KYB Verification Queue"
+            value={kybPendingCount}
+            sub="Pending incorporation or address proof"
             icon={AlertTriangle}
             iconBg="rgba(245, 158, 11, 0.12)"
             iconColor="#f59e0b"
           />
 
           <AdminKpiCard
-            label="Action Needed"
-            value={changesCount}
-            sub="Missing address proof or docs"
-            icon={Sliders}
-            iconBg="rgba(56, 189, 248, 0.12)"
-            iconColor="#38bdf8"
+            label="Administrative Payout Holds"
+            value={payoutHoldCount}
+            sub="Frozen transfers • Storefronts remain live"
+            icon={Lock}
+            iconBg="rgba(239, 68, 68, 0.12)"
+            iconColor="#ef4444"
           />
 
           <AdminKpiCard
             label="Suspended Accounts"
             value={suspendedCount}
-            sub="Paused due to policy infractions"
+            sub="Unlisted due to trademark/policy issues"
             icon={ShieldAlert}
-            iconBg="rgba(239, 68, 68, 0.12)"
-            iconColor="#ef4444"
+            iconBg="rgba(100, 116, 139, 0.12)"
+            iconColor="#94a3b8"
           />
         </div>
 
-        {/* Vendors Table Panel */}
+        {/* Vendors Directory Panel */}
         <div className="admin-panel">
           <div className="admin-filter-bar">
             <div className="admin-filter-tabs">
               {[
-                { id: 'all', label: `All Merchants (${vendors.length})` },
-                { id: 'approved', label: `Active (${approvedCount})` },
-                { id: 'pending_approval', label: `Pending Review (${pendingCount})` },
-                { id: 'changes_requested', label: `Action Needed (${changesCount})` },
+                { id: 'all', label: `All Boutiques (${vendors.length})` },
+                { id: 'active', label: `Storefronts Live (${liveCount})` },
+                { id: 'kyb_pending', label: `KYB Review (${kybPendingCount})` },
+                { id: 'payout_hold', label: `Payout Holds (${payoutHoldCount})` },
                 { id: 'suspended', label: `Suspended (${suspendedCount})` }
               ].map(t => (
                 <button
@@ -191,7 +239,7 @@ export default function AdminVendorsPage() {
               <input
                 type="text"
                 className="admin-search-input"
-                placeholder="Search brand, legal entity, handle, email..."
+                placeholder="Search atelier name, legal entity, handle, email..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -203,12 +251,12 @@ export default function AdminVendorsPage() {
               <Loader2 size={24} className="animate-spin admin-empty-icon" />
               <p>Loading merchant directory...</p>
             </div>
-          ) : vendors.length === 0 ? (
+          ) : filteredVendors.length === 0 ? (
             <div className="admin-empty-state">
               <Users size={32} className="admin-empty-icon" />
-              <div className="admin-empty-title">No Merchants Found</div>
+              <div className="admin-empty-title">No Boutiques Found</div>
               <p className="admin-empty-desc">
-                {search ? 'Try clearing your search query.' : 'No vendors currently match this status filter.'}
+                {search ? 'Try adjusting your search criteria.' : 'No vendors currently match this governance filter.'}
               </p>
             </div>
           ) : (
@@ -217,28 +265,40 @@ export default function AdminVendorsPage() {
                 <thead>
                   <tr>
                     <th>Merchant Atelier</th>
-                    <th>Subdomain & Handle</th>
-                    <th>Compliance / KYB</th>
-                    <th>Active Garments</th>
-                    <th>Joined</th>
-                    <th>Status</th>
+                    <th>Storefront Access</th>
+                    <th>Business KYB</th>
+                    <th>Payout Eligibility</th>
+                    <th>Contract Rate</th>
                     <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {vendors.map(v => {
-                    const kyc = v.kyc_status || 'under_review';
-                    const hasPendingDocs = (v.documents || []).some(d => d.status === 'pending');
-                    const hasRejectedDocs = (v.documents || []).some(d => d.status === 'rejected');
+                  {filteredVendors.map(v => {
+                    const sfStatus = v.storefront_status || (v.vendor_status === 'approved' ? 'active' : (v.vendor_status === 'suspended' ? 'suspended' : 'under_review'));
+                    const kyb = v.kyb_status || v.kyc_status || 'verified';
+                    const isPayoutHold = (v.payout_eligibility === 'administrative_hold' || v.commercial_terms?.payout_hold || v.payout_hold_details?.active);
+                    const agreement = v.marketplace_agreement || { version: 'v2.4', commission_rate_pct: v.commercial_terms?.take_rate_pct || 5.0 };
 
-                    let kycPill = { text: 'KYC Verified', color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)' };
-                    if (kyc === 'documents_required' || hasRejectedDocs) {
-                      kycPill = { text: 'Address Proof Needed', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.12)' };
-                    } else if (kyc === 'under_review' || hasPendingDocs) {
-                      kycPill = { text: 'Docs Under Review', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)' };
-                    } else if (kyc === 'suspended') {
-                      kycPill = { text: 'Suspended', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.12)' };
+                    // Storefront badge styling
+                    let sfBadge = { text: 'Active Live', color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)' };
+                    if (sfStatus === 'suspended') {
+                      sfBadge = { text: 'Suspended', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.12)' };
+                    } else if (sfStatus === 'under_review' || sfStatus === 'pending_approval') {
+                      sfBadge = { text: 'Under Review', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)' };
                     }
+
+                    // KYB badge styling
+                    let kybBadge = { text: 'Verified', color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)' };
+                    if (kyb === 'rejected') {
+                      kybBadge = { text: 'Rejected', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.12)' };
+                    } else if (kyb === 'pending_documents' || kyb === 'documents_required' || kyb === 'under_review') {
+                      kybBadge = { text: 'Docs Required', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)' };
+                    }
+
+                    // Payout badge styling
+                    let payoutBadge = isPayoutHold
+                      ? { text: 'Administrative Hold', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.12)' }
+                      : { text: 'Eligible', color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)' };
 
                     return (
                       <tr key={v.id}>
@@ -253,74 +313,91 @@ export default function AdminVendorsPage() {
                               {(v.store_name || 'V').charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <div style={{ fontWeight: 600, color: 'var(--adm-text-main)', fontSize: '0.82rem' }}>
-                                {v.store_name}
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ fontWeight: 600, color: 'var(--adm-text-main)', fontSize: '0.82rem' }}>
+                                  {v.store_name}
+                                </span>
+                                <span style={{ fontSize: '0.62rem', color: '#818cf8', fontWeight: 500 }}>
+                                  [Demo]
+                                </span>
                               </div>
-                              <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)' }}>
+                              <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', marginTop: '1px' }}>
                                 {v.legal_business_name || v.store_name} • {v.country || 'Global'}
                               </div>
                             </div>
                           </div>
                         </td>
 
-                        {/* Subdomain & Handle */}
-                        <td>
-                          <div>
-                            <a
-                              href={`/store/${v.store_handle}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              style={{
-                                display: 'inline-flex', alignItems: 'center', gap: 4,
-                                color: 'var(--adm-accent)', textDecoration: 'none', fontWeight: 600, fontSize: '0.76rem'
-                              }}
-                            >
-                              <span>@{v.store_handle}</span>
-                              <ExternalLink size={11} />
-                            </a>
-                            <div style={{ fontSize: '0.66rem', color: 'var(--adm-text-sub)' }}>
-                              {v.email}
-                            </div>
-                          </div>
-                        </td>
-
-                        {/* Compliance / KYB */}
+                        {/* Storefront Access Gate */}
                         <td>
                           <span
                             style={{
                               display: 'inline-flex',
                               alignItems: 'center',
-                              gap: '4px',
+                              gap: '5px',
                               fontSize: '0.66rem',
                               fontWeight: 600,
                               padding: '2px 7px',
                               borderRadius: '4px',
-                              background: kycPill.bg,
-                              color: kycPill.color
+                              background: sfBadge.bg,
+                              color: sfBadge.color
                             }}
                           >
-                            <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: kycPill.color }} />
-                            {kycPill.text}
+                            <span style={{ width: 5, height: 5, borderRadius: '50%', background: sfBadge.color }} />
+                            {sfBadge.text}
                           </span>
                         </td>
 
-                        {/* Active Garments */}
+                        {/* Business KYB Gate */}
                         <td>
-                          <span style={{ fontWeight: 600, color: 'var(--adm-text-main)', fontSize: '0.78rem' }}>
-                            {v.products_count ?? 0} pieces
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              fontSize: '0.66rem',
+                              fontWeight: 600,
+                              padding: '2px 7px',
+                              borderRadius: '4px',
+                              background: kybBadge.bg,
+                              color: kybBadge.color
+                            }}
+                          >
+                            <span style={{ width: 5, height: 5, borderRadius: '50%', background: kybBadge.color }} />
+                            {kybBadge.text}
                           </span>
                         </td>
 
-                        {/* Joined Date */}
+                        {/* Payout Eligibility Gate */}
                         <td>
-                          <span style={{ fontSize: '0.74rem', color: 'var(--adm-text-sub)' }}>
-                            {new Date(v.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              fontSize: '0.66rem',
+                              fontWeight: 600,
+                              padding: '2px 7px',
+                              borderRadius: '4px',
+                              background: payoutBadge.bg,
+                              color: payoutBadge.color
+                            }}
+                          >
+                            <span style={{ width: 5, height: 5, borderRadius: '50%', background: payoutBadge.color }} />
+                            {payoutBadge.text}
                           </span>
                         </td>
 
-                        {/* Status */}
+                        {/* Agreement Take-Rate */}
                         <td>
-                          <AdminStatusBadge status={v.vendor_status} />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontWeight: 600, color: 'var(--adm-text-main)', fontSize: '0.78rem' }}>
+                              {(agreement.commission_rate_pct ?? 5.0).toFixed(1)}%
+                            </span>
+                            <span style={{ fontSize: '0.64rem', padding: '1px 5px', borderRadius: '3px', background: 'var(--adm-panel-hover)', color: 'var(--adm-text-sub)', fontFamily: 'monospace' }}>
+                              {agreement.version || 'v2.4'}
+                            </span>
+                          </div>
                         </td>
 
                         {/* Actions */}
@@ -356,7 +433,7 @@ export default function AdminVendorsPage() {
         </div>
       </div>
 
-      {/* Vendor Audit & Management Modal */}
+      {/* Vendor Audit & Governance Modal */}
       {selectedVendor && (
         <VendorAuditModal
           vendor={selectedVendor}
@@ -364,8 +441,10 @@ export default function AdminVendorsPage() {
           onClose={handleCloseAudit}
           onSaveBusiness={handleSaveBusiness}
           onUpdateDocStatus={handleUpdateDocStatus}
-          onUpdateTerms={handleUpdateTerms}
-          onUpdateStatus={handleUpdateStatus}
+          onPlacePayoutHold={handlePlacePayoutHold}
+          onReleasePayoutHold={handleReleasePayoutHold}
+          onUpdateAgreementRate={handleUpdateAgreementRate}
+          onUpdateStorefrontStatus={handleUpdateStorefrontStatus}
           loading={actionLoading}
         />
       )}

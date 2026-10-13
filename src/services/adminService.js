@@ -98,6 +98,54 @@ export const adminService = {
     return res.json();
   },
 
+  async placeVendorPayoutHold(vendorId, { category, reason, adminName = 'Platform Root Admin' }) {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.placeVendorPayoutHold(vendorId, { category, reason, adminName });
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/vendors/${vendorId}/payout-hold`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ category, reason, adminName })
+    });
+    return res.json();
+  },
+
+  async releaseVendorPayoutHold(vendorId, { note = '', adminName = 'Platform Root Admin' } = {}) {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.releaseVendorPayoutHold(vendorId, { note, adminName });
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/vendors/${vendorId}/payout-hold/release`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ note, adminName })
+    });
+    return res.json();
+  },
+
+  async updateVendorAgreementRate(vendorId, { newRate, reason, effectiveDate, adminName = 'Commercial Director' }) {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.updateVendorAgreementRate(vendorId, { newRate, reason, effectiveDate, adminName });
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/vendors/${vendorId}/agreement-rate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ newRate, reason, effectiveDate, adminName })
+    });
+    return res.json();
+  },
+
+  async updateVendorStorefrontStatus(vendorId, { status, reason = '', adminName = 'Platform Root Admin' }) {
+    if (IS_MOCK_MODE) {
+      return mockAdminAdapter.updateVendorStorefrontStatus(vendorId, { status, reason, adminName });
+    }
+    const res = await fetch(`${APP_CONFIG.API_BASE_URL}/admin/vendors/${vendorId}/storefront-status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, reason, adminName })
+    });
+    return res.json();
+  },
+
   async getDisputes() {
     if (IS_MOCK_MODE) {
       return mockAdminAdapter.getDisputes();

@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import {
   X, CheckCircle, AlertTriangle, ShieldAlert, Building2,
   FileText, CreditCard, ShieldCheck, ExternalLink, Globe,
-  Check, Clock, MapPin, User, Phone, Mail, FileCheck, Eye
+  Check, Clock, MapPin, User, Phone, Mail, FileCheck, Eye,
+  Lock, Unlock, FileSignature, History, Info, AlertCircle, Shield
 } from 'lucide-react';
-import { AdminModal, AdminStatusBadge } from '../index';
+import { AdminModal } from '../index';
 
 export default function VendorAuditModal({
   vendor,
@@ -13,6 +14,11 @@ export default function VendorAuditModal({
   onClose,
   onSaveBusiness,
   onUpdateDocStatus,
+  onPlacePayoutHold,
+  onReleasePayoutHold,
+  onUpdateAgreementRate,
+  onUpdateStorefrontStatus,
+  // Backwards compatibility fallbacks:
   onUpdateTerms,
   onUpdateStatus,
   loading = false
@@ -49,10 +55,23 @@ export default function VendorAuditModal({
     }
   });
 
-  // Commercial terms form state
-  const [termsForm, setTermsForm] = useState({
-    take_rate_pct: vendor.commercial_terms?.take_rate_pct || 5.0,
-    payout_hold: Boolean(vendor.commercial_terms?.payout_hold)
+  // Agreement Rate amendment form state
+  const currentAgreement = vendor.marketplace_agreement || {
+    version: 'v2.4',
+    effective_date: '2026-08-15',
+    accepted_by: vendor.representative?.name || 'Authorized Signer',
+    accepted_at: '2026-08-15T10:14:22Z',
+    commission_rate_pct: vendor.commercial_terms?.take_rate_pct || 5.0,
+    protocol_fees_desc: '0.0% listing fee • Standard payment processing passed at cost',
+    fulfillment_model: 'Merchant Atelier Self-Fulfill (DHL Express / Contracted Couriers)',
+    return_policy: '14-Day Boutique Window • Escrow released 48h post verified delivery (POD)',
+    payout_conditions: '5-step automated eligibility protocol verified'
+  };
+
+  const [rateForm, setRateForm] = useState({
+    newRate: currentAgreement.commission_rate_pct || 5.0,
+    reason: '',
+    effectiveDate: new Date().toISOString().split('T')[0]
   });
 
   // Address equivalence helper
@@ -69,12 +88,28 @@ export default function VendorAuditModal({
     isAddressesEqual(vendor.legal_address, vendor.return_warehouse_address) || !vendor.return_warehouse_address?.street
   );
 
-  // Action notes state
-  const [auditNote, setAuditNote] = useState('');
+  // Sub-modal states
   const [feedback, setFeedback] = useState(null);
   const [previewDoc, setPreviewDoc] = useState(null);
   const [rejectingDocId, setRejectingDocId] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
+  
+  // Payout Hold Sub-dialog
+  const [showHoldModal, setShowHoldModal] = useState(false);
+  const [holdCategory, setHoldCategory] = useState('Address Proof & KYB Verification Stale');
+  const [holdReason, setHoldReason] = useState('');
+  
+  // Release Hold Sub-dialog
+  const [showReleaseModal, setShowReleaseModal] = useState(false);
+  const [releaseNote, setReleaseNote] = useState('');
+
+  // Storefront Status Confirmation dialog
+  const [showStorefrontStatusModal, setShowStorefrontStatusModal] = useState(false);
+  const [targetStorefrontStatus, setTargetStorefrontStatus] = useState('');
+  const [storefrontReason, setStorefrontReason] = useState('');
+
+  // General note input
+  const [adHocNote, setAdHocNote] = useState('');
 
   useEffect(() => {
     if (vendor) {
@@ -107,16 +142,18 @@ export default function VendorAuditModal({
         }
       });
 
-      setTermsForm({
-        take_rate_pct: vendor.commercial_terms?.take_rate_pct || 5.0,
-        payout_hold: Boolean(vendor.commercial_terms?.payout_hold)
+      const agreedRate = vendor.marketplace_agreement?.commission_rate_pct ?? vendor.commercial_terms?.take_rate_pct ?? 5.0;
+      setRateForm({
+        newRate: agreedRate,
+        reason: '',
+        effectiveDate: new Date().toISOString().split('T')[0]
       });
     }
   }, [vendor]);
 
   const showFeedback = (msg, type = 'success') => {
     setFeedback({ msg, type });
-    setTimeout(() => setFeedback(null), 3000);
+    setTimeout(() => setFeedback(null), 3500);
   };
 
   const handleSameAddressToggle = (e) => {
@@ -138,15 +175,7 @@ export default function VendorAuditModal({
         return_warehouse_address: sameAsRegistered ? { ...bizForm.legal_address } : bizForm.return_warehouse_address
       };
       await onSaveBusiness(vendor.id, dataToSave);
-      showFeedback('Business profile & addresses saved successfully.');
-    }
-  };
-
-  const handleSaveTerms = async (e) => {
-    e.preventDefault();
-    if (onUpdateTerms) {
-      await onUpdateTerms(vendor.id, termsForm);
-      showFeedback('Commercial take-rate & payout hold updated.');
+      showFeedback('Business registration & addresses saved successfully.');
     }
   };
 
@@ -159,28 +188,129 @@ export default function VendorAuditModal({
     }
   };
 
-  const handleStatusChange = async (action) => {
-    if (onUpdateStatus) {
-      await onUpdateStatus(vendor.id, action, auditNote);
-      setAuditNote('');
-      showFeedback(`Boutique status updated to ${action}.`);
+  const handleConfirmPayoutHold = async () => {
+    if (!holdReason.trim()) {
+      alert('Please provide a justification reason for placing an administrative payout hold.');
+      return;
+    }
+    if (onPlacePayoutHold) {
+      await onPlacePayoutHold(vendor.id, {
+        category: holdCategory,
+        reason: holdReason,
+        adminName: 'Platform Root Admin'
+      });
+      setShowHoldModal(false);
+      setHoldReason('');
+      showFeedback('Administrative payout hold placed. Storefront remains active.');
+    } else if (onUpdateTerms) {
+      await onUpdateTerms(vendor.id, { payout_hold: true });
+      setShowHoldModal(false);
+      showFeedback('Payout hold placed.');
     }
   };
 
+  const handleConfirmReleasePayoutHold = async () => {
+    if (onReleasePayoutHold) {
+      await onReleasePayoutHold(vendor.id, {
+        note: releaseNote || 'Compliance audit resolved. Rolling payouts resumed.',
+        adminName: 'Platform Root Admin'
+      });
+      setShowReleaseModal(false);
+      setReleaseNote('');
+      showFeedback('Administrative payout hold released. Rolling payouts resumed.');
+    } else if (onUpdateTerms) {
+      await onUpdateTerms(vendor.id, { payout_hold: false });
+      setShowReleaseModal(false);
+      showFeedback('Payout hold released.');
+    }
+  };
+
+  const handleConfirmStorefrontStatus = async () => {
+    if (onUpdateStorefrontStatus) {
+      await onUpdateStorefrontStatus(vendor.id, {
+        status: targetStorefrontStatus,
+        reason: storefrontReason,
+        adminName: 'Platform Root Admin'
+      });
+      setShowStorefrontStatusModal(false);
+      setStorefrontReason('');
+      showFeedback(`Storefront access updated to ${targetStorefrontStatus}.`);
+    } else if (onUpdateStatus) {
+      await onUpdateStatus(vendor.id, targetStorefrontStatus === 'active' ? 'approve' : 'suspend', storefrontReason);
+      setShowStorefrontStatusModal(false);
+      showFeedback(`Status updated.`);
+    }
+  };
+
+  const handleExecuteRateAmendment = async (e) => {
+    e.preventDefault();
+    if (onUpdateAgreementRate) {
+      await onUpdateAgreementRate(vendor.id, {
+        newRate: parseFloat(rateForm.newRate),
+        reason: rateForm.reason || 'Negotiated contract amendment',
+        effectiveDate: rateForm.effectiveDate,
+        adminName: 'Commercial Director'
+      });
+      showFeedback(`Agreement rate amended to ${rateForm.newRate}%.`);
+      setRateForm(prev => ({ ...prev, reason: '' }));
+    } else if (onUpdateTerms) {
+      await onUpdateTerms(vendor.id, { take_rate_pct: parseFloat(rateForm.newRate) });
+      showFeedback(`Commission take-rate updated to ${rateForm.newRate}%.`);
+    }
+  };
+
+  // Status mapping
+  const storefrontStatus = vendor.storefront_status || (vendor.vendor_status === 'approved' ? 'active' : (vendor.vendor_status === 'suspended' ? 'suspended' : 'under_review'));
+  const kybStatus = vendor.kyb_status || vendor.kyc_status || 'verified';
+  const payoutEligibility = vendor.payout_eligibility || (vendor.commercial_terms?.payout_hold || vendor.payout_hold_details?.active ? 'administrative_hold' : 'eligible');
+
   const docs = vendor.documents || [];
-  const status = vendor.vendor_status || 'approved';
+  const paymentProvider = vendor.payment_provider || {
+    provider: 'Stripe Connect (Custom)',
+    account_id: vendor.commercial_terms?.stripe_account_id || 'acct_1N4k92A',
+    onboarding_status: 'completed',
+    charges_enabled: true,
+    payouts_enabled: !vendor.commercial_terms?.payout_hold,
+    bank_name: vendor.commercial_terms?.bank_name || 'JPMorgan Chase (Paris)',
+    account_last4: vendor.commercial_terms?.account_last4 || '4192',
+    currency: 'EUR',
+    source: 'provider_synced'
+  };
+
+  const agreementHistory = vendor.agreement_history || [
+    {
+      version: currentAgreement.version || 'v2.4',
+      rate_pct: currentAgreement.commission_rate_pct || 5.0,
+      effective_date: currentAgreement.effective_date || '2026-08-15',
+      reason: 'Standard luxury atelier marketplace terms',
+      updated_by: currentAgreement.accepted_by || 'Camille Laurent',
+      updated_at: currentAgreement.accepted_at || '2026-08-15T10:14:22Z'
+    }
+  ];
+
+  const auditTrail = vendor.audit_trail || [
+    {
+      id: 'aud_init_1',
+      timestamp: vendor.created_at || '2026-08-15T10:00:00Z',
+      actor: 'Onboarding System',
+      action: 'Boutique Account Registered',
+      note: 'Application initiated via merchant portal.'
+    }
+  ];
 
   return (
     <AdminModal
       isOpen={isOpen}
       onClose={onClose}
       title={`Boutique Audit Dossier: ${vendor.store_name}`}
-      maxWidth="840px"
+      maxWidth="860px"
       footer={
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.72rem', color: 'var(--adm-text-sub)' }}>
             <span>Merchant ID:</span>
             <code style={{ fontFamily: 'monospace', color: 'var(--adm-text-main)' }}>{vendor.id}</code>
+            <span style={{ color: 'var(--adm-border)' }}>•</span>
+            <span style={{ color: '#818cf8', fontWeight: 500 }}>Fictional Demo Entity</span>
           </div>
 
           <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -198,7 +328,7 @@ export default function VendorAuditModal({
               rel="noreferrer"
               className="admin-btn admin-btn-secondary admin-btn-sm"
             >
-              <span>Visit Storefront</span>
+              <span>Visit Public Storefront</span>
               <ExternalLink size={11} />
             </a>
           </div>
@@ -223,51 +353,126 @@ export default function VendorAuditModal({
         </div>
       )}
 
-      {/* Header Summary Banner */}
+      {/* Header Summary Banner with 3 Separated Governance Gates & Demo Watermark */}
       <div
         style={{
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0.85rem 1rem',
+          flexDirection: 'column',
+          gap: '0.75rem',
+          padding: '0.95rem 1.1rem',
           borderRadius: '8px',
           background: 'var(--adm-panel-hover)',
           border: '1px solid var(--adm-border)',
-          marginBottom: '1.25rem',
-          flexWrap: 'wrap',
-          gap: '0.75rem'
+          marginBottom: '1.25rem'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: 8,
+                background: 'var(--adm-bg)',
+                border: '1px solid var(--adm-border)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 700,
+                fontSize: '1.05rem',
+                color: 'var(--adm-accent)'
+              }}
+            >
+              {(vendor.store_name || 'V').charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--adm-text-main)' }}>
+                  {vendor.store_name}
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.62rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    background: 'rgba(99, 102, 241, 0.12)',
+                    color: '#818cf8',
+                    border: '1px solid rgba(99, 102, 241, 0.25)'
+                  }}
+                >
+                  Fictional Sandbox Record • Demo Data Only
+                </span>
+              </div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                @{vendor.store_handle} • {vendor.country || 'Global'} • {vendor.products_count ?? 0} active garments
+              </div>
+            </div>
+          </div>
+
+          <a
+            href={`/store/${vendor.store_handle}`}
+            target="_blank"
+            rel="noreferrer"
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: 8,
-              background: 'var(--adm-bg)',
-              border: '1px solid var(--adm-border)',
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 700,
-              fontSize: '1rem',
-              color: 'var(--adm-accent)'
+              gap: 4,
+              fontSize: '0.72rem',
+              color: 'var(--adm-accent)',
+              textDecoration: 'none',
+              fontWeight: 600
             }}
           >
-            {(vendor.store_name || 'V').charAt(0).toUpperCase()}
-          </div>
-          <div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--adm-text-main)' }}>
-              {vendor.store_name}
-            </div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--adm-text-sub)' }}>
-              @{vendor.store_handle} • {vendor.country || 'Global'} • {vendor.products_count ?? 0} active garments
-            </div>
-          </div>
+            <span>Preview Boutique</span>
+            <ExternalLink size={11} />
+          </a>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <AdminStatusBadge status={status} />
+        {/* 3 Separated Governance Gates */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+            gap: '0.6rem',
+            paddingTop: '0.65rem',
+            borderTop: '1px solid var(--adm-border-subtle)'
+          }}
+        >
+          {/* Gate 1: Storefront Access */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--adm-bg)', padding: '0.45rem 0.65rem', borderRadius: '6px', border: '1px solid var(--adm-border)' }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: storefrontStatus === 'active' ? '#10b981' : (storefrontStatus === 'suspended' ? '#ef4444' : '#f59e0b') }} />
+            <div>
+              <div style={{ fontSize: '0.62rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Storefront Access</div>
+              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--adm-text-main)', textTransform: 'capitalize' }}>
+                {storefrontStatus === 'active' ? 'Active Live' : (storefrontStatus === 'suspended' ? 'Suspended (Unlisted)' : 'Under Review')}
+              </div>
+            </div>
+          </div>
+
+          {/* Gate 2: Business KYB */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--adm-bg)', padding: '0.45rem 0.65rem', borderRadius: '6px', border: '1px solid var(--adm-border)' }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: kybStatus === 'verified' ? '#10b981' : (kybStatus === 'rejected' ? '#ef4444' : '#f59e0b') }} />
+            <div>
+              <div style={{ fontSize: '0.62rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Business KYB</div>
+              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--adm-text-main)', textTransform: 'capitalize' }}>
+                {kybStatus === 'verified' ? 'Verified' : (kybStatus === 'rejected' ? 'Rejected / Non-Compliant' : 'Documents Required')}
+              </div>
+            </div>
+          </div>
+
+          {/* Gate 3: Payout Eligibility */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--adm-bg)', padding: '0.45rem 0.65rem', borderRadius: '6px', border: '1px solid var(--adm-border)' }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: payoutEligibility === 'eligible' ? '#10b981' : '#ef4444' }} />
+            <div>
+              <div style={{ fontSize: '0.62rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Payout Eligibility</div>
+              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: payoutEligibility === 'eligible' ? 'var(--adm-text-main)' : '#ef4444' }}>
+                {payoutEligibility === 'eligible' ? 'Eligible (Rolling Payouts)' : 'Administrative Payout Hold'}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -275,9 +480,9 @@ export default function VendorAuditModal({
       <div className="admin-tab-nav" style={{ marginBottom: '1.25rem' }}>
         {[
           { id: 'business', label: 'Business & Legal Entity' },
-          { id: 'documents', label: 'Address Proof & Documents', count: docs.length },
-          { id: 'commercials', label: 'Marketplace Terms' },
-          { id: 'decision', label: 'Audit & Decision' }
+          { id: 'documents', label: 'Verification & Documents', count: docs.length },
+          { id: 'agreement', label: 'Marketplace Agreement', tag: currentAgreement.version || 'v2.4' },
+          { id: 'decision', label: 'Audit & Account Status', alert: payoutEligibility === 'administrative_hold' }
         ].map(t => {
           const isActive = activeTab === t.id;
           return (
@@ -291,6 +496,12 @@ export default function VendorAuditModal({
               {t.count !== undefined && (
                 <span className="admin-tab-badge">{t.count}</span>
               )}
+              {t.tag && (
+                <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: '3px', background: 'var(--adm-panel-hover)', color: 'var(--adm-text-sub)' }}>{t.tag}</span>
+              )}
+              {t.alert && (
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444' }} />
+              )}
             </button>
           );
         })}
@@ -302,8 +513,11 @@ export default function VendorAuditModal({
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {/* Entity Details Card */}
             <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
-              <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Building2 size={13} color="#38bdf8" /> Corporate Legal Registration
+              <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Building2 size={13} color="#38bdf8" /> Corporate Legal Registration
+                </div>
+                <span style={{ fontSize: '0.62rem', color: '#818cf8', fontWeight: 500 }}>Demo Registry Sandbox</span>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
@@ -335,28 +549,34 @@ export default function VendorAuditModal({
                 </div>
 
                 <div>
-                  <label className="admin-settings-title" style={{ display: 'block', marginBottom: '4px' }}>
-                    Tax / VAT Identification
-                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <label className="admin-settings-title" style={{ margin: 0 }}>
+                      Tax / VAT Identification
+                    </label>
+                    <span style={{ fontSize: '0.62rem', color: 'var(--adm-text-muted)' }}>[Demo VAT ID]</span>
+                  </div>
                   <input
                     type="text"
                     className="admin-input"
                     value={bizForm.tax_id}
                     onChange={(e) => setBizForm({ ...bizForm, tax_id: e.target.value })}
-                    placeholder="e.g. FR 89 293849102"
+                    placeholder="e.g. FR-DEMO-892938491"
                   />
                 </div>
 
                 <div>
-                  <label className="admin-settings-title" style={{ display: 'block', marginBottom: '4px' }}>
-                    Company Registry Number
-                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <label className="admin-settings-title" style={{ margin: 0 }}>
+                      Company Registry Number
+                    </label>
+                    <span style={{ fontSize: '0.62rem', color: 'var(--adm-text-muted)' }}>[Demo Registry #]</span>
+                  </div>
                   <input
                     type="text"
                     className="admin-input"
                     value={bizForm.registration_number}
                     onChange={(e) => setBizForm({ ...bizForm, registration_number: e.target.value })}
-                    placeholder="e.g. RCS Paris 892 938 491"
+                    placeholder="e.g. RCS Paris Demo 892 938 491"
                   />
                 </div>
               </div>
@@ -469,7 +689,7 @@ export default function VendorAuditModal({
                       <span>Same as registered business address</span>
                     </div>
                     <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)' }}>
-                      Customer dispatches and returns route to the registered corporate address:
+                      Customer dispatches and returns route to the corporate address on file:
                     </div>
                     <div style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: 'var(--adm-text-main)', background: 'var(--adm-bg)', padding: '0.45rem 0.65rem', borderRadius: '4px', border: '1px solid var(--adm-border-subtle)', marginTop: '2px' }}>
                       {bizForm.legal_address.street || 'Address on file'}
@@ -546,7 +766,7 @@ export default function VendorAuditModal({
             {/* Representative Card */}
             <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
               <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <User size={13} color="#38bdf8" /> Primary Business Representative
+                <User size={13} color="#38bdf8" /> Authorized Signer & Business Representative
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
@@ -568,7 +788,7 @@ export default function VendorAuditModal({
 
                 <div>
                   <label className="admin-settings-title" style={{ display: 'block', marginBottom: '4px' }}>
-                    Official Corporate Title
+                    Corporate Title
                   </label>
                   <input
                     type="text"
@@ -584,7 +804,7 @@ export default function VendorAuditModal({
 
                 <div>
                   <label className="admin-settings-title" style={{ display: 'block', marginBottom: '4px' }}>
-                    Direct Email
+                    Verified Email
                   </label>
                   <input
                     type="email"
@@ -632,15 +852,17 @@ export default function VendorAuditModal({
       {/* Tab 2: Address Proof & Compliance Documents */}
       {activeTab === 'documents' && (
         <div>
-          <div style={{ marginBottom: '1rem', fontSize: '0.74rem', color: 'var(--adm-text-sub)' }}>
-            Inspect legal incorporation extracts, address proof bills, and brand trademark authorizations. Every boutique requires verified address proof before payout disbursement.
+          <div style={{ marginBottom: '1rem', fontSize: '0.74rem', color: 'var(--adm-text-sub)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <span>Inspect legal incorporation extracts, address proof bills, and brand trademark authorizations.</span>
+            <span style={{ fontSize: '0.64rem', color: '#818cf8', fontWeight: 500 }}>
+              All documents are cryptographically simulated sandbox files
+            </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {docs.map((doc) => {
               const isVerified = doc.status === 'verified';
               const isRejected = doc.status === 'rejected';
-              const isPending = doc.status === 'pending' || !doc.status;
 
               let badgeBg = 'rgba(245, 158, 11, 0.12)';
               let badgeColor = '#f59e0b';
@@ -683,11 +905,16 @@ export default function VendorAuditModal({
                         <FileText size={16} />
                       </div>
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: '0.8rem', color: 'var(--adm-text-main)' }}>
-                          {doc.title}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ fontWeight: 600, fontSize: '0.8rem', color: 'var(--adm-text-main)' }}>
+                            {doc.title}
+                          </span>
+                          <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: '3px', background: 'var(--adm-panel-hover)', color: 'var(--adm-text-sub)' }}>
+                            PDF Sandbox
+                          </span>
                         </div>
-                        <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)' }}>
-                          File: <span style={{ fontFamily: 'monospace' }}>{doc.filename}</span> • {doc.size} • Uploaded {new Date(doc.uploaded_at).toLocaleDateString()}
+                        <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                          File: <span style={{ fontFamily: 'monospace' }}>{doc.filename}</span> • {doc.size} • Expiry: <strong>{doc.expiry_date || 'N/A'}</strong>
                         </div>
                       </div>
                     </div>
@@ -722,7 +949,7 @@ export default function VendorAuditModal({
                           onClick={() => handleDocAction(doc.id, 'verified')}
                           style={{ padding: '2px 8px', fontSize: '0.68rem' }}
                         >
-                          <Check size={11} /> Approve
+                          <Check size={11} /> Verify
                         </button>
                       )}
 
@@ -742,6 +969,7 @@ export default function VendorAuditModal({
                   {doc.notes && (
                     <div style={{ marginTop: '0.5rem', fontSize: '0.7rem', color: isRejected ? '#ef4444' : 'var(--adm-text-muted)', background: 'var(--adm-panel-hover)', padding: '0.4rem 0.65rem', borderRadius: '4px' }}>
                       <strong>Audit Note:</strong> {doc.notes}
+                      {doc.reviewed_by && <span style={{ marginLeft: '6px', color: 'var(--adm-text-sub)' }}>— {doc.reviewed_by}</span>}
                     </div>
                   )}
 
@@ -754,7 +982,7 @@ export default function VendorAuditModal({
                       <input
                         type="text"
                         className="admin-input"
-                        placeholder="e.g. Utility bill is over 90 days old or address does not match incorporation..."
+                        placeholder="e.g. Utility bill is over 90 days old or company registry is unverified..."
                         value={rejectReason}
                         onChange={(e) => setRejectReason(e.target.value)}
                         style={{ width: '100%', marginBottom: '6px' }}
@@ -787,7 +1015,7 @@ export default function VendorAuditModal({
             <AdminModal
               isOpen={Boolean(previewDoc)}
               onClose={() => setPreviewDoc(null)}
-              title={`Document Inspection: ${previewDoc.title}`}
+              title={`Simulated Document Inspection: ${previewDoc.title}`}
               maxWidth="520px"
               footer={
                 <button
@@ -799,19 +1027,24 @@ export default function VendorAuditModal({
                 </button>
               }
             >
-              <div style={{ padding: '1.5rem', textAlign: 'center', background: 'var(--adm-bg)', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
-                <FileCheck size={48} color="#38bdf8" style={{ margin: '0 auto 1rem' }} />
+              <div style={{ padding: '1.25rem', textAlign: 'center', background: 'var(--adm-bg)', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
+                <FileCheck size={44} color="#38bdf8" style={{ margin: '0 auto 0.75rem' }} />
                 <div style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--adm-text-main)' }}>
                   {previewDoc.filename}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--adm-text-sub)', marginTop: '4px' }}>
-                  Cryptographically hashed sandbox PDF • {previewDoc.size}
+                <div style={{ fontSize: '0.7rem', color: '#818cf8', marginTop: '2px', fontWeight: 500 }}>
+                  Simulated Demo Document (PDF Sandbox) • {previewDoc.size}
                 </div>
-                <div style={{ marginTop: '1rem', padding: '0.75rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', fontSize: '0.72rem', color: 'var(--adm-text-main)', textAlign: 'left' }}>
-                  <div><strong>Document Type:</strong> {previewDoc.type}</div>
-                  <div><strong>Status:</strong> {previewDoc.status}</div>
+                <div style={{ marginTop: '1rem', padding: '0.75rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', fontSize: '0.72rem', color: 'var(--adm-text-main)', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div><strong>Document Title:</strong> {previewDoc.title}</div>
+                  <div><strong>Type:</strong> <span style={{ fontFamily: 'monospace' }}>{previewDoc.type}</span></div>
+                  <div><strong>Status:</strong> <span style={{ textTransform: 'capitalize' }}>{previewDoc.status}</span></div>
+                  <div><strong>Expiry Date:</strong> {previewDoc.expiry_date || 'Permanent / Not Applicable'}</div>
                   <div><strong>Uploaded:</strong> {new Date(previewDoc.uploaded_at).toLocaleString()}</div>
-                  {previewDoc.notes && <div style={{ marginTop: '4px' }}><strong>Note:</strong> {previewDoc.notes}</div>}
+                  {previewDoc.notes && <div style={{ marginTop: '4px', color: 'var(--adm-text-sub)' }}><strong>Audit Record:</strong> {previewDoc.notes}</div>}
+                </div>
+                <div style={{ marginTop: '0.85rem', fontSize: '0.66rem', color: 'var(--adm-text-muted)' }}>
+                  This preview renders simulated file metadata for demonstration. In production, documents are verified via encrypted cloud storage and IDV providers.
                 </div>
               </div>
             </AdminModal>
@@ -819,214 +1052,506 @@ export default function VendorAuditModal({
         </div>
       )}
 
-      {/* Tab 3: Marketplace & Financial Terms */}
-      {activeTab === 'commercials' && (
-        <form onSubmit={handleSaveTerms}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div className="admin-settings-row">
-              <div className="admin-settings-info">
-                <div className="admin-settings-title">Negotiated Commission Take-Rate</div>
-                <div className="admin-settings-desc">Percentage deducted from gross merchandise value on settled orders.</div>
+      {/* Tab 3: Marketplace Agreement & History */}
+      {activeTab === 'agreement' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* Active Agreement Record */}
+          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileSignature size={16} color="#38bdf8" />
+                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--adm-text-main)' }}>
+                  Marketplace Agreement {currentAgreement.version || 'v2.4'}
+                </span>
+                <span style={{ fontSize: '0.64rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.12)', color: '#10b981', fontWeight: 600 }}>
+                  Active Contract
+                </span>
               </div>
-              <div className="admin-settings-control">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <input
-                    type="number"
-                    min="1"
-                    max="30"
-                    step="0.5"
-                    className="admin-input"
-                    value={termsForm.take_rate_pct}
-                    onChange={(e) => setTermsForm({ ...termsForm, take_rate_pct: parseFloat(e.target.value) || 0 })}
-                    style={{ width: '90px', fontWeight: 600 }}
-                  />
-                  <span style={{ fontSize: '0.8rem', color: 'var(--adm-text-sub)' }}>%</span>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--adm-text-muted)', marginLeft: '0.5rem' }}>
-                    (Standard marketplace rate is 5.0%)
-                  </span>
-                </div>
+              <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)' }}>
+                Effective: <strong>{currentAgreement.effective_date || '2026-08-15'}</strong>
               </div>
             </div>
 
-            <div className="admin-settings-row">
-              <div className="admin-settings-info">
-                <div className="admin-settings-title">Administrative Payout Hold</div>
-                <div className="admin-settings-desc">Freeze escrow disbursement without unlisting the storefront.</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--adm-text-sub)', marginBottom: '0.75rem', lineHeight: 1.45 }}>
+              Accepted electronically by <strong>{currentAgreement.accepted_by || vendor.representative?.name || 'Camille Laurent'}</strong> on {new Date(currentAgreement.accepted_at || '2026-08-15T10:14:22Z').toLocaleString()}. Governs merchant listing standards, escrow release conditions, and dispute arbitration.
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <div style={{ padding: '0.65rem 0.85rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)' }}>
+                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Commission Take-Rate</div>
+                <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--adm-text-main)', marginTop: '2px' }}>
+                  {(currentAgreement.commission_rate_pct ?? 5.0).toFixed(1)}% <span style={{ fontSize: '0.68rem', fontWeight: 400, color: 'var(--adm-text-muted)' }}>of settled GMV</span>
+                </div>
+                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                  {currentAgreement.protocol_fees_desc || '0.0% listing fee • Standard payment processing passed at cost'}
+                </div>
               </div>
-              <div className="admin-settings-control">
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', cursor: 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    checked={termsForm.payout_hold}
-                    onChange={(e) => setTermsForm({ ...termsForm, payout_hold: e.target.checked })}
-                    style={{ accentColor: 'var(--adm-accent)', width: '16px', height: '16px' }}
-                  />
-                  <span style={{ fontSize: '0.78rem', fontWeight: 500, color: termsForm.payout_hold ? '#ef4444' : 'var(--adm-text-main)' }}>
-                    {termsForm.payout_hold ? 'Payouts Currently Frozen (Administrative Hold)' : 'Rolling Payouts Active'}
-                  </span>
+
+              <div style={{ padding: '0.65rem 0.85rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)' }}>
+                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Fulfillment & Logistics</div>
+                <div style={{ fontSize: '0.76rem', fontWeight: 600, color: 'var(--adm-text-main)', marginTop: '2px' }}>
+                  {currentAgreement.fulfillment_model || 'Merchant Atelier Self-Fulfill'}
+                </div>
+                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                  Tracking required within 72h of order placement
+                </div>
+              </div>
+
+              <div style={{ padding: '0.65rem 0.85rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)' }}>
+                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Escrow & Return Policy</div>
+                <div style={{ fontSize: '0.76rem', fontWeight: 600, color: 'var(--adm-text-main)', marginTop: '2px' }}>
+                  14-Day Boutique Window
+                </div>
+                <div style={{ fontSize: '0.64rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
+                  Escrow released 48h post verified carrier delivery (POD)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Negotiate / Amend Commission Rate */}
+          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
+            <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <History size={13} color="#38bdf8" /> Propose Commission Amendment
+            </div>
+
+            <form onSubmit={handleExecuteRateAmendment} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.5fr auto', gap: '0.75rem', alignItems: 'flex-end' }}>
+              <div>
+                <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+                  New Rate (%)
                 </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="1"
+                  max="30"
+                  className="admin-input"
+                  value={rateForm.newRate}
+                  onChange={(e) => setRateForm({ ...rateForm, newRate: e.target.value })}
+                  required
+                />
               </div>
-            </div>
 
-            <div className="admin-settings-row">
-              <div className="admin-settings-info">
-                <div className="admin-settings-title">Connected Payment Vault ID</div>
-                <div className="admin-settings-desc">Provider connected account receiving automated transfer splits.</div>
+              <div>
+                <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+                  Effective Date
+                </label>
+                <input
+                  type="date"
+                  className="admin-input"
+                  value={rateForm.effectiveDate}
+                  onChange={(e) => setRateForm({ ...rateForm, effectiveDate: e.target.value })}
+                  required
+                />
               </div>
-              <div className="admin-settings-control">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <input
-                    type="text"
-                    readOnly
-                    className="admin-input"
-                    value={vendor.commercial_terms?.stripe_account_id || 'acct_unconnected'}
-                    style={{ width: '100%', fontFamily: 'monospace', fontSize: '0.74rem', background: 'var(--adm-bg)' }}
-                  />
-                  {vendor.commercial_terms?.stripe_account_id && (
-                    <a
-                      href={`https://dashboard.stripe.com/test/connect/accounts/${vendor.commercial_terms.stripe_account_id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="admin-btn admin-btn-ghost admin-btn-sm"
-                      style={{ padding: '4px 8px' }}
-                      title="Open in provider console"
-                    >
-                      <ExternalLink size={12} />
-                    </a>
-                  )}
-                </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', marginTop: '4px' }}>
-                  Destination: {vendor.commercial_terms?.bank_name || 'Commercial Bank'} •••• {vendor.commercial_terms?.account_last4 || '0000'}
-                </div>
-              </div>
-            </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <div>
+                <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+                  Amendment Justification
+                </label>
+                <input
+                  type="text"
+                  className="admin-input"
+                  placeholder="e.g. Negotiated volume milestone incentive..."
+                  value={rateForm.reason}
+                  onChange={(e) => setRateForm({ ...rateForm, reason: e.target.value })}
+                  required
+                />
+              </div>
+
               <button
                 type="submit"
                 className="admin-btn admin-btn-primary admin-btn-sm"
                 disabled={loading}
+                style={{ height: '34px' }}
               >
-                Save Commercial Terms
+                Execute Amendment
               </button>
+            </form>
+          </div>
+
+          {/* Chronological Agreement History */}
+          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
+            <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.6rem' }}>
+              Agreement Amendment History
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {agreementHistory.map((h, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.55rem 0.75rem',
+                    borderRadius: '6px',
+                    background: 'var(--adm-panel-hover)',
+                    border: '1px solid var(--adm-border-subtle)',
+                    fontSize: '0.72rem'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <code style={{ fontWeight: 700, color: 'var(--adm-accent)' }}>{h.version}</code>
+                    <span style={{ fontWeight: 600, color: 'var(--adm-text-main)' }}>{h.rate_pct}% Take-Rate</span>
+                    <span style={{ color: 'var(--adm-text-sub)' }}>• {h.reason}</span>
+                  </div>
+                  <div style={{ fontSize: '0.66rem', color: 'var(--adm-text-muted)' }}>
+                    Effective {h.effective_date} • By {h.updated_by}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </form>
+        </div>
       )}
 
-      {/* Tab 4: Audit & Decision */}
+      {/* Tab 4: Audit & Account Status */}
       {activeTab === 'decision' && (
-        <div>
-          {/* Current Decision Box */}
-          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)', marginBottom: '1.25rem' }}>
-            <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.5rem' }}>
-              Boutique Governance Status
-            </div>
-
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* Gate 1: Storefront Access Management */}
+          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
               <div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--adm-text-main)', textTransform: 'capitalize' }}>
-                  Current Status: {status.replace('_', ' ')}
+                <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Storefront Access & Catalog Indexing
                 </div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--adm-text-sub)', marginTop: '2px' }}>
-                  {status === 'approved' && 'Storefront is publicly accessible, products are indexed, and payouts are operational.'}
-                  {status === 'pending_approval' && 'Application submitted. Catalog is hidden from public market until approved.'}
-                  {status === 'changes_requested' && 'Application paused. Merchant has been requested to submit missing documentation.'}
-                  {status === 'suspended' && 'Storefront unlisted and checkouts paused due to policy infraction or copyright review.'}
+                <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--adm-text-main)', marginTop: '2px' }}>
+                  Status: {storefrontStatus === 'active' ? 'Active (Public Storefront Live)' : 'Suspended (Catalog Hidden)'}
+                </div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--adm-text-sub)', marginTop: '2px', maxWidth: '520px' }}>
+                  Suspension unlists the boutique from search and pauses purchases. Does not affect past order escrow releases.
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                {(status === 'pending_approval' || status === 'changes_requested') && (
-                  <>
-                    <button
-                      type="button"
-                      className="admin-btn admin-btn-primary admin-btn-sm"
-                      onClick={() => handleStatusChange('approve')}
-                    >
-                      <CheckCircle size={13} /> Approve Boutique
-                    </button>
-
-                    <button
-                      type="button"
-                      className="admin-btn admin-btn-secondary admin-btn-sm"
-                      onClick={() => handleStatusChange('request_changes')}
-                    >
-                      <AlertTriangle size={13} /> Request Missing Docs
-                    </button>
-
-                    <button
-                      type="button"
-                      className="admin-btn admin-btn-danger admin-btn-sm"
-                      onClick={() => handleStatusChange('reject')}
-                    >
-                      <X size={13} /> Reject
-                    </button>
-                  </>
-                )}
-
-                {status === 'approved' && (
+              <div>
+                {storefrontStatus === 'active' ? (
                   <button
                     type="button"
                     className="admin-btn admin-btn-danger admin-btn-sm"
-                    onClick={() => handleStatusChange('suspend')}
+                    onClick={() => {
+                      setTargetStorefrontStatus('suspended');
+                      setShowStorefrontStatusModal(true);
+                    }}
                   >
-                    <ShieldAlert size={13} /> Suspend Storefront
+                    <ShieldAlert size={12} /> Suspend Storefront
                   </button>
-                )}
-
-                {status === 'suspended' && (
+                ) : (
                   <button
                     type="button"
                     className="admin-btn admin-btn-primary admin-btn-sm"
-                    onClick={() => handleStatusChange('reactivate')}
+                    onClick={() => {
+                      setTargetStorefrontStatus('active');
+                      setShowStorefrontStatusModal(true);
+                    }}
                   >
-                    <CheckCircle size={13} /> Reactivate Boutique
+                    <CheckCircle size={12} /> Reactivate Storefront
                   </button>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Audit Notes & Log */}
-          <div>
-            <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.4rem' }}>
-              Add Compliance Note / Reason
-            </label>
-            <textarea
-              rows={2}
-              className="admin-search-input"
-              style={{ width: '100%', height: 'auto', padding: '0.65rem 0.85rem', marginBottom: '0.75rem' }}
-              placeholder="e.g. Verified Charonne commercial lease and Paris company registration. Approved for autumn launch."
-              value={auditNote}
-              onChange={(e) => setAuditNote(e.target.value)}
-            />
+          {/* Gate 2: Payment Provider Account (Stripe Connect) */}
+          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <CreditCard size={14} color="#38bdf8" />
+                <span style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Payment Provider Account (Stripe Connect)
+                </span>
+              </div>
+              <span style={{ fontSize: '0.64rem', padding: '2px 6px', borderRadius: '4px', background: paymentProvider.charges_enabled ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)', color: paymentProvider.charges_enabled ? '#10b981' : '#ef4444', fontWeight: 600 }}>
+                {paymentProvider.charges_enabled ? 'Charges Enabled' : 'Charges Blocked'}
+              </span>
+            </div>
 
-            {vendor.admin_notes && (
-              <div style={{ marginTop: '0.5rem' }}>
-                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>
-                  Audit History Log
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
+              <div>
+                <label style={{ fontSize: '0.66rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Connected Account ID</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <input
+                    type="text"
+                    readOnly
+                    className="admin-input"
+                    value={paymentProvider.account_id}
+                    style={{ fontFamily: 'monospace', fontSize: '0.74rem', background: 'var(--adm-panel-hover)' }}
+                  />
+                  <a
+                    href={`https://dashboard.stripe.com/test/connect/accounts/${paymentProvider.account_id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="admin-btn admin-btn-ghost admin-btn-sm"
+                    title="Inspect in provider console"
+                    style={{ padding: '4px 7px' }}
+                  >
+                    <ExternalLink size={12} />
+                  </a>
                 </div>
-                <pre
-                  style={{
-                    padding: '0.75rem',
-                    borderRadius: '6px',
-                    background: 'var(--adm-bg)',
-                    border: '1px solid var(--adm-border)',
-                    fontSize: '0.72rem',
-                    color: 'var(--adm-text-main)',
-                    whiteSpace: 'pre-wrap',
-                    fontFamily: 'monospace',
-                    margin: 0
-                  }}
-                >
-                  {vendor.admin_notes}
-                </pre>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.66rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '2px' }}>Settlement Bank Rails</label>
+                <div style={{ padding: '0.5rem 0.65rem', borderRadius: '6px', background: 'var(--adm-panel-hover)', border: '1px solid var(--adm-border-subtle)', fontSize: '0.72rem', color: 'var(--adm-text-main)' }}>
+                  {paymentProvider.bank_name} •••• {paymentProvider.account_last4}
+                  <span style={{ fontSize: '0.62rem', color: 'var(--adm-text-muted)', marginLeft: '6px' }}>(Synced from Provider Ledger)</span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ fontSize: '0.66rem', color: 'var(--adm-text-sub)', marginTop: '0.6rem' }}>
+              Connected account banking details are synced directly via Stripe Connect webhooks. Direct manual text edits are disallowed to prevent payment redirect exploits.
+            </div>
+          </div>
+
+          {/* Gate 3: Controlled Administrative Payout Governance */}
+          <div style={{ padding: '1rem', borderRadius: '8px', border: `1px solid ${payoutEligibility === 'administrative_hold' ? 'rgba(239, 68, 68, 0.4)' : 'var(--adm-border)'}`, background: 'var(--adm-bg)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <div>
+                <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Administrative Payout Governance
+                </div>
+                <div style={{ fontSize: '0.82rem', fontWeight: 600, color: payoutEligibility === 'administrative_hold' ? '#ef4444' : '#10b981', marginTop: '2px' }}>
+                  {payoutEligibility === 'administrative_hold' ? 'Administrative Payout Hold Active' : 'Rolling Payouts Eligible'}
+                </div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--adm-text-sub)', marginTop: '2px', maxWidth: '520px' }}>
+                  A payout hold pauses release of transfer funds without unlisting the public storefront. Each hold requires a documented category and rationale.
+                </div>
+              </div>
+
+              <div>
+                {payoutEligibility === 'administrative_hold' ? (
+                  <button
+                    type="button"
+                    className="admin-btn admin-btn-primary admin-btn-sm"
+                    onClick={() => setShowReleaseModal(true)}
+                  >
+                    <Unlock size={12} /> Release Payout Hold
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="admin-btn admin-btn-danger admin-btn-sm"
+                    onClick={() => setShowHoldModal(true)}
+                  >
+                    <Lock size={12} /> Place Payout Hold
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Active Hold Details Box */}
+            {payoutEligibility === 'administrative_hold' && (vendor.payout_hold_details || vendor.commercial_terms?.payout_hold) && (
+              <div style={{ marginTop: '0.85rem', padding: '0.75rem', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', fontSize: '0.72rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ef4444', fontWeight: 600, marginBottom: '3px' }}>
+                  <AlertCircle size={13} />
+                  <span>Category: {vendor.payout_hold_details?.category || 'Administrative Compliance Review'}</span>
+                </div>
+                <div style={{ color: 'var(--adm-text-main)' }}>
+                  <strong>Justification:</strong> {vendor.payout_hold_details?.reason || 'Payout hold active pending compliance documentation.'}
+                </div>
+                <div style={{ fontSize: '0.66rem', color: 'var(--adm-text-sub)', marginTop: '4px' }}>
+                  Placed by {vendor.payout_hold_details?.placed_by || 'Platform Admin'} on {new Date(vendor.payout_hold_details?.placed_at || Date.now()).toLocaleDateString()}
+                </div>
               </div>
             )}
           </div>
+
+          {/* Unified Chronological Audit Trail */}
+          <div style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--adm-border)', background: 'var(--adm-bg)' }}>
+            <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--adm-text-sub)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.65rem' }}>
+              Immutable Compliance Audit Trail
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '220px', overflowY: 'auto' }}>
+              {auditTrail.map((aud) => (
+                <div
+                  key={aud.id}
+                  style={{
+                    padding: '0.55rem 0.75rem',
+                    borderRadius: '6px',
+                    background: 'var(--adm-panel-hover)',
+                    border: '1px solid var(--adm-border-subtle)',
+                    fontSize: '0.72rem'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2px' }}>
+                    <span style={{ fontWeight: 600, color: 'var(--adm-text-main)' }}>{aud.action}</span>
+                    <span style={{ fontSize: '0.64rem', color: 'var(--adm-text-muted)' }}>{new Date(aud.timestamp).toLocaleString()}</span>
+                  </div>
+                  <div style={{ color: 'var(--adm-text-sub)' }}>{aud.note}</div>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--adm-accent)', marginTop: '2px' }}>Actor: {aud.actor}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+      )}
+
+      {/* Place Payout Hold Sub-Dialog */}
+      {showHoldModal && (
+        <AdminModal
+          isOpen={showHoldModal}
+          onClose={() => setShowHoldModal(false)}
+          title="Place Administrative Payout Hold"
+          maxWidth="500px"
+          footer={
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', width: '100%' }}>
+              <button
+                type="button"
+                className="admin-btn admin-btn-ghost admin-btn-sm"
+                onClick={() => setShowHoldModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="admin-btn admin-btn-danger admin-btn-sm"
+                onClick={handleConfirmPayoutHold}
+                disabled={loading}
+              >
+                Confirm Payout Hold
+              </button>
+            </div>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--adm-text-sub)' }}>
+              Placing an administrative payout hold freezes outgoing escrow settlements to this merchant's bank account while keeping their storefront public and available for customer purchases.
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+                Hold Category
+              </label>
+              <select
+                className="admin-input"
+                value={holdCategory}
+                onChange={(e) => setHoldCategory(e.target.value)}
+              >
+                <option value="Address Proof & KYB Verification Stale">Address Proof & KYB Verification Stale</option>
+                <option value="Copyright & Trademark Dispute">Copyright & Trademark Infringement Notice</option>
+                <option value="Unusually High Return / Defect Rate">Unusually High Return / Defect Rate</option>
+                <option value="Buyer Claim Arbitration">Buyer Claim Arbitration Pending</option>
+                <option value="Suspected Fraud / AML Review">Suspected Fraud / AML Review</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+                Formal Justification / Reason *
+              </label>
+              <textarea
+                rows={3}
+                className="admin-search-input"
+                style={{ width: '100%', height: 'auto', padding: '0.5rem 0.75rem' }}
+                placeholder="Detail the compliance violation or trigger reason..."
+                value={holdReason}
+                onChange={(e) => setHoldReason(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+        </AdminModal>
+      )}
+
+      {/* Release Payout Hold Sub-Dialog */}
+      {showReleaseModal && (
+        <AdminModal
+          isOpen={showReleaseModal}
+          onClose={() => setShowReleaseModal(false)}
+          title="Release Administrative Payout Hold"
+          maxWidth="500px"
+          footer={
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', width: '100%' }}>
+              <button
+                type="button"
+                className="admin-btn admin-btn-ghost admin-btn-sm"
+                onClick={() => setShowReleaseModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="admin-btn admin-btn-primary admin-btn-sm"
+                onClick={handleConfirmReleasePayoutHold}
+                disabled={loading}
+              >
+                Release Hold & Resume Payouts
+              </button>
+            </div>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--adm-text-sub)' }}>
+              Releasing this payout hold will restore rolling automated payouts for delivered orders meeting the 48-hour delivery verification window.
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+                Resolution Note (Optional)
+              </label>
+              <textarea
+                rows={3}
+                className="admin-search-input"
+                style={{ width: '100%', height: 'auto', padding: '0.5rem 0.75rem' }}
+                placeholder="e.g. Valid address proof received and verified against commercial registry..."
+                value={releaseNote}
+                onChange={(e) => setReleaseNote(e.target.value)}
+              />
+            </div>
+          </div>
+        </AdminModal>
+      )}
+
+      {/* Storefront Status Confirmation Dialog */}
+      {showStorefrontStatusModal && (
+        <AdminModal
+          isOpen={showStorefrontStatusModal}
+          onClose={() => setShowStorefrontStatusModal(false)}
+          title={targetStorefrontStatus === 'active' ? 'Reactivate Boutique Storefront' : 'Suspend Boutique Storefront'}
+          maxWidth="480px"
+          footer={
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', width: '100%' }}>
+              <button
+                type="button"
+                className="admin-btn admin-btn-ghost admin-btn-sm"
+                onClick={() => setShowStorefrontStatusModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={`admin-btn ${targetStorefrontStatus === 'active' ? 'admin-btn-primary' : 'admin-btn-danger'} admin-btn-sm`}
+                onClick={handleConfirmStorefrontStatus}
+                disabled={loading}
+              >
+                {targetStorefrontStatus === 'active' ? 'Reactivate Storefront' : 'Confirm Suspension'}
+              </button>
+            </div>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--adm-text-sub)' }}>
+              {targetStorefrontStatus === 'active'
+                ? 'Reactivating will make this atelier public and re-enable garment indexing in marketplace catalogs.'
+                : 'Suspending will unlist this atelier from public search and disable customer checkout. Existing delivered orders remain eligible for settlement.'}
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.68rem', color: 'var(--adm-text-sub)', display: 'block', marginBottom: '4px' }}>
+                Action Reason
+              </label>
+              <input
+                type="text"
+                className="admin-input"
+                placeholder="e.g. Trademark audit completed or storefront terms violation..."
+                value={storefrontReason}
+                onChange={(e) => setStorefrontReason(e.target.value)}
+              />
+            </div>
+          </div>
+        </AdminModal>
       )}
     </AdminModal>
   );

@@ -422,7 +422,7 @@ export const mockAdminAdapter = {
     const products = storageEngine.getItem(STORAGE_KEYS.PRODUCTS, []);
 
     // Ensure fallback stores exist or are upgraded with full compliance schema
-    if (!stores || stores.length < 5 || !stores[0]?.legal_business_name) {
+    if (!stores || stores.length < 5 || !stores[0]?.marketplace_agreement) {
       stores = INITIAL_VENDORS_DATA;
       storageEngine.setItem(STORAGE_KEYS.STORES, stores);
     }
@@ -523,26 +523,43 @@ export const mockAdminAdapter = {
     };
   },
 
-  async updateVendorDocumentStatus(vendorId, docId, status, notes = '') {
+  async updateVendorDocumentStatus(vendorId, docId, status, notes = '', adminName = 'Compliance Reviewer') {
     await delay(250);
     let stores = storageEngine.getItem(STORAGE_KEYS.STORES, INITIAL_VENDORS_DATA);
     const idx = stores.findIndex(s => (s.vendor_id === vendorId || s.id === vendorId || s.vendorId === vendorId));
-    if (idx === -1) {
-      return { success: false, error: 'Vendor not found' };
-    }
+    if (idx === -1) return { success: false, error: 'Vendor not found' };
 
     const docs = stores[idx].documents || [];
     const dIdx = docs.findIndex(d => d.id === docId);
     if (dIdx !== -1) {
+      const docTitle = docs[dIdx].title;
       docs[dIdx] = {
         ...docs[dIdx],
         status,
         notes: notes || docs[dIdx].notes,
-        verified_at: status === 'verified' ? new Date().toISOString() : docs[dIdx].verified_at
+        verified_at: status === 'verified' ? new Date().toISOString() : docs[dIdx].verified_at,
+        reviewed_by: adminName
       };
+
+      const auditEntry = {
+        id: 'aud_' + Math.floor(1000 + Math.random() * 9000),
+        timestamp: new Date().toISOString(),
+        actor: adminName,
+        action: `Document ${status === 'verified' ? 'Approved' : 'Rejected'}: ${docTitle}`,
+        note: notes || (status === 'verified' ? 'Document verified against compliance standards.' : 'Document rejected.')
+      };
+
+      const allVerified = docs.every(d => d.status === 'verified');
+      const anyRejected = docs.some(d => d.status === 'rejected');
+      let nextKyb = 'verified';
+      if (anyRejected) nextKyb = 'documents_required';
+      else if (!allVerified) nextKyb = 'pending_documents';
+
       stores[idx] = {
         ...stores[idx],
         documents: docs,
+        kyb_status: nextKyb,
+        audit_trail: [auditEntry, ...(stores[idx].audit_trail || [])],
         updated_at: new Date().toISOString()
       };
       storageEngine.setItem(STORAGE_KEYS.STORES, stores);
@@ -552,6 +569,134 @@ export const mockAdminAdapter = {
       success: true,
       vendor: stores[idx]
     };
+  },
+
+  async placeVendorPayoutHold(vendorId, { category, reason, adminName = 'Platform Root Admin' }) {
+    await delay(300);
+    let stores = storageEngine.getItem(STORAGE_KEYS.STORES, INITIAL_VENDORS_DATA);
+    const idx = stores.findIndex(s => (s.vendor_id === vendorId || s.id === vendorId || s.vendorId === vendorId));
+    if (idx === -1) return { success: false, error: 'Vendor not found' };
+
+    const holdObj = {
+      active: true,
+      category: category || 'Administrative Compliance Review',
+      reason: reason || 'Payout hold placed pending review.',
+      placed_by: adminName,
+      placed_at: new Date().toISOString()
+    };
+
+    const auditEntry = {
+      id: 'aud_' + Math.floor(1000 + Math.random() * 9000),
+      timestamp: new Date().toISOString(),
+      actor: adminName,
+      action: 'Administrative Payout Hold Placed',
+      note: `Category: ${holdObj.category} • Reason: ${holdObj.reason}`
+    };
+
+    stores[idx] = {
+      ...stores[idx],
+      payout_eligibility: 'administrative_hold',
+      payout_hold_details: holdObj,
+      audit_trail: [auditEntry, ...(stores[idx].audit_trail || [])],
+      updated_at: new Date().toISOString()
+    };
+    storageEngine.setItem(STORAGE_KEYS.STORES, stores);
+    return { success: true, vendor: stores[idx] };
+  },
+
+  async releaseVendorPayoutHold(vendorId, { note = '', adminName = 'Platform Root Admin' }) {
+    await delay(300);
+    let stores = storageEngine.getItem(STORAGE_KEYS.STORES, INITIAL_VENDORS_DATA);
+    const idx = stores.findIndex(s => (s.vendor_id === vendorId || s.id === vendorId || s.vendorId === vendorId));
+    if (idx === -1) return { success: false, error: 'Vendor not found' };
+
+    const auditEntry = {
+      id: 'aud_' + Math.floor(1000 + Math.random() * 9000),
+      timestamp: new Date().toISOString(),
+      actor: adminName,
+      action: 'Administrative Payout Hold Released',
+      note: note || 'Compliance audit resolved. Rolling payouts resumed.'
+    };
+
+    stores[idx] = {
+      ...stores[idx],
+      payout_eligibility: 'eligible',
+      payout_hold_details: null,
+      audit_trail: [auditEntry, ...(stores[idx].audit_trail || [])],
+      updated_at: new Date().toISOString()
+    };
+    storageEngine.setItem(STORAGE_KEYS.STORES, stores);
+    return { success: true, vendor: stores[idx] };
+  },
+
+  async updateVendorAgreementRate(vendorId, { newRate, reason, effectiveDate, adminName = 'Commercial Director' }) {
+    await delay(300);
+    let stores = storageEngine.getItem(STORAGE_KEYS.STORES, INITIAL_VENDORS_DATA);
+    const idx = stores.findIndex(s => (s.vendor_id === vendorId || s.id === vendorId || s.vendorId === vendorId));
+    if (idx === -1) return { success: false, error: 'Vendor not found' };
+
+    const rateNum = parseFloat(newRate) || 5.0;
+    const currentAgreement = stores[idx].marketplace_agreement || {};
+    const oldVerNum = parseFloat((currentAgreement.version || 'v2.4').replace('v', '')) || 2.4;
+    const newVersion = 'v' + (oldVerNum + 0.1).toFixed(1);
+
+    const historyEntry = {
+      version: newVersion,
+      rate_pct: rateNum,
+      effective_date: effectiveDate || new Date().toISOString().split('T')[0],
+      reason: reason || 'Contract amendment negotiated',
+      updated_by: adminName,
+      updated_at: new Date().toISOString()
+    };
+
+    const auditEntry = {
+      id: 'aud_' + Math.floor(1000 + Math.random() * 9000),
+      timestamp: new Date().toISOString(),
+      actor: adminName,
+      action: `Agreement Rate Amendment (${newVersion})`,
+      note: `Take-rate adjusted to ${rateNum.toFixed(1)}%. Reason: ${historyEntry.reason}. Effective: ${historyEntry.effective_date}.`
+    };
+
+    stores[idx] = {
+      ...stores[idx],
+      marketplace_agreement: {
+        ...currentAgreement,
+        version: newVersion,
+        effective_date: historyEntry.effective_date,
+        commission_rate_pct: rateNum
+      },
+      agreement_history: [historyEntry, ...(stores[idx].agreement_history || [])],
+      audit_trail: [auditEntry, ...(stores[idx].audit_trail || [])],
+      updated_at: new Date().toISOString()
+    };
+    storageEngine.setItem(STORAGE_KEYS.STORES, stores);
+    return { success: true, vendor: stores[idx] };
+  },
+
+  async updateVendorStorefrontStatus(vendorId, { status, reason = '', adminName = 'Platform Root Admin' }) {
+    await delay(300);
+    let stores = storageEngine.getItem(STORAGE_KEYS.STORES, INITIAL_VENDORS_DATA);
+    const idx = stores.findIndex(s => (s.vendor_id === vendorId || s.id === vendorId || s.vendorId === vendorId));
+    if (idx === -1) return { success: false, error: 'Vendor not found' };
+
+    const isLive = status === 'active';
+    const auditEntry = {
+      id: 'aud_' + Math.floor(1000 + Math.random() * 9000),
+      timestamp: new Date().toISOString(),
+      actor: adminName,
+      action: isLive ? 'Storefront Access Reactivated' : 'Storefront Access Suspended',
+      note: reason || (isLive ? 'Public storefront listing restored.' : 'Storefront unlisted and checkouts paused.')
+    };
+
+    stores[idx] = {
+      ...stores[idx],
+      storefront_status: status,
+      vendor_status: isLive ? 'approved' : status,
+      audit_trail: [auditEntry, ...(stores[idx].audit_trail || [])],
+      updated_at: new Date().toISOString()
+    };
+    storageEngine.setItem(STORAGE_KEYS.STORES, stores);
+    return { success: true, vendor: stores[idx] };
   },
 
   async updateVendorCommercialTerms(vendorId, terms) {
@@ -598,6 +743,7 @@ export const mockAdminAdapter = {
       stores[idx] = {
         ...stores[idx],
         vendor_status: nextStatus,
+        storefront_status: nextStatus === 'approved' ? 'active' : (nextStatus === 'suspended' ? 'suspended' : 'under_review'),
         admin_notes: newNotes,
         status_updated_at: new Date().toISOString()
       };
@@ -1242,15 +1388,19 @@ const INITIAL_VENDORS_DATA = [
     vendor_id: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c',
     store_name: 'Studio Label Paris',
     store_handle: 'studiolabel',
+    is_demo_sandbox: true,
     email: 'concierge@studiolabelparis.com',
     phone: '+33 1 42 68 55 00',
     custom_domain: 'shop.studiolabelparis.com',
     vendor_status: 'approved',
-    kyc_status: 'verified',
-    legal_business_name: 'Studio Label Paris S.A.S.',
+    storefront_status: 'active',
+    kyb_status: 'verified',
+    payout_eligibility: 'eligible',
+    payout_hold_details: null,
+    legal_business_name: 'Studio Label Paris S.A.S. (Demo)',
     business_type: 'Société par Actions Simplifiée (SAS)',
-    tax_id: 'FR 89 293849102',
-    registration_number: 'RCS Paris 892 938 491',
+    tax_id: 'FR-DEMO-89293849102',
+    registration_number: 'RCS-PARIS-DEMO-892938',
     country: 'France',
     products_count: 8,
     created_at: '2026-08-15T10:00:00Z',
@@ -1261,9 +1411,9 @@ const INITIAL_VENDORS_DATA = [
       country: 'France'
     },
     return_warehouse_address: {
-      street: '42 Rue de Paradis, Atelier 3B',
+      street: '18 Rue du Faubourg Saint-Honoré',
       city: 'Paris',
-      postal_code: '75010',
+      postal_code: '75008',
       country: 'France'
     },
     representative: {
@@ -1273,18 +1423,40 @@ const INITIAL_VENDORS_DATA = [
       phone: '+33 6 12 34 56 78'
     },
     documents: [
-      { id: 'doc_101', type: 'address_proof', title: 'Proof of Business Address', filename: 'commercial_lease_faubourg.pdf', size: '2.4 MB', uploaded_at: '2026-08-10T12:00:00Z', status: 'verified', notes: 'Verified against Paris commercial property registry.' },
-      { id: 'doc_102', type: 'incorporation', title: 'Certificate of Incorporation (Kbis)', filename: 'kbis_extract_2026.pdf', size: '1.1 MB', uploaded_at: '2026-08-10T12:00:00Z', status: 'verified', notes: 'Active in Paris Registry of Commerce.' },
-      { id: 'doc_103', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'passport_c_laurent.pdf', size: '3.8 MB', uploaded_at: '2026-08-10T12:00:00Z', status: 'verified', notes: 'Passport valid through 2031.' },
-      { id: 'doc_104', type: 'trademark', title: 'Brand Trademark Registration', filename: 'euipo_trademark_01829.pdf', size: '940 KB', uploaded_at: '2026-08-10T12:00:00Z', status: 'verified', notes: 'EUIPO registered brand owner.' }
+      { id: 'doc_101', type: 'address_proof', title: 'Proof of Business Address', filename: 'commercial_lease_faubourg.pdf', size: '2.4 MB', uploaded_at: '2026-08-10T12:00:00Z', expiry_date: '2027-08-10', status: 'verified', notes: 'Verified against Paris commercial property registry.' },
+      { id: 'doc_102', type: 'incorporation', title: 'Certificate of Incorporation (Kbis)', filename: 'kbis_extract_2026.pdf', size: '1.1 MB', uploaded_at: '2026-08-10T12:00:00Z', expiry_date: '2026-11-10', status: 'verified', notes: 'Active in Paris Registry of Commerce (within 90-day validity window).' },
+      { id: 'doc_103', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'passport_c_laurent.pdf', size: '3.8 MB', uploaded_at: '2026-08-10T12:00:00Z', expiry_date: '2031-06-15', status: 'verified', notes: 'Passport identity confirmed.' },
+      { id: 'doc_104', type: 'trademark', title: 'Brand Trademark Registration', filename: 'euipo_trademark_01829.pdf', size: '940 KB', uploaded_at: '2026-08-10T12:00:00Z', expiry_date: '2034-01-20', status: 'verified', notes: 'EUIPO registered brand owner in fashion classes 25 & 35.' }
     ],
-    commercial_terms: {
-      take_rate_pct: 5.0,
-      payout_hold: false,
-      stripe_account_id: 'acct_1N4k92A',
+    payment_provider: {
+      provider: 'Stripe Connect (Custom)',
+      account_id: 'acct_1N4k92A',
+      onboarding_status: 'completed',
+      charges_enabled: true,
+      payouts_enabled: true,
       bank_name: 'JPMorgan Chase (Paris)',
-      account_last4: '4192'
+      account_last4: '4192',
+      currency: 'EUR',
+      source: 'provider_synced'
     },
+    marketplace_agreement: {
+      version: 'v2.4',
+      effective_date: '2026-08-15',
+      accepted_by: 'Camille Laurent',
+      accepted_at: '2026-08-15T10:14:22Z',
+      commission_rate_pct: 5.0,
+      protocol_fees_desc: '0.0% listing fee • Standard payment processing passed at cost',
+      fulfillment_model: 'Merchant Atelier Self-Fulfill (DHL Express / Negotiated Couriers)',
+      return_policy: '14-Day Boutique Window • Escrow released 48h post verified delivery (POD)',
+      payout_conditions: '5-step automated eligibility verification passed'
+    },
+    agreement_history: [
+      { version: 'v2.4', rate_pct: 5.0, effective_date: '2026-08-15', reason: 'Initial boutique onboarding agreement', updated_by: 'Platform Root Admin', updated_at: '2026-08-15T10:14:22Z' }
+    ],
+    audit_trail: [
+      { id: 'aud_101', timestamp: '2026-08-15T10:14:22Z', actor: 'Platform Root Admin', action: 'Boutique Onboarding Approved', note: 'All 4 KYB documents verified. Agreement v2.4 accepted.' },
+      { id: 'aud_102', timestamp: '2026-08-10T14:30:00Z', actor: 'Compliance Reviewer', action: 'KYB Identity Verification Completed', note: 'Address proof and Kbis excerpt authenticated.' }
+    ],
     admin_notes: 'Atelier verified during Paris Fashion Week intake.'
   },
   {
@@ -1292,15 +1464,19 @@ const INITIAL_VENDORS_DATA = [
     vendor_id: 'mch_elena_02',
     store_name: 'Elena Couture',
     store_handle: 'elenacouture',
+    is_demo_sandbox: true,
     email: 'elena@elenacouture.com',
     phone: '+39 02 7600 1234',
     custom_domain: 'shop.elenacouture.com',
     vendor_status: 'approved',
-    kyc_status: 'verified',
-    legal_business_name: 'Elena Couture S.r.l.',
+    storefront_status: 'active',
+    kyb_status: 'verified',
+    payout_eligibility: 'eligible',
+    payout_hold_details: null,
+    legal_business_name: 'Elena Couture S.r.l. (Demo)',
     business_type: 'Società a Responsabilità Limitata (S.r.l.)',
-    tax_id: 'IT 08192840152',
-    registration_number: 'REA Milano MI-2091823',
+    tax_id: 'IT-DEMO-08192840152',
+    registration_number: 'REA-MILANO-DEMO-2091823',
     country: 'Italy',
     products_count: 2,
     created_at: '2026-09-01T14:30:00Z',
@@ -1323,18 +1499,39 @@ const INITIAL_VENDORS_DATA = [
       phone: '+39 340 1234567'
     },
     documents: [
-      { id: 'doc_201', type: 'address_proof', title: 'Proof of Business Address', filename: 'telecom_italia_utility_bill.pdf', size: '1.8 MB', uploaded_at: '2026-08-28T09:30:00Z', status: 'verified', notes: 'Matches Montenapoleone commercial registry.' },
-      { id: 'doc_202', type: 'incorporation', title: 'Certificate of Incorporation', filename: 'camera_commercio_milano.pdf', size: '2.1 MB', uploaded_at: '2026-08-28T09:30:00Z', status: 'verified', notes: 'Milan Chamber of Commerce certified.' },
-      { id: 'doc_203', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'carta_identita_rossi.pdf', size: '2.9 MB', uploaded_at: '2026-08-28T09:30:00Z', status: 'verified', notes: 'Italian national identity verified.' },
-      { id: 'doc_204', type: 'trademark', title: 'Brand Trademark Registration', filename: 'uibm_marchio_elena.pdf', size: '1.2 MB', uploaded_at: '2026-08-28T09:30:00Z', status: 'verified', notes: 'Italian Patent and Trademark Office registered.' }
+      { id: 'doc_201', type: 'address_proof', title: 'Proof of Business Address', filename: 'telecom_italia_utility_bill.pdf', size: '1.8 MB', uploaded_at: '2026-08-28T09:30:00Z', expiry_date: '2026-11-28', status: 'verified', notes: 'Matches Montenapoleone commercial registry.' },
+      { id: 'doc_202', type: 'incorporation', title: 'Certificate of Incorporation', filename: 'camera_commercio_milano.pdf', size: '2.1 MB', uploaded_at: '2026-08-28T09:30:00Z', expiry_date: '2026-11-28', status: 'verified', notes: 'Milan Chamber of Commerce certified.' },
+      { id: 'doc_203', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'carta_identita_rossi.pdf', size: '2.9 MB', uploaded_at: '2026-08-28T09:30:00Z', expiry_date: '2030-04-12', status: 'verified', notes: 'Italian national identity verified.' },
+      { id: 'doc_204', type: 'trademark', title: 'Brand Trademark Registration', filename: 'uibm_marchio_elena.pdf', size: '1.2 MB', uploaded_at: '2026-08-28T09:30:00Z', expiry_date: '2035-09-01', status: 'verified', notes: 'Italian Patent and Trademark Office registered.' }
     ],
-    commercial_terms: {
-      take_rate_pct: 4.5,
-      payout_hold: false,
-      stripe_account_id: 'acct_1N8m10B',
+    payment_provider: {
+      provider: 'Stripe Connect (Custom)',
+      account_id: 'acct_1N8m10B',
+      onboarding_status: 'completed',
+      charges_enabled: true,
+      payouts_enabled: true,
       bank_name: 'BNP Paribas Private',
-      account_last4: '8821'
+      account_last4: '8821',
+      currency: 'EUR',
+      source: 'provider_synced'
     },
+    marketplace_agreement: {
+      version: 'v2.4',
+      effective_date: '2026-09-01',
+      accepted_by: 'Elena Rossi',
+      accepted_at: '2026-09-01T14:30:00Z',
+      commission_rate_pct: 4.5,
+      protocol_fees_desc: '0.0% listing fee • Standard payment processing passed at cost',
+      fulfillment_model: 'Merchant Atelier Self-Fulfill (FedEx International)',
+      return_policy: '14-Day Boutique Window • Escrow released 48h post verified delivery (POD)',
+      payout_conditions: '5-step automated eligibility verification passed'
+    },
+    agreement_history: [
+      { version: 'v2.4', rate_pct: 4.5, effective_date: '2026-09-01', reason: 'Negotiated high-volume bridal wear tier', updated_by: 'Platform Root Admin', updated_at: '2026-09-01T14:30:00Z' }
+    ],
+    audit_trail: [
+      { id: 'aud_201', timestamp: '2026-09-01T14:30:00Z', actor: 'Platform Root Admin', action: 'Boutique Onboarding Approved', note: 'Direct contract negotiated at 4.5% platform commission.' }
+    ],
     admin_notes: 'Direct contract negotiated at 4.5% platform commission.'
   },
   {
@@ -1342,15 +1539,19 @@ const INITIAL_VENDORS_DATA = [
     vendor_id: 'mch_ombre_03',
     store_name: "Maison de L'Ombre",
     store_handle: 'maisondelombre',
+    is_demo_sandbox: true,
     email: 'contact@maisondelombre.fr',
     phone: '+33 1 48 05 99 11',
     custom_domain: 'boutique.maisondelombre.fr',
     vendor_status: 'pending_approval',
-    kyc_status: 'under_review',
-    legal_business_name: "Maison de L'Ombre Créations SARL",
+    storefront_status: 'under_review',
+    kyb_status: 'pending_documents',
+    payout_eligibility: 'restricted',
+    payout_hold_details: null,
+    legal_business_name: "Maison de L'Ombre Créations SARL (Demo)",
     business_type: 'Société à Responsabilité Limitée (SARL)',
-    tax_id: 'FR 41 908123456',
-    registration_number: 'RCS Paris 908 123 456',
+    tax_id: 'FR-DEMO-41908123456',
+    registration_number: 'RCS-PARIS-DEMO-908123',
     country: 'France',
     products_count: 4,
     created_at: '2026-10-08T15:20:00Z',
@@ -1361,7 +1562,7 @@ const INITIAL_VENDORS_DATA = [
       country: 'France'
     },
     return_warehouse_address: {
-      street: '7 Rue de Charonne, Rez-de-chaussée',
+      street: '7 Rue de Charonne',
       city: 'Paris',
       postal_code: '75011',
       country: 'France'
@@ -1373,18 +1574,39 @@ const INITIAL_VENDORS_DATA = [
       phone: '+33 6 77 88 99 00'
     },
     documents: [
-      { id: 'doc_301', type: 'address_proof', title: 'Proof of Business Address', filename: 'edf_electricity_bill_july2026.pdf', size: '1.4 MB', uploaded_at: '2026-10-08T15:20:00Z', status: 'pending', notes: 'Awaiting admin verification against Charonne commercial lease.' },
-      { id: 'doc_302', type: 'incorporation', title: 'Certificate of Incorporation (Kbis)', filename: 'kbis_extrait_ombre.pdf', size: '890 KB', uploaded_at: '2026-10-08T15:20:00Z', status: 'verified', notes: 'Validated with Infogreffe database.' },
-      { id: 'doc_303', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'passeport_vaneau.pdf', size: '3.1 MB', uploaded_at: '2026-10-08T15:20:00Z', status: 'verified', notes: 'Passport verified via Stripe Identity check.' },
-      { id: 'doc_304', type: 'trademark', title: 'Brand Trademark Registration', filename: 'inpi_marque_depot_ombre.pdf', size: '1.5 MB', uploaded_at: '2026-10-08T15:20:00Z', status: 'pending', notes: 'French INPI application pending final publication review.' }
+      { id: 'doc_301', type: 'address_proof', title: 'Proof of Business Address', filename: 'edf_electricity_bill_july2026.pdf', size: '1.4 MB', uploaded_at: '2026-10-08T15:20:00Z', expiry_date: '2026-10-31', status: 'pending', notes: 'Awaiting admin verification against Charonne commercial lease.' },
+      { id: 'doc_302', type: 'incorporation', title: 'Certificate of Incorporation (Kbis)', filename: 'kbis_extrait_ombre.pdf', size: '890 KB', uploaded_at: '2026-10-08T15:20:00Z', expiry_date: '2027-01-08', status: 'verified', notes: 'Validated with Infogreffe database.' },
+      { id: 'doc_303', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'passeport_vaneau.pdf', size: '3.1 MB', uploaded_at: '2026-10-08T15:20:00Z', expiry_date: '2032-11-20', status: 'verified', notes: 'Passport verified via Stripe Identity check.' },
+      { id: 'doc_304', type: 'trademark', title: 'Brand Trademark Registration', filename: 'inpi_marque_depot_ombre.pdf', size: '1.5 MB', uploaded_at: '2026-10-08T15:20:00Z', expiry_date: '2036-10-01', status: 'pending', notes: 'French INPI application pending final publication review.' }
     ],
-    commercial_terms: {
-      take_rate_pct: 5.0,
-      payout_hold: true,
-      stripe_account_id: 'acct_1N9p77C',
+    payment_provider: {
+      provider: 'Stripe Connect (Custom)',
+      account_id: 'acct_1N9p77C',
+      onboarding_status: 'requirements_pending',
+      charges_enabled: false,
+      payouts_enabled: false,
       bank_name: 'Société Générale (Bastille)',
-      account_last4: '1092'
+      account_last4: '1092',
+      currency: 'EUR',
+      source: 'provider_synced'
     },
+    marketplace_agreement: {
+      version: 'v2.4',
+      effective_date: '2026-10-08',
+      accepted_by: 'Mathieu Vaneau',
+      accepted_at: '2026-10-08T15:20:00Z',
+      commission_rate_pct: 5.0,
+      protocol_fees_desc: '0.0% listing fee • Standard payment processing passed at cost',
+      fulfillment_model: 'Merchant Atelier Self-Fulfill (DHL Express)',
+      return_policy: '14-Day Boutique Window • Escrow released 48h post verified delivery (POD)',
+      payout_conditions: '5-step automated eligibility protocol verified'
+    },
+    agreement_history: [
+      { version: 'v2.4', rate_pct: 5.0, effective_date: '2026-10-08', reason: 'Initial application terms accepted by applicant', updated_by: 'Mathieu Vaneau', updated_at: '2026-10-08T15:20:00Z' }
+    ],
+    audit_trail: [
+      { id: 'aud_301', timestamp: '2026-10-08T15:20:00Z', actor: 'Automated Onboarding Ingest', action: 'Application Registered', note: 'Initial application submitted with 4 haute couture evening pieces. Address proof and trademark pending verification.' }
+    ],
     admin_notes: 'Initial application received. Catalog contains 4 haute couture evening pieces. Address proof and trademark pending approval.'
   },
   {
@@ -1392,15 +1614,25 @@ const INITIAL_VENDORS_DATA = [
     vendor_id: 'mch_noir_04',
     store_name: 'Atelier Noir Studio',
     store_handle: 'ateliernoir',
+    is_demo_sandbox: true,
     email: 'contact@ateliernoir.com',
     phone: '+1 (212) 555-0184',
     custom_domain: 'ateliernoir.com',
     vendor_status: 'changes_requested',
-    kyc_status: 'documents_required',
-    legal_business_name: 'Noir Studio LLC',
+    storefront_status: 'active',
+    kyb_status: 'documents_required',
+    payout_eligibility: 'administrative_hold',
+    payout_hold_details: {
+      active: true,
+      category: 'Compliance Documentation Review',
+      reason: 'Proof of address utility bill rejected (exceeded 90-day threshold). Updated commercial lease deed required.',
+      placed_by: 'Senior Compliance Auditor #4',
+      placed_at: '2026-10-01T11:00:00Z'
+    },
+    legal_business_name: 'Noir Studio LLC (Demo)',
     business_type: 'Limited Liability Company (LLC)',
-    tax_id: 'US 13-9824018',
-    registration_number: 'NY DOS ID 6920194',
+    tax_id: 'US-DEMO-139824018',
+    registration_number: 'NY-DOS-DEMO-6920194',
     country: 'United States',
     products_count: 5,
     created_at: '2026-09-20T11:00:00Z',
@@ -1423,18 +1655,40 @@ const INITIAL_VENDORS_DATA = [
       phone: '+1 (917) 555-0199'
     },
     documents: [
-      { id: 'doc_401', type: 'address_proof', title: 'Proof of Business Address', filename: 'conedison_bill_unclear.pdf', size: '720 KB', uploaded_at: '2026-09-20T11:00:00Z', status: 'rejected', notes: 'Rejected: Bill is dated over 6 months ago. Upload utility bill from last 90 days or signed Soho lease.' },
-      { id: 'doc_402', type: 'incorporation', title: 'Certificate of Formation', filename: 'ny_articles_of_organization.pdf', size: '1.3 MB', uploaded_at: '2026-09-20T11:00:00Z', status: 'verified', notes: 'New York Department of State verified.' },
-      { id: 'doc_403', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'ny_driver_license_vance.pdf', size: '2.5 MB', uploaded_at: '2026-09-20T11:00:00Z', status: 'verified', notes: 'Driver license valid through 2028.' },
-      { id: 'doc_404', type: 'trademark', title: 'USPTO Trademark Filing', filename: 'uspto_sn_97812903.pdf', size: '1.1 MB', uploaded_at: '2026-09-20T11:00:00Z', status: 'verified', notes: 'USPTO Principal Register active.' }
+      { id: 'doc_401', type: 'address_proof', title: 'Proof of Business Address', filename: 'conedison_bill_unclear.pdf', size: '720 KB', uploaded_at: '2026-09-20T11:00:00Z', expiry_date: '2026-03-15', status: 'rejected', notes: 'Rejected: Bill is dated over 6 months ago. Upload utility bill from last 90 days or signed Soho lease.' },
+      { id: 'doc_402', type: 'incorporation', title: 'Certificate of Formation', filename: 'ny_articles_of_organization.pdf', size: '1.3 MB', uploaded_at: '2026-09-20T11:00:00Z', expiry_date: 'Permanent', status: 'verified', notes: 'New York Department of State verified.' },
+      { id: 'doc_403', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'ny_driver_license_vance.pdf', size: '2.5 MB', uploaded_at: '2026-09-20T11:00:00Z', expiry_date: '2028-10-14', status: 'verified', notes: 'Driver license valid through 2028.' },
+      { id: 'doc_404', type: 'trademark', title: 'USPTO Trademark Filing', filename: 'uspto_sn_97812903.pdf', size: '1.1 MB', uploaded_at: '2026-09-20T11:00:00Z', expiry_date: '2033-05-22', status: 'verified', notes: 'USPTO Principal Register active.' }
     ],
-    commercial_terms: {
-      take_rate_pct: 5.0,
-      payout_hold: true,
-      stripe_account_id: 'acct_1N9x55D',
+    payment_provider: {
+      provider: 'Stripe Connect (Custom)',
+      account_id: 'acct_1N9x55D',
+      onboarding_status: 'restricted',
+      charges_enabled: true,
+      payouts_enabled: false,
       bank_name: 'Silicon Valley Bank / First Citizens',
-      account_last4: '3049'
+      account_last4: '3049',
+      currency: 'USD',
+      source: 'provider_synced'
     },
+    marketplace_agreement: {
+      version: 'v2.4',
+      effective_date: '2026-09-20',
+      accepted_by: 'Julian Vance',
+      accepted_at: '2026-09-20T11:00:00Z',
+      commission_rate_pct: 5.0,
+      protocol_fees_desc: '0.0% listing fee • Standard payment processing passed at cost',
+      fulfillment_model: 'Merchant Atelier Self-Fulfill (UPS Worldwide)',
+      return_policy: '14-Day Boutique Window • Escrow released 48h post verified delivery (POD)',
+      payout_conditions: '5-step automated eligibility protocol verified'
+    },
+    agreement_history: [
+      { version: 'v2.4', rate_pct: 5.0, effective_date: '2026-09-20', reason: 'Initial boutique terms', updated_by: 'Julian Vance', updated_at: '2026-09-20T11:00:00Z' }
+    ],
+    audit_trail: [
+      { id: 'aud_401', timestamp: '2026-10-01T11:00:00Z', actor: 'Senior Compliance Auditor #4', action: 'Administrative Payout Hold Placed', note: 'Utility bill rejected as stale. Payout hold placed without unlisting storefront.' },
+      { id: 'aud_402', timestamp: '2026-09-20T11:00:00Z', actor: 'Onboarding System', action: 'Application Accepted into Staging', note: 'Articles of organization and photo ID approved.' }
+    ],
     admin_notes: 'Address proof was rejected on Oct 1st. Notified applicant to supply valid utility bill or Soho commercial lease.'
   },
   {
@@ -1442,15 +1696,25 @@ const INITIAL_VENDORS_DATA = [
     vendor_id: 'mch_vanguard_05',
     store_name: 'Vanguard Streetwear Co.',
     store_handle: 'vanguardstreet',
+    is_demo_sandbox: true,
     email: 'legal@vanguardstreet.co.uk',
     phone: '+44 20 7946 0912',
     custom_domain: 'shop.vanguardstreet.co.uk',
     vendor_status: 'suspended',
-    kyc_status: 'suspended',
-    legal_business_name: 'Vanguard Streetwear Limited',
+    storefront_status: 'suspended',
+    kyb_status: 'rejected',
+    payout_eligibility: 'administrative_hold',
+    payout_hold_details: {
+      active: true,
+      category: 'Copyright & Trademark Infringement',
+      reason: 'Active trademark dispute filed by third-party rights holder. Full IP audit required before access restoration.',
+      placed_by: 'Senior Legal Admin',
+      placed_at: '2026-10-02T09:15:00Z'
+    },
+    legal_business_name: 'Vanguard Streetwear Limited (Demo)',
     business_type: 'Private Limited Company (Ltd)',
-    tax_id: 'GB 992 0192 84',
-    registration_number: 'Companies House 12904812',
+    tax_id: 'GB-DEMO-992019284',
+    registration_number: 'UK-CH-DEMO-12904812',
     country: 'United Kingdom',
     products_count: 6,
     created_at: '2026-07-15T08:00:00Z',
@@ -1473,18 +1737,40 @@ const INITIAL_VENDORS_DATA = [
       phone: '+44 7700 900123'
     },
     documents: [
-      { id: 'doc_501', type: 'address_proof', title: 'Proof of Business Address', filename: 'shoreditch_lease_deed.pdf', size: '3.1 MB', uploaded_at: '2026-07-15T08:00:00Z', status: 'verified', notes: 'Verified commercial lease.' },
-      { id: 'doc_502', type: 'incorporation', title: 'Certificate of Incorporation', filename: 'companies_house_extract.pdf', size: '1.4 MB', uploaded_at: '2026-07-15T08:00:00Z', status: 'verified', notes: 'Companies House registered.' },
-      { id: 'doc_503', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'uk_passport_sterling.pdf', size: '2.8 MB', uploaded_at: '2026-07-15T08:00:00Z', status: 'verified', notes: 'UK passport verified.' },
-      { id: 'doc_504', type: 'trademark', title: 'Brand Trademark Registration', filename: 'uk_ipo_trademark.pdf', size: '1.0 MB', uploaded_at: '2026-07-15T08:00:00Z', status: 'rejected', notes: 'Flagged: Active trademark dispute filed by third party rights holder.' }
+      { id: 'doc_501', type: 'address_proof', title: 'Proof of Business Address', filename: 'shoreditch_lease_deed.pdf', size: '3.1 MB', uploaded_at: '2026-07-15T08:00:00Z', expiry_date: '2028-06-30', status: 'verified', notes: 'Verified commercial lease.' },
+      { id: 'doc_502', type: 'incorporation', title: 'Certificate of Incorporation', filename: 'companies_house_extract.pdf', size: '1.4 MB', uploaded_at: '2026-07-15T08:00:00Z', expiry_date: 'Permanent', status: 'verified', notes: 'Companies House registered.' },
+      { id: 'doc_503', type: 'owner_id', title: 'Beneficial Owner Government ID', filename: 'uk_passport_sterling.pdf', size: '2.8 MB', uploaded_at: '2026-07-15T08:00:00Z', expiry_date: '2029-02-18', status: 'verified', notes: 'UK passport verified.' },
+      { id: 'doc_504', type: 'trademark', title: 'Brand Trademark Registration', filename: 'uk_ipo_trademark.pdf', size: '1.0 MB', uploaded_at: '2026-07-15T08:00:00Z', expiry_date: 'Disputed', status: 'rejected', notes: 'Flagged: Active trademark dispute filed by third party rights holder.' }
     ],
-    commercial_terms: {
-      take_rate_pct: 6.0,
-      payout_hold: true,
-      stripe_account_id: 'acct_1N7k19E',
+    payment_provider: {
+      provider: 'Stripe Connect (Custom)',
+      account_id: 'acct_1N7k19E',
+      onboarding_status: 'restricted',
+      charges_enabled: false,
+      payouts_enabled: false,
       bank_name: 'Barclays Commercial UK',
-      account_last4: '9901'
+      account_last4: '9901',
+      currency: 'GBP',
+      source: 'provider_synced'
     },
+    marketplace_agreement: {
+      version: 'v2.3',
+      effective_date: '2026-07-15',
+      accepted_by: 'Liam Sterling',
+      accepted_at: '2026-07-15T08:00:00Z',
+      commission_rate_pct: 6.0,
+      protocol_fees_desc: '0.0% listing fee • Standard payment processing passed at cost',
+      fulfillment_model: 'Merchant Atelier Self-Fulfill (Royal Mail Special Delivery)',
+      return_policy: '14-Day Boutique Window • Escrow released 48h post verified delivery (POD)',
+      payout_conditions: '5-step automated eligibility protocol verified'
+    },
+    agreement_history: [
+      { version: 'v2.3', rate_pct: 6.0, effective_date: '2026-07-15', reason: 'High-risk streetwear category terms', updated_by: 'Platform Root Admin', updated_at: '2026-07-15T08:00:00Z' }
+    ],
+    audit_trail: [
+      { id: 'aud_501', timestamp: '2026-10-02T09:15:00Z', actor: 'Senior Legal Admin', action: 'Storefront Suspended & Payout Hold Placed', note: 'Third-party rights holder filed trademark claim on logo graphic. Storefront unlisted.' },
+      { id: 'aud_502', timestamp: '2026-07-15T08:00:00Z', actor: 'Onboarding System', action: 'Boutique Onboarded', note: 'Initial agreement v2.3 executed.' }
+    ],
     admin_notes: 'Account suspended on Oct 2nd following trademark infringement notice. Storefront unlisted and payouts locked.'
   }
 ];
