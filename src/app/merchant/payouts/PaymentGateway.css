@@ -4,9 +4,20 @@
    Zero Inline Styles
    ========================================================================== */
 
+/* ── Shell & Main Viewport Padding ── */
 .pg-shell {
+  padding: 1.75rem 2rem;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
   font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   color: var(--d-t1, #0f172a);
+}
+
+@media (max-width: 768px) {
+  .pg-shell {
+    padding: 1rem;
+  }
 }
 
 .pg-container {
@@ -18,7 +29,7 @@
 
 /* ── Top Header ── */
 .pg-header {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .pg-title {
@@ -36,6 +47,33 @@
   color: var(--d-t3, #64748b);
   line-height: 1.4;
   font-family: inherit;
+}
+
+/* ── Toast Success Notification ── */
+.pg-toast-success {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding: 0.65rem 1rem;
+  border-radius: 6px;
+  background: #ecfdf5;
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  color: #047857;
+  font-size: 0.78rem;
+  font-weight: 600;
+  animation: pgFadeIn 0.2s ease-in-out;
+}
+
+.pg-toast-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@keyframes pgFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Polaris Card Surfaces ── */
@@ -63,6 +101,13 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pg-card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .pg-gateway-logo {
@@ -102,11 +147,28 @@
   border: 1px solid rgba(5, 150, 105, 0.2);
 }
 
+.pg-badge-pending {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid rgba(180, 83, 9, 0.2);
+}
+
 .pg-status-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: #10b981;
+}
+
+.pg-status-dot-amber {
+  background: #f59e0b;
 }
 
 /* Payment Chips */
@@ -129,6 +191,27 @@
 }
 
 /* Polaris Buttons */
+.pg-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0f172a;
+  border: 1px solid #0f172a;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.pg-btn-primary:hover {
+  background: #1e293b;
+  border-color: #1e293b;
+}
+
 .pg-btn-secondary {
   display: inline-flex;
   align-items: center;
@@ -152,6 +235,24 @@
   color: var(--d-t1, #0f172a);
 }
 
+.pg-btn-text {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  text-decoration: underline;
+}
+
+.pg-btn-text:hover {
+  color: #1d4ed8;
+}
+
 /* ── Key-Value 4-Column Grid ── */
 .pg-kv-grid {
   display: grid;
@@ -165,6 +266,12 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+.pg-kv-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .pg-kv-label {
@@ -202,7 +309,6 @@
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  divide-x: 1px solid var(--d-border2, #f1f5f9);
   overflow: hidden;
 }
 
@@ -518,4 +624,148 @@
   font-size: 0.7rem;
   color: var(--d-t3, #64748b);
   line-height: 1.4;
+}
+
+/* ==========================================================================
+   Shopify Polaris Modals: Edit Bank & Connect Stripe
+   ========================================================================== */
+
+.pg-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.pg-modal {
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  max-width: 520px;
+  width: 100%;
+  overflow: hidden;
+  animation: pgModalFadeIn 0.15s ease-out;
+}
+
+@keyframes pgModalFadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.pg-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--d-border2, #f1f5f9);
+}
+
+.pg-modal-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+  margin: 0;
+}
+
+.pg-modal-close {
+  background: none;
+  border: none;
+  color: var(--d-t3, #64748b);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.pg-modal-close:hover {
+  background: var(--d-hover, #f8fafc);
+  color: var(--d-t1, #0f172a);
+}
+
+.pg-modal-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.pg-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--d-border2, #f1f5f9);
+  background: var(--d-hover, #f8fafc);
+}
+
+.pg-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pg-form-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--d-t2, #334155);
+}
+
+.pg-form-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.82rem;
+  border: 1px solid var(--d-border, #d1d5db);
+  border-radius: 6px;
+  background: var(--d-panel, #ffffff);
+  color: var(--d-t1, #0f172a);
+  outline: none;
+  transition: border-color 0.15s ease;
+  font-family: inherit;
+}
+
+.pg-form-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.pg-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.pg-form-hint {
+  font-size: 0.7rem;
+  color: var(--d-t4, #94a3b8);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+.pg-notice-box {
+  background: var(--d-hover, #f8fafc);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 6px;
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.74rem;
+  color: var(--d-t3, #64748b);
+  line-height: 1.45;
+}
+
+.pg-notice-icon {
+  color: #2563eb;
+  flex-shrink: 0;
+  margin-top: 2px;
 }

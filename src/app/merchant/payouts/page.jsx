@@ -1,12 +1,30 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   PaymentGatewayCard,
   PayoutBalanceSummary,
   PayoutsHistoryTable,
-  PaymentSecurityCard
+  PaymentSecurityCard,
+  EditBankModal,
+  ConnectStripeModal
 } from '@/components/merchant/payments';
+import { CheckCircle2, X } from 'lucide-react';
 import './PaymentGateway.css';
+
+const STORAGE_KEY = 'vogue_merchant_payout_settings';
+
+const DEFAULT_ACCOUNT = {
+  provider: 'Stripe Connect',
+  accountId: 'acct_1Ox7Y8K92A8291',
+  status: 'active',
+  bankName: 'JPMorgan Chase',
+  accountHolder: 'Studio Label Paris LLC',
+  accountLast4: '4192',
+  routingNumber: '021000021',
+  currency: 'USD',
+  payoutSchedule: 'Automatic daily (48h post-delivery)',
+  dashboardUrl: 'https://connect.stripe.com/express_login'
+};
 
 const INITIAL_TRANSFERS = [
   {
@@ -56,17 +74,74 @@ const INITIAL_TRANSFERS = [
 ];
 
 export default function PaymentGatewaysPage() {
-  const [transfers] = useState(INITIAL_TRANSFERS);
+  const [account, setAccount] = useState(DEFAULT_ACCOUNT);
+  const [transfers, setTransfers] = useState(INITIAL_TRANSFERS);
+  const [isEditBankOpen, setIsEditBankOpen] = useState(false);
+  const [isConnectStripeOpen, setIsConnectStripeOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
-  const accountInfo = {
-    provider: 'Stripe Connect',
-    accountId: 'acct_1Ox7Y8K92A8291',
-    status: 'active',
-    bankName: 'JPMorgan Chase',
-    accountLast4: '4192',
-    currency: 'USD',
-    payoutSchedule: 'Automatic daily (48h post-delivery)',
-    dashboardUrl: 'https://connect.stripe.com/express_login'
+  // Hydrate from localStorage on initial mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setAccount(prev => ({ ...prev, ...parsed }));
+      }
+    } catch (e) {
+      console.error('Failed to load payout settings from localStorage', e);
+    }
+  }, []);
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage('');
+    }, 4500);
+  };
+
+  const handleSaveBank = (newBankData) => {
+    const updated = {
+      ...account,
+      bankName: newBankData.bankName,
+      accountHolder: newBankData.accountHolder,
+      routingNumber: newBankData.routingNumber,
+      accountLast4: newBankData.accountLast4,
+      currency: newBankData.currency
+    };
+    setAccount(updated);
+
+    // Update transfers bank column to match new bank
+    setTransfers(prev => prev.map(t => ({
+      ...t,
+      bank: `${newBankData.bankName} •••• ${newBankData.accountLast4}`
+    })));
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Failed to persist to localStorage', e);
+    }
+
+    showToast(`Settlement bank account updated to ${newBankData.bankName} •••• ${newBankData.accountLast4}`);
+  };
+
+  const handleSaveStripe = (newStripeData) => {
+    const updated = {
+      ...account,
+      accountId: newStripeData.accountId,
+      payoutSchedule: newStripeData.payoutSchedule,
+      status: newStripeData.status
+    };
+    setAccount(updated);
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Failed to persist to localStorage', e);
+    }
+
+    showToast(`Stripe Connect configuration updated (${newStripeData.accountId})`);
   };
 
   return (
@@ -80,8 +155,29 @@ export default function PaymentGatewaysPage() {
           </p>
         </div>
 
+        {/* Success Toast */}
+        {toastMessage && (
+          <div className="pg-toast-success">
+            <div className="pg-toast-left">
+              <CheckCircle2 size={16} />
+              <span>{toastMessage}</span>
+            </div>
+            <button
+              type="button"
+              className="pg-modal-close"
+              onClick={() => setToastMessage('')}
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
+
         {/* 1. Primary Payment Gateway Card (Shopify Polaris style) */}
-        <PaymentGatewayCard account={accountInfo} />
+        <PaymentGatewayCard
+          account={account}
+          onOpenEditBank={() => setIsEditBankOpen(true)}
+          onOpenConnectStripe={() => setIsConnectStripeOpen(true)}
+        />
 
         {/* 2. Polaris Financial Metrics Summary */}
         <PayoutBalanceSummary
@@ -98,6 +194,21 @@ export default function PaymentGatewaysPage() {
         {/* 4. Payment Security & Fraud Protection */}
         <PaymentSecurityCard />
       </div>
+
+      {/* 5. Modals for Bank & Stripe Entry */}
+      <EditBankModal
+        isOpen={isEditBankOpen}
+        onClose={() => setIsEditBankOpen(false)}
+        currentBank={account}
+        onSaveBank={handleSaveBank}
+      />
+
+      <ConnectStripeModal
+        isOpen={isConnectStripeOpen}
+        onClose={() => setIsConnectStripeOpen(false)}
+        currentAccount={account}
+        onSaveStripe={handleSaveStripe}
+      />
     </div>
   );
 }

@@ -1,32 +1,34 @@
 "use client";
 import React from 'react';
-import { ExternalLink, Landmark } from 'lucide-react';
+import { ExternalLink, Landmark, Settings2, Edit2 } from 'lucide-react';
 
 export default function PaymentGatewayCard({
-  account = {
-    provider: 'Stripe Connect',
-    accountId: 'acct_1Ox7Y8K92A8291',
-    status: 'active',
-    bankName: 'JPMorgan Chase',
-    accountLast4: '4192',
-    currency: 'USD',
-    payoutSchedule: 'Automatic daily (48h post-delivery)',
-    dashboardUrl: 'https://connect.stripe.com/express_login'
-  }
+  account = {},
+  onOpenEditBank,
+  onOpenConnectStripe
 }) {
+  const isConnected = account.status === 'active';
+
   return (
     <div className="pg-card">
       <div className="pg-card-header">
         <div className="pg-card-header-left">
           <div className="pg-gateway-logo">
             <span className="pg-gateway-logo-icon">S</span>
-            <span>{account.provider}</span>
+            <span>{account.provider || 'Stripe Connect'}</span>
           </div>
 
-          <span className="pg-badge-active">
-            <span className="pg-status-dot" />
-            Active
-          </span>
+          {isConnected ? (
+            <span className="pg-badge-active">
+              <span className="pg-status-dot" />
+              Active
+            </span>
+          ) : (
+            <span className="pg-badge-pending">
+              <span className="pg-status-dot pg-status-dot-amber" />
+              Action Required
+            </span>
+          )}
 
           {/* Payment Method Acceptance Chips */}
           <div className="pg-payment-chips">
@@ -38,40 +40,83 @@ export default function PaymentGatewayCard({
           </div>
         </div>
 
-        <a
-          href={account.dashboardUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="pg-btn-secondary"
-        >
-          <span>Stripe Express Dashboard</span>
-          <ExternalLink size={13} />
-        </a>
+        <div className="pg-card-header-actions">
+          <button
+            type="button"
+            className="pg-btn-secondary"
+            onClick={onOpenConnectStripe}
+            title="Configure Stripe Connected Account"
+          >
+            <Settings2 size={13} />
+            <span>Manage Stripe</span>
+          </button>
+
+          <a
+            href={account.dashboardUrl || 'https://connect.stripe.com/express_login'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pg-btn-secondary"
+          >
+            <span>Stripe Express Dashboard</span>
+            <ExternalLink size={13} />
+          </a>
+        </div>
       </div>
 
       <div className="pg-kv-grid">
+        {/* Connected Account */}
         <div className="pg-kv-item">
-          <span className="pg-kv-label">Connected Account ID</span>
+          <div className="pg-kv-header-row">
+            <span className="pg-kv-label">Connected Account ID</span>
+            <button
+              type="button"
+              className="pg-btn-text"
+              onClick={onOpenConnectStripe}
+            >
+              Change
+            </button>
+          </div>
           <div className="pg-kv-val">
-            <code className="pg-code">{account.accountId}</code>
+            <code className="pg-code">{account.accountId || 'acct_1Ox7Y8K92A8291'}</code>
           </div>
         </div>
 
+        {/* Settlement Bank */}
         <div className="pg-kv-item">
-          <span className="pg-kv-label">Settlement Bank</span>
+          <div className="pg-kv-header-row">
+            <span className="pg-kv-label">Settlement Bank</span>
+            <button
+              type="button"
+              className="pg-btn-text"
+              onClick={onOpenEditBank}
+            >
+              Update bank
+            </button>
+          </div>
           <div className="pg-kv-val">
             <Landmark size={14} />
-            <span>{account.bankName} •••• {account.accountLast4}</span>
+            <span>{account.bankName || 'JPMorgan Chase'} •••• {account.accountLast4 || '4192'}</span>
           </div>
         </div>
 
+        {/* Payout Schedule */}
         <div className="pg-kv-item">
-          <span className="pg-kv-label">Payout Schedule</span>
+          <div className="pg-kv-header-row">
+            <span className="pg-kv-label">Payout Schedule</span>
+            <button
+              type="button"
+              className="pg-btn-text"
+              onClick={onOpenConnectStripe}
+            >
+              Edit
+            </button>
+          </div>
           <div className="pg-kv-val">
-            <span>{account.payoutSchedule}</span>
+            <span>{account.payoutSchedule || 'Automatic daily (48h post-delivery)'}</span>
           </div>
         </div>
 
+        {/* Tax Documents */}
         <div className="pg-kv-item">
           <span className="pg-kv-label">Tax Documents</span>
           <div className="pg-kv-val">
