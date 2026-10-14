@@ -127,11 +127,12 @@ export default function ProductsPage() {
       if (data && data.success && Array.isArray(data.products)) {
         const normalized = data.products.map((p) => ({
           ...p,
+          name: (p.name || '').replace(/Atelier\s*/gi, 'Tailored '),
           image_url: p.imageUrl || p.image_url || '',
           back_image_url: p.backImageUrl || p.back_image_url || '',
           sale_price: p.salePrice || p.sale_price || null,
           target_audience: p.targetAudience || p.target_audience || 'Women',
-          desc: p.description || p.desc || '',
+          desc: (p.description || p.desc || '').replace(/Atelier\s*/gi, 'Studio '),
           stock: p.stock !== undefined ? p.stock : 25,
           status: p.status || 'live'
         }));

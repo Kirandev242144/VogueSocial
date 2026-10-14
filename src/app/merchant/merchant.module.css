@@ -1621,104 +1621,107 @@
 .fbHeroBox {
   background: var(--d-panel);
   border: 1px solid var(--d-border);
-  border-radius: 16px;
-  padding: 1.5rem 1.75rem;
-  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
   box-shadow: var(--d-shadow);
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .fbHeaderLeft {
   display: flex;
   align-items: center;
-  gap: 1.1rem;
+  gap: 0.85rem;
 }
 
 .fbIconCircle {
-  width: 50px;
-  height: 50px;
-  border-radius: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   background: #1877f2;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(24, 119, 242, 0.35);
+  box-shadow: 0 2px 8px rgba(24, 119, 242, 0.25);
   flex-shrink: 0;
 }
 
 .fbTitleRow {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
+  flex-wrap: wrap;
 }
 
 .fbTitle {
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--d-t1);
-  font-family: var(--font-heading);
+  font-family: inherit;
   letter-spacing: -0.01em;
+  margin: 0;
 }
 
 .fbSubtitle {
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   color: var(--d-t3);
-  margin-top: 0.25rem;
+  margin-top: 0.2rem;
   max-width: 580px;
-  line-height: 1.45;
+  line-height: 1.4;
+  margin-bottom: 0;
 }
 
 .fbBadgeConnected {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(16, 185, 129, 0.12);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  padding: 3px 10px;
-  border-radius: 99px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  gap: 4px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .fbBadgeDisconnected {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(245, 158, 11, 0.12);
-  color: #f59e0b;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  padding: 3px 10px;
-  border-radius: 99px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  gap: 4px;
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .fbConfigCard {
   background: var(--d-card);
   border: 1px solid var(--d-border);
-  border-radius: 14px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
 }
 
 .fbConfigHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .fbConfigTitle {
-  font-size: 0.95rem;
-  font-weight: 800;
+  font-size: 0.88rem;
+  font-weight: 700;
   color: var(--d-t1);
   display: flex;
   align-items: center;
@@ -1728,7 +1731,7 @@
 .fbGridFields {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 @media (max-width: 900px) {
@@ -1763,8 +1766,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 1.25rem;
-  padding-top: 1.25rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
   border-top: 1px solid var(--d-border2);
   flex-wrap: wrap;
   gap: 0.75rem;
@@ -1773,8 +1776,8 @@
 .fbStatsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
 }
 
 @media (max-width: 900px) {
@@ -1786,52 +1789,55 @@
 .fbStatCard {
   background: var(--d-panel);
   border: 1px solid var(--d-border);
-  border-radius: 12px;
-  padding: 1.1rem 1.25rem;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
 }
 
 .fbStatLabel {
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: 0.68rem;
+  font-weight: 600;
   color: var(--d-t3);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 0.35rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
 }
 
 .fbStatValue {
-  font-size: 1.6rem;
-  font-weight: 900;
+  font-size: 1.15rem;
+  font-weight: 700;
   color: var(--d-t1);
-  font-family: var(--font-heading);
+  font-family: inherit;
+  letter-spacing: -0.01em;
 }
 
 .fbTabNav {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 .fbTabBtn {
   background: var(--d-card);
   border: 1px solid var(--d-border);
-  border-radius: 9px;
-  padding: 0.5rem 1rem;
-  font-size: 0.8rem;
-  font-weight: 700;
+  border-radius: 6px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.76rem;
+  font-weight: 600;
   color: var(--d-t3);
   cursor: pointer;
   transition: all 0.15s;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  font-family: inherit;
 }
 
 .fbTabBtnActive {
   background: #1877f2;
   color: #ffffff;
   border-color: #1877f2;
-  box-shadow: 0 4px 12px rgba(24, 119, 242, 0.25);
+  box-shadow: none;
 }
 
 .badgeFbSynced {

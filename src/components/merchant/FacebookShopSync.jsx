@@ -356,7 +356,7 @@ export default function FacebookShopSync({ products = [] }) {
                               className={styles.garmentThumb}
                             />
                             <div className={styles.garmentInfo}>
-                              <span className={styles.garmentName}>{p.name}</span>
+                              <span className={styles.garmentName}>{(p.name || 'Untitled').replace(/Atelier\s*/gi, 'Tailored ')}</span>
                               <span className={styles.garmentCategory}>{p.category || 'Clothing'}</span>
                             </div>
                           </div>

@@ -9,7 +9,7 @@ import {
   SEED_WARDROBE_TRIPS
 } from '../../constants/seedWardrobe';
 
-const SEED_VERSION = 'v6_feed_synced_garments';
+const SEED_VERSION = 'v7_clean_polaris_garments';
 
 /**
  * Robust LocalStorage Wrapper with Automatic Seed Data Hydration & Versioning
