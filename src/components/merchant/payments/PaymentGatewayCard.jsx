@@ -103,13 +103,6 @@ export default function PaymentGatewayCard({
         <div className="pg-kv-item">
           <div className="pg-kv-header-row">
             <span className="pg-kv-label">Payout Schedule</span>
-            <button
-              type="button"
-              className="pg-btn-text"
-              onClick={onOpenConnectStripe}
-            >
-              Edit
-            </button>
           </div>
           <div className="pg-kv-val">
             <span>{account.payoutSchedule || 'Automatic daily (48h post-delivery)'}</span>

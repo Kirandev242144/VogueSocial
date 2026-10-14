@@ -3,7 +3,7 @@ export const SEED_PRODUCTS = [
   {
     id: 'prod_sl_001',
     vendorId: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c', // Studio Label Paris
-    name: 'Structured Minimalist Atelier Suit',
+    name: 'Structured Minimalist Tailored Suit',
     category: 'Outerwear',
     subcategory: 'Suits & Tailoring',
     targetAudience: 'Women',
@@ -24,8 +24,8 @@ export const SEED_PRODUCTS = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     materials: '98% European Virgin Wool, 2% Elastane (Lining: 100% Cupro)',
     authenticity_verified: true,
-    authenticity_certificate: 'Atelier Direct Paris • Authenticity Assured',
-    description: 'Precision-tailored minimalist atelier suit cut from premium European virgin wool blend. Features clean architectural lines and an empowering modern silhouette.',
+    authenticity_certificate: 'Designer Studio Direct • Authenticity Assured',
+    description: 'Precision-tailored minimalist suit cut from premium European virgin wool blend. Features clean architectural lines and an empowering modern silhouette.',
     shipping_info: 'Complimentary worldwide express shipping via DHL Express (2-3 business days).',
     return_policy: '14-Day Boutique Window • Escrow released 48h post verified carrier delivery (POD).',
     createdAt: '2026-09-20T10:00:00Z',
@@ -78,7 +78,7 @@ export const SEED_PRODUCTS = [
   {
     id: 'prod_sl_003',
     vendorId: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c', // Studio Label Paris
-    name: 'Structured Wool Atelier Overshirt',
+    name: 'Structured Wool Signature Overshirt',
     category: 'Outerwear',
     subcategory: 'Jackets',
     targetAudience: 'Unisex',
@@ -99,7 +99,7 @@ export const SEED_PRODUCTS = [
     sizes: ['S', 'M', 'L', 'XL'],
     materials: '100% Boiled Merino Wool (Weight: 380 GSM)',
     authenticity_verified: true,
-    authenticity_certificate: 'Atelier Direct Paris • Authenticity Assured',
+    authenticity_certificate: 'Designer Studio Direct • Authenticity Assured',
     merchant_feedback: 'Please upload higher-resolution detail photos of the horn button placket and provide garment care specifications.',
     internal_notes: 'Returned to merchant on Oct 11th for updated placket imagery.',
     description: 'Contemporary structured overshirt with horn button placket and fluid drape. Single-breasted front with double chest patch pockets.',
@@ -153,7 +153,7 @@ export const SEED_PRODUCTS = [
   {
     id: 'prod_sl_005',
     vendorId: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c', // Studio Label Paris
-    name: 'Wide-Leg Sartorial Atelier Trousers',
+    name: 'Wide-Leg Sartorial Pleated Trousers',
     category: 'Bottoms',
     subcategory: 'Trousers',
     targetAudience: 'Women',
@@ -187,7 +187,7 @@ export const SEED_PRODUCTS = [
   {
     id: 'prod_sl_006',
     vendorId: 'ec9e5c47-4d4a-4998-b4b3-16d228f9615c', // Studio Label Paris
-    name: 'Pointed Toe Atelier Ankle Boots',
+    name: 'Pointed Toe Leather Ankle Boots',
     category: 'Footwear',
     subcategory: 'Boots',
     targetAudience: 'Women',
@@ -205,7 +205,7 @@ export const SEED_PRODUCTS = [
     colors: ['Obsidian Black', 'Vintage Cognac'],
     sizes: ['37', '38', '39', '40', '41'],
     description: 'Sculpted ankle boots in supple Italian calfskin with architectural stacked block heel and tapered toe silhouette.',
-    shipping_info: 'Hand-packed in protective atelier dust bags.',
+    shipping_info: 'Hand-packed in protective garment dust bags.',
     return_policy: 'Complimentary return label included.',
     createdAt: '2026-09-22T14:30:00Z',
     adminNotes: JSON.stringify({
@@ -321,7 +321,7 @@ export const SEED_PRODUCTS = [
   {
     id: 'prod_el_002',
     vendorId: 'mch_elena_02', // Elena Couture
-    name: 'Wide-Leg Sartorial Atelier Trousers',
+    name: 'Wide-Leg Sartorial Pleated Trousers',
     category: 'Bottoms',
     subcategory: 'Trousers',
     targetAudience: 'Women',

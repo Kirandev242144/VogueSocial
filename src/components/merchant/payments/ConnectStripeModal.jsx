@@ -9,8 +9,6 @@ export default function ConnectStripeModal({
   onSaveStripe
 }) {
   const [accountId, setAccountId] = useState(currentAccount?.accountId || 'acct_1Ox7Y8K92A8291');
-  const [payoutSchedule, setPayoutSchedule] = useState(currentAccount?.payoutSchedule || 'Automatic daily (48h post-delivery)');
-  const [status, setStatus] = useState(currentAccount?.status || 'active');
   const [saving, setSaving] = useState(false);
 
   if (!isOpen) return null;
@@ -22,8 +20,8 @@ export default function ConnectStripeModal({
     setTimeout(() => {
       onSaveStripe({
         accountId: accountId.trim() || 'acct_1Ox7Y8K92A8291',
-        payoutSchedule,
-        status
+        payoutSchedule: currentAccount?.payoutSchedule || 'Automatic daily (48h post-delivery)',
+        status: currentAccount?.status || 'active'
       });
       setSaving(false);
       onClose();
@@ -81,29 +79,26 @@ export default function ConnectStripeModal({
             </div>
 
             <div className="pg-form-group">
-              <label className="pg-form-label">Automated Payout Schedule</label>
-              <select
-                className="pg-form-input"
-                value={payoutSchedule}
-                onChange={(e) => setPayoutSchedule(e.target.value)}
-              >
-                <option value="Automatic daily (48h post-delivery)">Automatic daily (48h post carrier delivery POD)</option>
-                <option value="Weekly on Fridays">Weekly settlement (Every Friday)</option>
-                <option value="Monthly (1st of month)">Monthly settlement (1st of each month)</option>
-                <option value="Manual on request">Manual on demand</option>
-              </select>
+              <label className="pg-form-label">Gateway Compliance Status</label>
+              <div className="pg-readonly-field">
+                <span className="pg-badge-active">
+                  <span className="pg-status-dot" />
+                  Active & Verified via Stripe
+                </span>
+              </div>
+              <span className="pg-form-hint">
+                Regulated by Stripe identity/AML checks. Status updates automatically upon KYC review.
+              </span>
             </div>
 
             <div className="pg-form-group">
-              <label className="pg-form-label">Gateway Connection Status</label>
-              <select
-                className="pg-form-input"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <option value="active">Active & Verified (Ready for Payouts)</option>
-                <option value="pending">Pending Onboarding Verification</option>
-              </select>
+              <label className="pg-form-label">Settlement Release Policy</label>
+              <div className="pg-readonly-field">
+                <span>Automatic Daily (48h post carrier delivery POD)</span>
+              </div>
+              <span className="pg-form-hint">
+                Platform standard payout release rule. Protects merchant orders against disputes and chargebacks.
+              </span>
             </div>
           </div>
 
