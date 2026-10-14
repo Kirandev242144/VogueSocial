@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import { Shirt, TrendingUp, ShoppingBag, CheckCircle2, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { DollarSign, ShoppingBag, Sparkles, CheckCircle2, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { useMerchantTheme } from '@/app/merchant/ThemeContext';
 import './MerchantKPIs.css';
 
@@ -10,56 +10,16 @@ export default function MerchantKPIs() {
 
   return (
     <div className="merchant-kpi-grid">
-      {/* Card 1: Try-On Sessions */}
+      {/* Card 1: Total Store Sales (GMV) */}
       <div className="merchant-kpi-card">
         <div className="merchant-kpi-card-header">
           <div className="merchant-kpi-icon-wrap">
-            <Shirt size={20} color={isDark ? '#cbd5e1' : '#475569'} />
+            <DollarSign size={18} color={isDark ? '#cbd5e1' : '#2563eb'} />
           </div>
-          <span className="merchant-kpi-highlight-pill">8.4x Engagement</span>
+          <span className="merchant-kpi-highlight-pill merchant-pill-blue">75% Try-On Driven</span>
         </div>
         <div>
-          <div className="merchant-kpi-label">Try-On Sessions</div>
-          <div className="merchant-kpi-value">48,290</div>
-          <div className="merchant-kpi-spark-row">
-            <span className="merchant-kpi-trend merchant-trend-up">
-              <ArrowUpRight size={13} /> +24.6%
-            </span>
-            <span>3.8 fits per shopper visit</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Card 2: Fitting Room Conversion */}
-      <div className="merchant-kpi-card">
-        <div className="merchant-kpi-card-header">
-          <div className="merchant-kpi-icon-wrap">
-            <TrendingUp size={20} color={isDark ? '#cbd5e1' : '#475569'} />
-          </div>
-          <span className="merchant-kpi-highlight-pill">✦ High Lift</span>
-        </div>
-        <div>
-          <div className="merchant-kpi-label">Fitting Conversion</div>
-          <div className="merchant-kpi-value">38.2%</div>
-          <div className="merchant-kpi-spark-row">
-            <span className="merchant-kpi-trend merchant-trend-up">
-              <ArrowUpRight size={13} /> +9.4%
-            </span>
-            <span>vs 4.2% industry baseline</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Card 3: Influenced GMV */}
-      <div className="merchant-kpi-card">
-        <div className="merchant-kpi-card-header">
-          <div className="merchant-kpi-icon-wrap">
-            <ShoppingBag size={20} color={isDark ? '#cbd5e1' : '#475569'} />
-          </div>
-          <span className="merchant-kpi-highlight-pill">75% Try-On Driven</span>
-        </div>
-        <div>
-          <div className="merchant-kpi-label">Influenced GMV</div>
+          <div className="merchant-kpi-label">Total Sales (GMV)</div>
           <div className="merchant-kpi-value">$284,950</div>
           <div className="merchant-kpi-spark-row">
             <span className="merchant-kpi-trend merchant-trend-up">
@@ -70,13 +30,53 @@ export default function MerchantKPIs() {
         </div>
       </div>
 
+      {/* Card 2: Total Orders */}
+      <div className="merchant-kpi-card">
+        <div className="merchant-kpi-card-header">
+          <div className="merchant-kpi-icon-wrap">
+            <ShoppingBag size={18} color={isDark ? '#cbd5e1' : '#475569'} />
+          </div>
+          <span className="merchant-kpi-highlight-pill merchant-pill-amber">3 To Fulfill</span>
+        </div>
+        <div>
+          <div className="merchant-kpi-label">Total Orders</div>
+          <div className="merchant-kpi-value">1,428</div>
+          <div className="merchant-kpi-spark-row">
+            <span className="merchant-kpi-trend merchant-trend-up">
+              <ArrowUpRight size={13} /> +12.4%
+            </span>
+            <span>Avg $87.40 order value</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Card 3: Try-On Fitting Sessions */}
+      <div className="merchant-kpi-card">
+        <div className="merchant-kpi-card-header">
+          <div className="merchant-kpi-icon-wrap">
+            <Sparkles size={18} color={isDark ? '#cbd5e1' : '#7c3aed'} />
+          </div>
+          <span className="merchant-kpi-highlight-pill merchant-pill-purple">38.2% Conversion</span>
+        </div>
+        <div>
+          <div className="merchant-kpi-label">Virtual Try-On Fits</div>
+          <div className="merchant-kpi-value">48,290</div>
+          <div className="merchant-kpi-spark-row">
+            <span className="merchant-kpi-trend merchant-trend-up">
+              <ArrowUpRight size={13} /> +24.6%
+            </span>
+            <span>3.8 fits per shopper visit</span>
+          </div>
+        </div>
+      </div>
+
       {/* Card 4: Return Rate Reduction */}
       <div className="merchant-kpi-card">
         <div className="merchant-kpi-card-header">
           <div className="merchant-kpi-icon-wrap">
-            <CheckCircle2 size={20} color={isDark ? '#cbd5e1' : '#475569'} />
+            <CheckCircle2 size={18} color={isDark ? '#cbd5e1' : '#16a34a'} />
           </div>
-          <span className="merchant-kpi-highlight-pill">Returns Cut</span>
+          <span className="merchant-kpi-highlight-pill merchant-pill-green">Returns Cut</span>
         </div>
         <div>
           <div className="merchant-kpi-label">Return Rate</div>

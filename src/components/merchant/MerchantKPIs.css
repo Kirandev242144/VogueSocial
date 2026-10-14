@@ -1,28 +1,35 @@
 /* ================================================
-   MERCHANT KPIS - Pure Vanilla CSS
+   MERCHANT KPIS - Pure Vanilla CSS (Polaris)
    ================================================ */
 
 .merchant-kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .merchant-kpi-card {
-  background: var(--d-panel);
-  border: 1px solid var(--d-border);
-  border-radius: 12px;
-  padding: 1.25rem;
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 10px;
+  padding: 1rem 1.15rem;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--d-shadow);
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
 .merchant-kpi-card:hover {
   border-color: #cbd5e1;
   transform: translateY(-1px);
+}
+
+.merchant-shell-dark .merchant-kpi-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: none;
 }
 
 .merchant-shell-dark .merchant-kpi-card:hover {
@@ -32,104 +39,140 @@
 .merchant-kpi-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.65rem;
 }
 
 .merchant-kpi-icon-wrap {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: #f8fafc;
-  border: 1px solid #f1f5f9;
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  background: var(--d-hover, #f8fafc);
+  border: 1px solid var(--d-border2, #f1f5f9);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #475569;
 }
 
 .merchant-shell-dark .merchant-kpi-icon-wrap {
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.06);
-  color: #cbd5e1;
 }
 
 .merchant-kpi-highlight-pill {
-  font-size: 0.68rem;
-  font-weight: 500;
-  padding: 2px 7px;
-  border-radius: 6px;
-  background: #f8fafc;
-  color: #475569;
-  border: 1px solid #e2e8f0;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 5px;
+  border: 1px solid transparent;
 }
 
-.merchant-shell-dark .merchant-kpi-highlight-pill {
-  background: rgba(255, 255, 255, 0.04);
-  color: #cbd5e1;
-  border-color: rgba(255, 255, 255, 0.08);
+.merchant-pill-blue {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.merchant-pill-amber {
+  background: #fefce8;
+  color: #854d0e;
+  border-color: #fef08a;
+}
+
+.merchant-pill-purple {
+  background: #faf5ff;
+  color: #6b21a8;
+  border-color: #e9d5ff;
+}
+
+.merchant-pill-green {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.merchant-shell-dark .merchant-pill-blue {
+  background: rgba(37, 99, 235, 0.15);
+  color: #93c5fd;
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+.merchant-shell-dark .merchant-pill-amber {
+  background: rgba(202, 138, 4, 0.15);
+  color: #fde047;
+  border-color: rgba(202, 138, 4, 0.3);
+}
+
+.merchant-shell-dark .merchant-pill-purple {
+  background: rgba(124, 58, 237, 0.15);
+  color: #d8b4fe;
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+.merchant-shell-dark .merchant-pill-green {
+  background: rgba(22, 163, 74, 0.15);
+  color: #86efac;
+  border-color: rgba(22, 163, 74, 0.3);
 }
 
 .merchant-kpi-label {
   font-size: 0.68rem;
   font-weight: 600;
-  color: var(--d-t3);
+  color: var(--d-t3, #64748b);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.3rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+
+.merchant-shell-dark .merchant-kpi-label {
+  color: #94a3b8;
 }
 
 .merchant-kpi-value {
-  font-size: 1.75rem;
+  font-size: 1.35rem;
   font-weight: 700;
-  color: var(--d-t1);
-  letter-spacing: -0.03em;
-  font-family: var(--font-heading, inherit);
-  line-height: 1.15;
+  color: var(--d-t1, #0f172a);
+  letter-spacing: -0.02em;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+.merchant-shell-dark .merchant-kpi-value {
+  color: #f8fafc;
 }
 
 .merchant-kpi-spark-row {
-  margin-top: 0.65rem;
-  padding-top: 0.65rem;
-  border-top: 1px solid var(--d-border2);
-  font-size: 0.72rem;
-  color: var(--d-t4);
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--d-border2, #f1f5f9);
+  font-size: 0.7rem;
+  color: var(--d-t4, #94a3b8);
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.merchant-shell-dark .merchant-kpi-spark-row {
+  border-top-color: #334155;
 }
 
 .merchant-kpi-trend {
-  font-size: 0.7rem;
   font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 4px;
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
 }
 
 .merchant-trend-up {
-  background: #f0fdf4;
-  color: #166534;
-}
-
-.merchant-shell-dark .merchant-trend-up {
-  background: rgba(34, 197, 94, 0.15);
-  color: #4ade80;
+  color: #16a34a;
 }
 
 .merchant-trend-down {
-  background: #fef2f2;
-  color: #991b1b;
+  color: #dc2626;
 }
 
-.merchant-shell-dark .merchant-trend-down {
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-}
-
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .merchant-kpi-grid {
     grid-template-columns: repeat(2, 1fr);
   }

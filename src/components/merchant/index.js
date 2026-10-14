@@ -7,4 +7,6 @@ export { default as MerchantModelBreakdown } from './MerchantModelBreakdown';
 export { default as MerchantTopGarments, TOP_GARMENTS } from './MerchantTopGarments';
 export { default as MerchantLiveStream } from './MerchantLiveStream';
 export { default as MerchantStatusRibbon } from './MerchantStatusRibbon';
+export { default as MerchantActionBanner } from './MerchantActionBanner';
+export { default as MerchantRecentOrders } from './MerchantRecentOrders';
 export { default as FacebookShopSync } from './FacebookShopSync';

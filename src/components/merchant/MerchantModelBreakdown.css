@@ -24,7 +24,7 @@
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--d-t1);
-  font-family: var(--font-heading, inherit);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   letter-spacing: -0.01em;
   display: flex;
   align-items: center;
@@ -39,6 +39,7 @@
   color: #64748b;
   cursor: pointer;
   transition: color 0.15s ease;
+  font-family: inherit;
 }
 
 .merchant-panel-action:hover {
@@ -69,10 +70,10 @@
 }
 
 .merchant-donut-value {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--d-t1);
-  font-family: var(--font-heading, inherit);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .merchant-model-usage-list {
@@ -115,6 +116,7 @@
 
 .merchant-fill-women {
   background: #1e293b;
+  width: 48%;
 }
 
 .merchant-shell-dark .merchant-fill-women {
@@ -123,8 +125,10 @@
 
 .merchant-fill-men {
   background: #64748b;
+  width: 28%;
 }
 
 .merchant-fill-custom {
   background: #94a3b8;
+  width: 24%;
 }

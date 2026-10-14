@@ -69,7 +69,7 @@ export default function MerchantModelBreakdown() {
             <span>48% (23.1k)</span>
           </div>
           <div className="merchant-model-usage-track">
-            <div className="merchant-model-usage-fill merchant-fill-women" style={{ width: '48%' }} />
+            <div className="merchant-model-usage-fill merchant-fill-women" />
           </div>
         </div>
 
@@ -79,7 +79,7 @@ export default function MerchantModelBreakdown() {
             <span>28% (13.5k)</span>
           </div>
           <div className="merchant-model-usage-track">
-            <div className="merchant-model-usage-fill merchant-fill-men" style={{ width: '28%' }} />
+            <div className="merchant-model-usage-fill merchant-fill-men" />
           </div>
         </div>
 
@@ -89,7 +89,7 @@ export default function MerchantModelBreakdown() {
             <span>24% (11.6k)</span>
           </div>
           <div className="merchant-model-usage-track">
-            <div className="merchant-model-usage-fill merchant-fill-custom" style={{ width: '24%' }} />
+            <div className="merchant-model-usage-fill merchant-fill-custom" />
           </div>
         </div>
       </div>

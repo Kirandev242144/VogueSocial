@@ -5,12 +5,13 @@ import TryOnModal from '@/components/TryOnModal';
 import { useAuth } from '@/context/AuthContext';
 import {
   MerchantHeaderBanner,
+  MerchantActionBanner,
   MerchantKPIs,
+  MerchantRecentOrders,
   MerchantSalesChart,
   MerchantModelBreakdown,
   MerchantTopGarments,
   MerchantLiveStream,
-  MerchantStatusRibbon,
   TOP_GARMENTS
 } from '@/components/merchant';
 import './MerchantDashboard.css';
@@ -55,25 +56,28 @@ export default function MerchantDashboard() {
         onAddGarment={() => navigate('/merchant/products')}
       />
 
-      {/* ── 2. KPI METRICS (4 CARDS) ── */}
+      {/* ── 2. URGENT ACTIONS REQUIRED (SHOPIFY-STYLE) ── */}
+      <MerchantActionBanner />
+
+      {/* ── 3. BALANCED KPI METRICS (4 CARDS) ── */}
       <MerchantKPIs />
 
-      {/* ── 3. MIDDLE SECTION (ANALYTICS CHART & PRESETS BREAKDOWN) ── */}
+      {/* ── 4. RECENT ORDERS & FULFILLMENTS QUICK-VIEW ── */}
+      <MerchantRecentOrders />
+
+      {/* ── 5. SALES TRAJECTORY & FIT PRESETS BREAKDOWN ── */}
       <div className="merchant-grid-row merchant-grid-2-1">
         <MerchantSalesChart />
         <MerchantModelBreakdown />
       </div>
 
-      {/* ── 4. BOTTOM SECTION (TOP GARMENTS & LIVE STREAM) ── */}
+      {/* ── 6. TOP GARMENTS & LIVE FITTING ROOM STREAM ── */}
       <div className="merchant-grid-row merchant-grid-4-5">
         <MerchantTopGarments onPreviewGarment={handleTestTryOn} />
         <MerchantLiveStream />
       </div>
 
-      {/* ── 5. AI ENGINE & CLUSTER STATUS RIBBON ── */}
-      <MerchantStatusRibbon />
-
-      {/* ── 6. TRY-ON MODAL FOR QUICK PREVIEW ── */}
+      {/* ── 7. TRY-ON MODAL FOR QUICK PREVIEW ── */}
       {testModalOpen && (
         <TryOnModal
           isOpen={testModalOpen}

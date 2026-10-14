@@ -24,7 +24,7 @@
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--d-t1);
-  font-family: var(--font-heading, inherit);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   letter-spacing: -0.01em;
   display: flex;
   align-items: center;

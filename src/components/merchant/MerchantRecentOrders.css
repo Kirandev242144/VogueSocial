@@ -1,0 +1,282 @@
+/* ================================================
+   MERCHANT RECENT ORDERS - Pure Vanilla CSS (Polaris)
+   ================================================ */
+
+.merchant-recent-orders-card {
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin-top: 1.25rem;
+}
+
+.merchant-shell-dark .merchant-recent-orders-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: none;
+}
+
+.merchant-recent-orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.15rem;
+  border-bottom: 1px solid var(--d-border2, #f1f5f9);
+}
+
+.merchant-shell-dark .merchant-recent-orders-header {
+  border-bottom-color: #334155;
+}
+
+.merchant-recent-orders-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.merchant-shell-dark .merchant-recent-orders-title {
+  color: #f8fafc;
+}
+
+.merchant-recent-orders-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  border: none;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #2563eb;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  transition: color 0.15s ease;
+}
+
+.merchant-recent-orders-view-all:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.merchant-recent-orders-table-wrap {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.merchant-recent-orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.76rem;
+  text-align: left;
+}
+
+.merchant-recent-orders-table th {
+  padding: 0.65rem 0.95rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--d-t3, #64748b);
+  background: var(--d-hover, #f8fafc);
+  border-bottom: 1px solid var(--d-border, #e2e8f0);
+}
+
+.merchant-shell-dark .merchant-recent-orders-table th {
+  background: #0f172a;
+  border-bottom-color: #334155;
+  color: #94a3b8;
+}
+
+.merchant-recent-orders-table td {
+  padding: 0.7rem 0.95rem;
+  border-bottom: 1px solid var(--d-border2, #f1f5f9);
+  vertical-align: middle;
+}
+
+.merchant-shell-dark .merchant-recent-orders-table td {
+  border-bottom-color: #334155;
+}
+
+.merchant-recent-orders-table tr:hover td {
+  background: var(--d-hover, #f8fafc);
+}
+
+.merchant-shell-dark .merchant-recent-orders-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.merchant-order-id-link {
+  font-weight: 600;
+  color: #2563eb;
+  cursor: pointer;
+}
+
+.merchant-order-id-link:hover {
+  text-decoration: underline;
+}
+
+.merchant-order-cust-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.merchant-order-cust-name {
+  font-weight: 600;
+  color: var(--d-t1, #0f172a);
+}
+
+.merchant-shell-dark .merchant-order-cust-name {
+  color: #f8fafc;
+}
+
+.merchant-order-cust-email {
+  font-size: 0.68rem;
+  color: var(--d-t4, #94a3b8);
+}
+
+.merchant-order-item-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.merchant-order-thumb {
+  width: 28px;
+  height: 38px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid var(--d-border, #e2e8f0);
+  flex-shrink: 0;
+}
+
+.merchant-order-item-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.merchant-order-item-name {
+  font-weight: 500;
+  color: var(--d-t1, #0f172a);
+  max-width: 170px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.merchant-shell-dark .merchant-order-item-name {
+  color: #f8fafc;
+}
+
+.merchant-order-item-size {
+  font-size: 0.66rem;
+  color: var(--d-t4, #94a3b8);
+}
+
+/* ── Badges ── */
+.merchant-badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.merchant-status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.merchant-badge-paid {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.merchant-badge-paid .merchant-status-dot {
+  background: #22c55e;
+}
+
+.merchant-badge-pending {
+  background: #fefce8;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+}
+
+.merchant-badge-pending .merchant-status-dot {
+  background: #eab308;
+}
+
+.merchant-badge-fulfilled {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.merchant-badge-fulfilled .merchant-status-dot {
+  background: #3b82f6;
+}
+
+.merchant-badge-unfulfilled {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.merchant-badge-unfulfilled .merchant-status-dot {
+  background: #f97316;
+}
+
+.merchant-order-amount {
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+}
+
+.merchant-shell-dark .merchant-order-amount {
+  color: #f8fafc;
+}
+
+.merchant-btn-table-primary {
+  padding: 3px 9px;
+  background: #0f172a;
+  color: #ffffff;
+  border: 1px solid #0f172a;
+  border-radius: 5px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.merchant-btn-table-primary:hover {
+  background: #1e293b;
+}
+
+.merchant-btn-table-secondary {
+  padding: 3px 9px;
+  background: transparent;
+  color: var(--d-t2, #334155);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 5px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.merchant-btn-table-secondary:hover {
+  background: var(--d-hover, #f8fafc);
+  color: #0f172a;
+}

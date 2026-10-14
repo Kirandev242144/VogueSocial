@@ -1,28 +1,42 @@
 /* ================================================
-   MERCHANT NAVBAR - Pure Vanilla CSS
+   MERCHANT NAVBAR - Pure Vanilla CSS (Polaris)
    ================================================ */
 
 .merchant-topbar {
-  background: var(--d-topbar);
-  backdrop-filter: blur(16px) saturate(1.3);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  border-bottom: 1px solid var(--d-border);
-  padding: 1rem 2rem;
+  background: var(--d-panel, #ffffff);
+  border-bottom: 1px solid var(--d-border, #e2e8f0);
+  padding: 0.75rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: sticky;
   top: 0;
   z-index: 40;
-  transition: background-color 0.25s ease, border-color 0.25s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.merchant-shell-dark .merchant-topbar {
+  background: #0f172a;
+  border-color: #1e293b;
+}
+
+.merchant-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .merchant-topbar-title {
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--d-t1);
-  letter-spacing: -0.02em;
-  font-family: var(--font-heading, inherit);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.merchant-shell-dark .merchant-topbar-title {
+  color: #f8fafc;
 }
 
 .merchant-topbar-right {
@@ -31,146 +45,490 @@
   gap: 0.75rem;
 }
 
-/* Avatar Stack */
-.merchant-avatar-stack {
-  display: flex;
-  align-items: center;
-}
-
-.merchant-stack-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid var(--d-panel);
-  margin-left: -8px;
-  object-fit: cover;
-  transition: transform 0.15s ease;
-}
-
-.merchant-stack-avatar:first-child {
-  margin-left: 0;
-}
-
-.merchant-stack-avatar:hover {
-  transform: translateY(-2px);
-  z-index: 2;
-}
-
-.merchant-stack-more {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid var(--d-panel);
-  margin-left: -8px;
-  background: var(--d-hover);
-  color: var(--vs-green);
-  font-size: 0.65rem;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Notifications Button */
-.merchant-icon-notice-btn {
-  position: relative;
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  background: var(--d-panel);
-  border: 1px solid var(--d-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--d-t3);
-  transition: all 0.15s ease;
-}
-
-.merchant-icon-notice-btn:hover {
-  background: var(--d-hover);
-  color: var(--vs-green);
-  border-color: rgba(203, 243, 130, 0.4);
-}
-
-.merchant-notice-badge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: #ef4444;
-  color: #ffffff;
-  font-size: 0.62rem;
-  font-weight: 800;
-  padding: 1px 5px;
-  border-radius: 99px;
-  border: 2px solid var(--d-panel);
-}
-
-/* Search Bar */
+/* ── Global Search Bar ── */
 .merchant-search-bar {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--d-input);
-  border: 1px solid var(--d-border);
-  border-radius: 9px;
-  padding: 0.45rem 0.85rem;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: var(--d-hover, #f8fafc);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  transition: all 0.15s ease;
+}
+
+.merchant-shell-dark .merchant-search-bar {
+  background: #1e293b;
+  border-color: #334155;
 }
 
 .merchant-search-bar:focus-within {
-  border-color: var(--vs-green);
-  box-shadow: 0 0 0 2px rgba(203, 243, 130, 0.2);
+  border-color: #2563eb;
+  background: var(--d-panel, #ffffff);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
 }
 
 .merchant-search-bar input {
   border: none;
   background: none;
   outline: none;
-  font-size: 0.82rem;
-  color: var(--d-t1);
-  width: 140px;
+  font-size: 0.78rem;
+  color: var(--d-t1, #0f172a);
+  width: 210px;
+  font-family: inherit;
+}
+
+.merchant-shell-dark .merchant-search-bar input {
+  color: #f8fafc;
 }
 
 .merchant-search-bar input::placeholder {
-  color: var(--d-t4);
+  color: var(--d-t4, #94a3b8);
 }
 
-/* Command Badge */
 .merchant-cmd-badge {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--d-t4);
-  background: var(--d-t5);
-  padding: 2px 6px;
-  border-radius: 5px;
-  border: 1px solid var(--d-border);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--d-t3, #64748b);
+  background: var(--d-panel, #ffffff);
+  padding: 2px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--d-border, #e2e8f0);
 }
 
-/* Profile Avatar */
-.merchant-topbar-profile-img {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
+.merchant-shell-dark .merchant-cmd-badge {
+  background: #0f172a;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+/* ── View Online Store Button ── */
+.merchant-view-store-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  color: var(--d-t2, #334155);
+  border: 1px solid var(--d-border, #e2e8f0);
+  padding: 0.38rem 0.75rem;
+  border-radius: 7px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.merchant-shell-dark .merchant-view-store-btn {
+  color: #cbd5e1;
+  border-color: #334155;
+}
+
+.merchant-view-store-btn:hover {
+  background: var(--d-hover, #f8fafc);
+  color: #2563eb;
+  border-color: #93c5fd;
+}
+
+.merchant-shell-dark .merchant-view-store-btn:hover {
+  background: #1e293b;
+  color: #60a5fa;
+  border-color: #3b82f6;
+}
+
+.merchant-view-store-icon {
+  opacity: 0.7;
+}
+
+/* ── Dropdown Anchors & Triggers ── */
+.merchant-dropdown-anchor {
+  position: relative;
+}
+
+.merchant-icon-notice-btn {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  object-fit: cover;
-  border: 1px solid var(--d-border);
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  color: var(--d-t3, #64748b);
+  transition: all 0.15s ease;
 }
 
-.merchant-topbar-profile-img:hover {
-  transform: scale(1.05);
-  border-color: var(--vs-green);
+.merchant-shell-dark .merchant-icon-notice-btn {
+  background: #1e293b;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+.merchant-icon-notice-btn:hover,
+.merchant-icon-btn-active {
+  background: var(--d-hover, #f8fafc);
+  color: #2563eb;
+  border-color: #bfdbfe;
+}
+
+.merchant-shell-dark .merchant-icon-notice-btn:hover,
+.merchant-shell-dark .merchant-icon-btn-active {
+  background: #334155;
+  color: #60a5fa;
+  border-color: #3b82f6;
+}
+
+.merchant-notice-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  background: #2563eb;
+  border-radius: 50%;
+  border: 1.5px solid var(--d-panel, #ffffff);
+}
+
+/* ── Profile Trigger ── */
+.merchant-profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 2px 6px 2px 2px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.merchant-profile-trigger:hover {
+  background: var(--d-hover, #f8fafc);
+  border-color: var(--d-border, #e2e8f0);
+}
+
+.merchant-shell-dark .merchant-profile-trigger:hover {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.merchant-topbar-profile-img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--d-border, #cbd5e1);
+}
+
+.merchant-profile-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--d-t1, #0f172a);
+}
+
+.merchant-shell-dark .merchant-profile-name {
+  color: #f8fafc;
+}
+
+.merchant-profile-chevron {
+  color: var(--d-t4, #94a3b8);
+}
+
+/* ── Dropdown Menus ── */
+.merchant-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 10px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+  animation: merchantFadeSlide 0.15s ease-out;
+}
+
+.merchant-shell-dark .merchant-dropdown-menu {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes merchantFadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Notification Dropdown Specifics ── */
+.merchant-notif-menu {
+  width: 330px;
+  overflow: hidden;
+}
+
+.merchant-notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--d-border2, #f1f5f9);
+}
+
+.merchant-shell-dark .merchant-notif-header {
+  border-bottom-color: #334155;
+}
+
+.merchant-notif-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+}
+
+.merchant-shell-dark .merchant-notif-title {
+  color: #f8fafc;
+}
+
+.merchant-notif-mark-read {
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.merchant-notif-mark-read:hover {
+  text-decoration: underline;
+}
+
+.merchant-notif-list {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.merchant-notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--d-border2, #f1f5f9);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.merchant-shell-dark .merchant-notif-item {
+  border-bottom-color: #334155;
+}
+
+.merchant-notif-item:hover {
+  background: var(--d-hover, #f8fafc);
+}
+
+.merchant-shell-dark .merchant-notif-item:hover {
+  background: #0f172a;
+}
+
+.merchant-notif-icon-box {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.merchant-notif-order {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.merchant-notif-return {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.merchant-notif-payout {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.merchant-notif-body {
+  flex: 1;
+}
+
+.merchant-notif-text {
+  font-size: 0.74rem;
+  color: var(--d-t2, #334155);
+  line-height: 1.35;
+  margin: 0 0 2px 0;
+}
+
+.merchant-shell-dark .merchant-notif-text {
+  color: #cbd5e1;
+}
+
+.merchant-notif-time {
+  font-size: 0.66rem;
+  color: var(--d-t4, #94a3b8);
+}
+
+.merchant-notif-footer {
+  padding: 0.55rem 1rem;
+  background: var(--d-hover, #f8fafc);
+  text-align: center;
+}
+
+.merchant-shell-dark .merchant-notif-footer {
+  background: #0f172a;
+}
+
+.merchant-notif-view-all {
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.merchant-notif-view-all:hover {
+  text-decoration: underline;
+}
+
+/* ── Profile Dropdown Specifics ── */
+.merchant-profile-menu {
+  width: 240px;
+  padding: 0.4rem 0;
+}
+
+.merchant-profile-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--d-border2, #f1f5f9);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.merchant-shell-dark .merchant-profile-header {
+  border-bottom-color: #334155;
+}
+
+.merchant-menu-store-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+}
+
+.merchant-shell-dark .merchant-menu-store-name {
+  color: #f8fafc;
+}
+
+.merchant-menu-store-email {
+  font-size: 0.7rem;
+  color: var(--d-t4, #94a3b8);
+}
+
+.merchant-menu-plan-badge {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  margin-top: 0.25rem;
+}
+
+.merchant-profile-items {
+  padding: 0.35rem 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.merchant-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--d-t2, #334155);
+  font-size: 0.76rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.merchant-shell-dark .merchant-menu-item {
+  color: #cbd5e1;
+}
+
+.merchant-menu-item:hover {
+  background: var(--d-hover, #f8fafc);
+  color: #2563eb;
+}
+
+.merchant-shell-dark .merchant-menu-item:hover {
+  background: #0f172a;
+  color: #60a5fa;
+}
+
+.merchant-menu-item-danger {
+  color: #dc2626;
+}
+
+.merchant-shell-dark .merchant-menu-item-danger {
+  color: #f87171;
+}
+
+.merchant-menu-item-danger:hover {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.merchant-shell-dark .merchant-menu-item-danger:hover {
+  background: rgba(220, 38, 38, 0.1);
+  color: #f87171;
+}
+
+.merchant-menu-divider {
+  height: 1px;
+  background: var(--d-border2, #f1f5f9);
+  margin: 0.35rem 0;
+}
+
+.merchant-shell-dark .merchant-menu-divider {
+  background: #334155;
+}
+
+@media (max-width: 900px) {
+  .merchant-search-bar input {
+    width: 130px;
+  }
 }
 
 @media (max-width: 768px) {
   .merchant-topbar {
-    padding: 0.85rem 1rem;
+    padding: 0.65rem 1rem;
   }
   .merchant-search-bar {
     display: none;
   }
-  .merchant-avatar-stack {
+  .merchant-profile-name {
     display: none;
   }
 }

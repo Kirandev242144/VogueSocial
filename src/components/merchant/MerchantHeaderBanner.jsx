@@ -42,7 +42,7 @@ export default function MerchantHeaderBanner({
             </Link>
           </div>
           <span className="merchant-store-subtitle">
-            Luxury Ready-to-Wear · OmniTry AI Virtual Fitting Engine v2.4 Active
+            Boutique Ready-to-Wear · Paris, France · Active Catalog
           </span>
         </div>
       </div>
@@ -67,7 +67,7 @@ export default function MerchantHeaderBanner({
           onClick={onTestTryOn}
         >
           <Sparkles size={14} />
-          <span>Test Try-On Studio</span>
+          <span>Test Fitting Room</span>
         </button>
 
         <button
@@ -76,7 +76,7 @@ export default function MerchantHeaderBanner({
           onClick={handleAddGarment}
         >
           <Plus size={15} />
-          <span>Add Garment</span>
+          <span>Add Product</span>
         </button>
       </div>
     </div>
