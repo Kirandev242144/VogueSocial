@@ -1,15 +1,7 @@
 "use client";
-import React, { useState } from 'react';
-import { X, Truck, ShieldCheck } from 'lucide-react';
-
-const CARRIERS = [
-  'DHL Express',
-  'FedEx',
-  'UPS',
-  'Blue Dart',
-  'USPS Priority Mail',
-  'Royal Mail'
-];
+import React, { useState, useEffect } from 'react';
+import { X, Truck, ShieldCheck, Sparkles, ExternalLink } from 'lucide-react';
+import { CARRIERS, detectCarrier, getCarrierTrackingUrl } from './carrierUtils';
 
 export default function FulfillOrderModal({
   isOpen,
@@ -19,12 +11,46 @@ export default function FulfillOrderModal({
 }) {
   const [carrier, setCarrier] = useState('DHL Express');
   const [trackingNumber, setTrackingNumber] = useState('');
+  const [autoDetected, setAutoDetected] = useState(null);
+  const [userOverrodeCarrier, setUserOverrodeCarrier] = useState(false);
   const [notifyCustomer, setNotifyCustomer] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setCarrier('DHL Express');
+      setTrackingNumber('');
+      setAutoDetected(null);
+      setUserOverrodeCarrier(false);
+      setNotifyCustomer(true);
+      setSubmitting(false);
+    }
+  }, [isOpen, order?.id]);
 
   if (!isOpen || !order) return null;
 
   const cleanProduct = (order.product || 'Garment').replace(/Atelier\s*/gi, 'Tailored ');
+
+  const handleTrackingChange = (e) => {
+    const val = e.target.value;
+    setTrackingNumber(val);
+
+    const detected = detectCarrier(val);
+    if (detected) {
+      setAutoDetected(detected);
+      if (!userOverrodeCarrier) {
+        setCarrier(detected);
+      }
+    } else {
+      setAutoDetected(null);
+    }
+  };
+
+  const handleCarrierChange = (e) => {
+    setCarrier(e.target.value);
+    setUserOverrodeCarrier(true);
+    setAutoDetected(null);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -73,11 +99,18 @@ export default function FulfillOrderModal({
             </div>
 
             <div className="orders-form-group">
-              <label className="orders-form-label">Shipping Carrier / Courier *</label>
+              <div className="orders-carrier-label-row">
+                <label className="orders-form-label">Shipping Carrier / Courier *</label>
+                {autoDetected && (
+                  <span className="orders-detected-badge">
+                    <Sparkles size={11} /> Auto-detected
+                  </span>
+                )}
+              </div>
               <select
                 className="orders-form-select"
                 value={carrier}
-                onChange={(e) => setCarrier(e.target.value)}
+                onChange={handleCarrierChange}
               >
                 {CARRIERS.map((c) => (
                   <option key={c} value={c}>{c}</option>
@@ -90,14 +123,28 @@ export default function FulfillOrderModal({
               <input
                 type="text"
                 className="orders-form-input"
-                placeholder="e.g. FX28301948IN"
+                placeholder="e.g. FX28301948IN, 1Z999999..., or 10-digit AWB"
                 value={trackingNumber}
-                onChange={(e) => setTrackingNumber(e.target.value)}
+                onChange={handleTrackingChange}
                 required
               />
-              <span className="orders-form-hint">
-                Provided on your carrier consignment receipt or airway bill label.
-              </span>
+              <div className="orders-tracking-tools">
+                <span className="orders-form-hint">
+                  Provided on your carrier consignment receipt or airway bill label.
+                </span>
+                {trackingNumber.trim().length >= 4 && (
+                  <a
+                    href={getCarrierTrackingUrl(carrier, trackingNumber)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="orders-tracking-preview-link"
+                    title={`Preview tracking on ${carrier}`}
+                  >
+                    <span>Verify on {carrier}</span>
+                    <ExternalLink size={11} />
+                  </a>
+                )}
+              </div>
             </div>
 
             <div className="orders-form-group">

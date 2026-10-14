@@ -831,7 +831,54 @@
 .orders-toast-error { background: #dc2626; }
 .orders-toast-info { background: #2563eb; }
 
+/* ── Carrier Auto-Detection & Verification Link ── */
+.orders-carrier-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.orders-detected-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  animation: ordersFadeIn 0.2s ease-in-out;
+}
+
+.orders-tracking-tools {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.orders-tracking-preview-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #2563eb;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.orders-tracking-preview-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
 @keyframes ordersFadeIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
+

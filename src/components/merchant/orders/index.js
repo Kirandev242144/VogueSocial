@@ -6,3 +6,4 @@ export { default as OrderTrackingTable } from './OrderTrackingTable';
 export { default as FulfillOrderModal } from './FulfillOrderModal';
 export { default as ReturnReviewModal } from './ReturnReviewModal';
 export { default as OrderDetailsModal } from './OrderDetailsModal';
+export * from './carrierUtils';

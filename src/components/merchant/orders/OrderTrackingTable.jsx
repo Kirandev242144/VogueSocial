@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { Truck, ExternalLink, Eye, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
+import { getCarrierTrackingUrl } from './carrierUtils';
 
 const TRACKING_FILTERS = [
   { key: 'all', label: 'All Shipments' },
@@ -56,16 +57,6 @@ export default function OrderTrackingTable({
           </span>
         );
     }
-  };
-
-  const getCarrierUrl = (carrier, trackingId) => {
-    if (carrier?.toLowerCase().includes('dhl')) {
-      return `https://www.dhl.com/en/express/tracking.html?AWB=${trackingId}`;
-    }
-    if (carrier?.toLowerCase().includes('fedex')) {
-      return `https://www.fedex.com/fedextrack/?trknbr=${trackingId}`;
-    }
-    return `https://www.google.com/search?q=${encodeURIComponent(carrier + ' tracking ' + trackingId)}`;
   };
 
   return (
@@ -144,7 +135,7 @@ export default function OrderTrackingTable({
 
                   <td>
                     <a
-                      href={getCarrierUrl(item.carrier, item.trackingId)}
+                      href={getCarrierTrackingUrl(item.carrier, item.trackingId)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="orders-tracking-link"
