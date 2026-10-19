@@ -1,9 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import {
-  Monitor, Tablet, Smartphone, ExternalLink, Check, Save,
-  RefreshCw, CheckCircle2, RotateCcw, Eye, Sliders, Globe, Loader2
-} from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
+import EditorTopBar from './EditorTopBar';
 import StorefrontInspector from './StorefrontInspector';
 import StorefrontLiveCanvas from './StorefrontLiveCanvas';
 import './StorefrontEditor.css';
@@ -213,107 +211,17 @@ export default function StorefrontEditor({
 
   return (
     <div className={`storefront-editor-root ${isStandalone ? 'editor-standalone' : ''}`}>
-      {/* ── Top Bar ── */}
-      <header className="editor-topbar">
-        <div className="editor-topbar-left">
-          {isStandalone && (
-            <a
-              href="/merchant/website"
-              className="editor-btn-secondary"
-              style={{ marginRight: 6, fontSize: '0.74rem', textDecoration: 'none' }}
-              title="Return to Merchant Portal"
-            >
-              ← Portal Hub
-            </a>
-          )}
-          <div className="editor-store-avatar">
-            {(editorState.store_name || 'S').charAt(0).toUpperCase()}
-          </div>
-          <div className="editor-store-info">
-            <div className="editor-store-title-row">
-              <h2 className="editor-store-title">{editorState.store_name}</h2>
-              <span className="editor-status-badge">
-                <span className="editor-status-dot" />
-                <span>Live Storefront</span>
-              </span>
-            </div>
-            <span className="editor-store-subtitle">
-              {editorState.subdomain}.voguesocial.com · {editorState.template.toUpperCase()} Theme
-            </span>
-          </div>
-        </div>
-
-        {/* Viewport Switcher */}
-        <div className="editor-topbar-center">
-          <div className="editor-viewport-group">
-            <button
-              type="button"
-              className={`editor-viewport-btn ${viewport === 'desktop' ? 'editor-viewport-btn-active' : ''}`}
-              onClick={() => setViewport('desktop')}
-              title="Desktop View (1200px)"
-            >
-              <Monitor size={14} />
-              <span>Desktop</span>
-            </button>
-            <button
-              type="button"
-              className={`editor-viewport-btn ${viewport === 'tablet' ? 'editor-viewport-btn-active' : ''}`}
-              onClick={() => setViewport('tablet')}
-              title="Tablet View (768px)"
-            >
-              <Tablet size={14} />
-              <span>Tablet</span>
-            </button>
-            <button
-              type="button"
-              className={`editor-viewport-btn ${viewport === 'mobile' ? 'editor-viewport-btn-active' : ''}`}
-              onClick={() => setViewport('mobile')}
-              title="Mobile View (375px)"
-            >
-              <Smartphone size={14} />
-              <span>Mobile</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Right Actions */}
-        <div className="editor-topbar-right">
-          <button
-            type="button"
-            className="editor-btn-secondary"
-            onClick={handleResetDefaults}
-            title="Reset theme and sections to defaults"
-          >
-            <RotateCcw size={13} />
-            <span>Reset</span>
-          </button>
-
-          <a
-            href={liveUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="editor-btn-secondary"
-            title="Open live storefront in new browser tab"
-          >
-            <ExternalLink size={13} />
-            <span>Visit Live</span>
-          </a>
-
-          <button
-            type="button"
-            className="editor-btn-primary"
-            onClick={handleSaveAndPublish}
-            disabled={saving}
-          >
-            {saving ? (
-              <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
-            ) : (
-              <Save size={14} />
-            )}
-            <span>{saving ? 'Publishing...' : 'Save & Publish'}</span>
-          </button>
-        </div>
-      </header>
+      {/* ── Sleek Minimalist Top Bar ── */}
+      <EditorTopBar
+        editorState={editorState}
+        viewport={viewport}
+        setViewport={setViewport}
+        saving={saving}
+        liveUrl={liveUrl}
+        onReset={handleResetDefaults}
+        onSave={handleSaveAndPublish}
+        isStandalone={isStandalone}
+      />
 
       {/* ── Main Workspace: Left Inspector + Right Live Canvas ── */}
       <div className="editor-workspace">

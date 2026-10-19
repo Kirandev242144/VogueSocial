@@ -1,0 +1,788 @@
+/* ==========================================================================
+   VOGUESOCIAL STOREFRONT LIVE CANVAS STYLESHEET
+   100% External CSS • Zero Inline Styles • Modular Architecture
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Jost:wght@300;400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&family=Nunito:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;600&display=swap');
+
+/* ── Dynamic Font Pairings ── */
+.canvas-font-playfair {
+  --canvas-font-heading: 'Playfair Display', serif;
+  --canvas-font-body: 'Montserrat', sans-serif;
+}
+
+.canvas-font-cormorant {
+  --canvas-font-heading: 'Cormorant Garamond', serif;
+  --canvas-font-body: 'Jost', sans-serif;
+}
+
+.canvas-font-jakarta {
+  --canvas-font-heading: 'Plus Jakarta Sans', sans-serif;
+  --canvas-font-body: 'Inter', sans-serif;
+}
+
+.canvas-font-barlow {
+  --canvas-font-heading: 'Barlow Condensed', sans-serif;
+  --canvas-font-body: 'Space Grotesk', sans-serif;
+}
+
+/* ── Dynamic Corner Radii ── */
+.canvas-radius-sharp {
+  --canvas-radius: 0px;
+}
+
+.canvas-radius-soft {
+  --canvas-radius: 4px;
+}
+
+.canvas-radius-rounded {
+  --canvas-radius: 8px;
+}
+
+.canvas-radius-pill {
+  --canvas-radius: 99px;
+}
+
+/* ── Dynamic Accent Palette Variables ── */
+.canvas-accent-indigo { --canvas-accent: #2563eb; }
+.canvas-accent-slate { --canvas-accent: #0f172a; }
+.canvas-accent-gold { --canvas-accent: #c9a84c; }
+.canvas-accent-forest { --canvas-accent: #059669; }
+.canvas-accent-amber { --canvas-accent: #d97706; }
+.canvas-accent-rose { --canvas-accent: #e11d48; }
+
+/* ── Hero Overlay Opacity Levels ── */
+.canvas-overlay-10 { --hero-opacity: 0.1; }
+.canvas-overlay-20 { --hero-opacity: 0.2; }
+.canvas-overlay-30 { --hero-opacity: 0.3; }
+.canvas-overlay-45 { --hero-opacity: 0.45; }
+.canvas-overlay-60 { --hero-opacity: 0.6; }
+.canvas-overlay-75 { --hero-opacity: 0.75; }
+
+/* ── Announcement Bar Themes ── */
+.canvas-announcement-dark { background-color: #111827; }
+.canvas-announcement-indigo { background-color: #1e3a8a; }
+.canvas-announcement-black { background-color: #0a0a0a; }
+.canvas-announcement-gold { background-color: #854d0e; }
+.canvas-announcement-rose { background-color: #9f1239; }
+.canvas-announcement-forest { background-color: #064e3b; }
+
+/* ── Product Swatch Dot Colors ── */
+.swatch-dot-black { background-color: #0a0a0a; }
+.swatch-dot-white { background-color: #ffffff; }
+.swatch-dot-camel { background-color: #c19a6b; }
+.swatch-dot-grey { background-color: #9ca3af; }
+.swatch-dot-champagne { background-color: #f7e7ce; }
+.swatch-dot-oatmeal { background-color: #e6d7b9; }
+.swatch-dot-ochre { background-color: #a16207; }
+.swatch-dot-charcoal { background-color: #374151; }
+.swatch-dot-olive { background-color: #556b2f; }
+.swatch-dot-scarlet { background-color: #e11d48; }
+.swatch-dot-crimson { background-color: #800020; }
+.swatch-dot-emerald { background-color: #047857; }
+.swatch-dot-amber { background-color: #d97706; }
+.swatch-dot-indigo { background-color: #2563eb; }
+
+/* ── Canvas Root & Variables ── */
+.canvas-store-wrap {
+  min-height: 100%;
+  background-color: #fafaf9;
+  color: #1c1917;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  font-family: var(--canvas-font-body, 'Inter', sans-serif);
+}
+
+/* ── 1. Announcement Bar ── */
+.canvas-announcement-bar {
+  padding: 0.65rem 1.5rem;
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background-color: var(--announcement-bg, #111827);
+  color: #f3f4f6;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── 2. Sticky Editorial Header ── */
+.canvas-header {
+  position: sticky;
+  top: 0;
+  z-index: 35;
+  background: rgba(250, 250, 249, 0.98);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #e7e5e4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.15rem 2.5rem;
+  gap: 1.5rem;
+}
+
+.canvas-header-mobile {
+  padding: 0.85rem 1.25rem;
+}
+
+.canvas-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #57534e;
+  flex-wrap: wrap;
+}
+
+.canvas-nav-item {
+  cursor: pointer;
+  transition: color 0.15s ease;
+  white-space: nowrap;
+}
+
+.canvas-nav-item:hover {
+  color: #0a0a0a;
+}
+
+.canvas-brand-wrap {
+  text-align: center;
+}
+
+.canvas-brand-logo {
+  height: 28px;
+  object-fit: contain;
+}
+
+.canvas-brand-title {
+  font-family: var(--canvas-font-heading, 'Playfair Display', serif);
+  font-size: 1.65rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0;
+  color: #0a0a0a;
+  white-space: nowrap;
+}
+
+.canvas-brand-title-mobile {
+  font-size: 1.25rem;
+}
+
+.canvas-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  color: #292524;
+}
+
+.canvas-icon-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.canvas-cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-size: 0.58rem;
+  font-weight: 800;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── 3. High-Fashion Hero Banner ── */
+.canvas-hero {
+  position: relative;
+  min-height: 580px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #1c1917;
+}
+
+.canvas-hero-mobile {
+  min-height: 440px;
+}
+
+.canvas-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.canvas-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 10, 10, 0.2) 0%,
+    rgba(10, 10, 10, var(--hero-opacity, 0.45)) 100%
+  );
+}
+
+.canvas-hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  color: #ffffff;
+  padding: 2rem 1.5rem;
+  max-width: 720px;
+}
+
+.canvas-hero-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #d6d3d1;
+  margin-bottom: 0.85rem;
+  display: block;
+}
+
+.canvas-hero-headline {
+  font-family: var(--canvas-font-heading, 'Playfair Display', serif);
+  font-size: 3.3rem;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.85rem 0;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
+}
+
+.canvas-hero-headline-mobile {
+  font-size: 2.1rem;
+}
+
+.canvas-hero-tagline {
+  font-size: 1.05rem;
+  font-weight: 300;
+  color: #f5f5f4;
+  margin: 0 auto 1.5rem auto;
+  max-width: 520px;
+  line-height: 1.55;
+}
+
+.canvas-hero-tagline-mobile {
+  font-size: 0.88rem;
+}
+
+.canvas-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem 2.1rem;
+  background: #ffffff;
+  color: #0a0a0a;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border-radius: var(--canvas-radius, 4px);
+  border: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.canvas-hero-btn:hover {
+  background: #f5f5f4;
+  transform: translateY(-1px);
+}
+
+/* ── 4. Refined Dispatch Strip ── */
+.canvas-dispatch-strip {
+  border-top: 1px solid #e7e5e4;
+  border-bottom: 1px solid #e7e5e4;
+  padding: 1.15rem 2rem;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #78716c;
+  flex-wrap: wrap;
+}
+
+.canvas-dispatch-strip-mobile {
+  gap: 1.25rem;
+  font-size: 0.65rem;
+  padding: 0.85rem 1rem;
+}
+
+/* ── 5. Main Catalog Section ── */
+.canvas-catalog-section {
+  padding: 3.5rem 2.75rem 5rem;
+}
+
+.canvas-catalog-section-mobile {
+  padding: 2rem 1.25rem 3rem;
+}
+
+.canvas-catalog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid #e7e5e4;
+  padding-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.canvas-category-tabs {
+  display: flex;
+  gap: 2rem;
+  overflow-x: auto;
+}
+
+.canvas-category-btn {
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #78716c;
+  cursor: pointer;
+  position: relative;
+  padding-bottom: 0.75rem;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.canvas-category-btn-active {
+  color: #0a0a0a;
+  font-weight: 700;
+  border-bottom-color: var(--canvas-accent, #2563eb);
+}
+
+.canvas-sort-indicator {
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #57534e;
+  font-weight: 600;
+  padding-bottom: 0.75rem;
+}
+
+/* Product Grid */
+.canvas-product-grid {
+  display: grid;
+  gap: 2.5rem 1.75rem;
+}
+
+.canvas-product-grid-cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.canvas-product-grid-cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.canvas-product-grid-cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.canvas-product-grid-mobile {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem 0.85rem;
+}
+
+/* Product Card */
+.canvas-product-card {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  position: relative;
+}
+
+.canvas-product-img-wrap {
+  position: relative;
+  aspect-ratio: 3/4;
+  width: 100%;
+  background: #f5f5f4;
+  overflow: hidden;
+  margin-bottom: 0.95rem;
+  border-radius: var(--canvas-radius, 4px);
+}
+
+.canvas-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.canvas-product-card:hover .canvas-product-img {
+  transform: scale(1.04);
+}
+
+.canvas-tryon-pill {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  opacity: 0;
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  transition: all 0.22s ease;
+  white-space: nowrap;
+  border-radius: var(--canvas-radius, 4px);
+  z-index: 5;
+}
+
+.canvas-product-card:hover .canvas-tryon-pill {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.canvas-product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.canvas-product-cat {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #a8a29e;
+}
+
+.canvas-product-name {
+  font-family: var(--canvas-font-heading, 'Playfair Display', serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+  color: #0a0a0a;
+  line-height: 1.35;
+}
+
+.canvas-product-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-top: 2px;
+}
+
+.canvas-price-current {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #0a0a0a;
+}
+
+.canvas-price-original {
+  font-size: 0.8rem;
+  color: #a8a29e;
+  text-decoration: line-through;
+}
+
+.canvas-swatches-row {
+  display: flex;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.canvas-swatch-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* ── 6. Brand Story Section ── */
+.canvas-story-section {
+  background: #ffffff;
+  border-top: 1px solid #e7e5e4;
+  border-bottom: 1px solid #e7e5e4;
+  padding: 4.5rem 2.75rem;
+}
+
+.canvas-story-section-mobile {
+  padding: 2.5rem 1.25rem;
+}
+
+.canvas-story-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.canvas-story-inner-mobile {
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.canvas-story-kicker {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--canvas-accent, #2563eb);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.canvas-story-title {
+  font-family: var(--canvas-font-heading, 'Playfair Display', serif);
+  font-size: 2.1rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: #0a0a0a;
+  margin: 0 0 1rem 0;
+}
+
+.canvas-story-title-mobile {
+  font-size: 1.6rem;
+}
+
+.canvas-story-desc {
+  font-size: 0.86rem;
+  color: #57534e;
+  line-height: 1.65;
+  margin: 0 0 1.5rem 0;
+}
+
+.canvas-story-quote-box {
+  border-left: 2px solid var(--canvas-accent, #2563eb);
+  padding-left: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.canvas-story-quote {
+  font-family: var(--canvas-font-heading, 'Playfair Display', serif);
+  font-size: 1.05rem;
+  font-style: italic;
+  color: #1c1917;
+  line-height: 1.5;
+  margin: 0 0 0.5rem 0;
+}
+
+.canvas-story-author {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #78716c;
+}
+
+.canvas-story-img-wrap {
+  aspect-ratio: 4/5;
+  background: #f5f5f4;
+  overflow: hidden;
+  border-radius: var(--canvas-radius, 4px);
+}
+
+.canvas-story-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── 7. VIP Newsletter Section ── */
+.canvas-newsletter-section {
+  padding: 5rem 2.5rem;
+  text-align: center;
+  background: #fafaf9;
+}
+
+.canvas-newsletter-section-mobile {
+  padding: 3rem 1.25rem;
+}
+
+.canvas-newsletter-box {
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+.canvas-newsletter-title {
+  font-family: var(--canvas-font-heading, 'Playfair Display', serif);
+  font-size: 1.9rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0a0a0a;
+  margin: 0 0 0.75rem 0;
+}
+
+.canvas-newsletter-title-mobile {
+  font-size: 1.45rem;
+}
+
+.canvas-newsletter-subtitle {
+  font-size: 0.82rem;
+  color: #57534e;
+  max-width: 460px;
+  margin: 0 auto 1.5rem auto;
+  line-height: 1.5;
+}
+
+.canvas-newsletter-form {
+  display: inline-flex;
+  max-width: 380px;
+  width: 100%;
+  gap: 6px;
+}
+
+.canvas-newsletter-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d6d3d1;
+  font-size: 0.8rem;
+  outline: none;
+  font-family: inherit;
+  border-radius: var(--canvas-radius, 4px);
+  background: #ffffff;
+}
+
+.canvas-newsletter-input:focus {
+  border-color: #0a0a0a;
+}
+
+.canvas-newsletter-btn {
+  padding: 0.75rem 1.4rem;
+  background: #0a0a0a;
+  color: #ffffff;
+  border: none;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: var(--canvas-radius, 4px);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+/* ── 8. Magazine Editorial Footer ── */
+.canvas-footer {
+  background: #0a0a0a;
+  color: #f5f5f4;
+  padding: 4.5rem 2.75rem 2rem;
+  margin-top: auto;
+}
+
+.canvas-footer-mobile {
+  padding: 3rem 1.25rem 1.5rem;
+}
+
+.canvas-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 3.5rem;
+  margin-bottom: 3.5rem;
+}
+
+.canvas-footer-inner-mobile {
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.canvas-footer-brand {
+  font-family: var(--canvas-font-heading, 'Playfair Display', serif);
+  font-size: 1.5rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0 0 0.85rem 0;
+}
+
+.canvas-footer-desc {
+  font-size: 0.82rem;
+  color: #a8a29e;
+  line-height: 1.6;
+  max-width: 320px;
+  margin: 0 0 1.25rem 0;
+}
+
+.canvas-footer-col-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 1.2rem;
+}
+
+.canvas-footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  font-size: 0.8rem;
+  color: #a8a29e;
+}
+
+.canvas-footer-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.canvas-footer-link:hover {
+  color: #ffffff;
+}
+
+.canvas-footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  color: #78716c;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.canvas-footer-legal {
+  display: flex;
+  gap: 1.5rem;
+}

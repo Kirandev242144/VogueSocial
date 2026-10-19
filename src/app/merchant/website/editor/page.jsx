@@ -37,25 +37,15 @@ export default function MerchantWebsiteEditorPage() {
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        gap: 12,
-        background: '#0f172a',
-        color: '#f8fafc',
-        fontFamily: 'system-ui, sans-serif'
-      }}>
-        <Loader2 size={24} color="#38bdf8" style={{ animation: 'spin 1s linear infinite' }} />
-        <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Loading Standalone Storefront Studio...</span>
+      <div className="editor-loading-screen">
+        <Loader2 size={24} color="#38bdf8" className="editor-spin" />
+        <span className="editor-loading-text">Loading Standalone Storefront Studio...</span>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
+    <div className="editor-page-root">
       <StorefrontEditor
         initialSettings={settings}
         vendorId={effectiveVendorId}

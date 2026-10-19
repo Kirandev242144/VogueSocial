@@ -1,8 +1,9 @@
 "use client";
 import React, { useState, useMemo } from 'react';
 import {
-  Search, ShoppingBag, Sparkles, ArrowRight, Lock, Check
+  Search, ShoppingBag, Sparkles, ArrowRight
 } from 'lucide-react';
+import './StorefrontCanvas.css';
 
 // Authentic luxury garments featured in VogueSocial feeds & virtual try-on lookbooks
 const FEED_STORE_PRODUCTS = [
@@ -80,38 +81,68 @@ const FEED_STORE_PRODUCTS = [
   }
 ];
 
-const COLOR_HEX_MAP = {
-  'obsidian black': '#0a0a0a',
-  'black': '#0a0a0a',
-  'jet black': '#0f172a',
-  'camel': '#c19a6b',
-  'camel beige': '#c19a6b',
-  'stone grey': '#9ca3af',
-  'grey': '#9ca3af',
-  'cream white': '#f5f5dc',
-  'white': '#ffffff',
-  'champagne': '#f7e7ce',
-  'oatmeal': '#e6d7b9',
-  'oatmeal dune': '#e6d7b9',
-  'ochre tan': '#a16207',
-  'charcoal grey': '#374151',
-  'olive drab': '#556b2f',
-  'scarlet red': '#e11d48',
-  'crimson ruby': '#800020',
-  'emerald palm': '#047857',
-  'vintage cognac': '#a16207',
-  'burgundy': '#800020',
-  'pinstripe noir': '#1e293b',
-  'midnight noir': '#0f172a',
-  'taupe': '#8b7d7b',
-  'summer floral': '#d97706'
-};
+function getSwatchDotClass(c) {
+  if (!c) return 'swatch-dot-charcoal';
+  const clean = c.toLowerCase().trim();
+  if (clean.includes('black') || clean === '#0a0a0a' || clean === '#000000' || clean === '#0f172a') return 'swatch-dot-black';
+  if (clean.includes('white') || clean === '#ffffff') return 'swatch-dot-white';
+  if (clean.includes('camel') || clean === '#c19a6b') return 'swatch-dot-camel';
+  if (clean.includes('grey') || clean.includes('gray') || clean === '#9ca3af') return 'swatch-dot-grey';
+  if (clean.includes('champagne') || clean === '#f7e7ce') return 'swatch-dot-champagne';
+  if (clean.includes('oatmeal') || clean.includes('dune') || clean === '#e6d7b9') return 'swatch-dot-oatmeal';
+  if (clean.includes('ochre') || clean.includes('tan') || clean === '#a16207') return 'swatch-dot-ochre';
+  if (clean.includes('olive') || clean === '#556b2f') return 'swatch-dot-olive';
+  if (clean.includes('rose') || clean.includes('scarlet') || clean === '#e11d48') return 'swatch-dot-scarlet';
+  if (clean.includes('burgundy') || clean.includes('crimson') || clean === '#800020') return 'swatch-dot-crimson';
+  if (clean.includes('emerald') || clean.includes('green') || clean === '#047857') return 'swatch-dot-emerald';
+  if (clean.includes('amber') || clean.includes('floral') || clean === '#d97706') return 'swatch-dot-amber';
+  if (clean.includes('indigo') || clean.includes('blue') || clean === '#2563eb') return 'swatch-dot-indigo';
+  return 'swatch-dot-charcoal';
+}
 
-function resolveColorHex(c) {
-  if (!c) return '#334155';
-  if (c.startsWith('#')) return c;
-  const key = c.toLowerCase().trim();
-  return COLOR_HEX_MAP[key] || '#475569';
+function getFontClass(pairing) {
+  if (pairing === 'cormorant-jost') return 'canvas-font-cormorant';
+  if (pairing === 'jakarta-inter') return 'canvas-font-jakarta';
+  if (pairing === 'barlow-grotesk') return 'canvas-font-barlow';
+  return 'canvas-font-playfair';
+}
+
+function getRadiusClass(radius) {
+  if (radius === 'sharp') return 'canvas-radius-sharp';
+  if (radius === 'rounded') return 'canvas-radius-rounded';
+  if (radius === 'pill') return 'canvas-radius-pill';
+  return 'canvas-radius-soft';
+}
+
+function getAccentClass(accent) {
+  if (!accent) return 'canvas-accent-indigo';
+  const a = accent.toLowerCase();
+  if (a === '#0f172a' || a.includes('slate')) return 'canvas-accent-slate';
+  if (a === '#c9a84c' || a.includes('gold')) return 'canvas-accent-gold';
+  if (a === '#059669' || a.includes('forest')) return 'canvas-accent-forest';
+  if (a === '#d97706' || a.includes('amber')) return 'canvas-accent-amber';
+  if (a === '#e11d48' || a.includes('rose')) return 'canvas-accent-rose';
+  return 'canvas-accent-indigo';
+}
+
+function getOverlayClass(opacity) {
+  if (opacity <= 0.15) return 'canvas-overlay-10';
+  if (opacity <= 0.25) return 'canvas-overlay-20';
+  if (opacity <= 0.35) return 'canvas-overlay-30';
+  if (opacity <= 0.55) return 'canvas-overlay-45';
+  if (opacity <= 0.65) return 'canvas-overlay-60';
+  return 'canvas-overlay-75';
+}
+
+function getAnnouncementBgClass(bg) {
+  if (!bg) return 'canvas-announcement-dark';
+  const b = bg.toLowerCase();
+  if (b.includes('1e3a8a') || b.includes('blue')) return 'canvas-announcement-indigo';
+  if (b.includes('0a0a0a') || b.includes('000000')) return 'canvas-announcement-black';
+  if (b.includes('854d0e') || b.includes('gold')) return 'canvas-announcement-gold';
+  if (b.includes('9f1239') || b.includes('rose')) return 'canvas-announcement-rose';
+  if (b.includes('064e3b') || b.includes('forest')) return 'canvas-announcement-forest';
+  return 'canvas-announcement-dark';
 }
 
 export default function StorefrontLiveCanvas({
@@ -132,7 +163,7 @@ export default function StorefrontLiveCanvas({
         price: p.salePrice || p.sale_price || p.price,
         originalPrice: (p.salePrice || p.sale_price) ? p.price : null,
         image: p.imageUrl || p.image_url || p.image || '/Shop_images/1/basic2-500x750.jpeg',
-        colors: (p.colors && p.colors.length > 0 ? p.colors : ['#0a0a0a', '#c19a6b']).map(resolveColorHex)
+        colors: (p.colors && p.colors.length > 0 ? p.colors : ['#0a0a0a', '#c19a6b'])
       }));
     }
     return FEED_STORE_PRODUCTS.map(p => ({
@@ -160,653 +191,298 @@ export default function StorefrontLiveCanvas({
     return normalizedProducts.filter(p => p.category === activeCat);
   }, [normalizedProducts, activeCat]);
 
-  // Font family determination
-  let fontHeading = "'Playfair Display', serif";
-  let fontBody = "'Inter', sans-serif";
-  if (editorState.font_pairing === 'cormorant-jost') {
-    fontHeading = "'Cormorant Garamond', serif";
-    fontBody = "'Jost', sans-serif";
-  } else if (editorState.font_pairing === 'jakarta-inter') {
-    fontHeading = "'Plus Jakarta Sans', sans-serif";
-    fontBody = "'Inter', sans-serif";
-  } else if (editorState.font_pairing === 'barlow-grotesk') {
-    fontHeading = "'Barlow Condensed', sans-serif";
-    fontBody = "'Space Grotesk', sans-serif";
-  }
-
-  // Border radius determination
-  let btnRadius = '0px';
-  if (editorState.border_radius === 'rounded') btnRadius = '8px';
-  if (editorState.border_radius === 'pill') btnRadius = '99px';
-  if (editorState.border_radius === 'soft') btnRadius = '4px';
-
-  const accentColor = editorState.accent_color || '#2563eb';
-
-  // Responsive class based on viewport
+  // Viewport Class
   let viewportClass = 'canvas-viewport-desktop';
   if (viewport === 'tablet') viewportClass = 'canvas-viewport-tablet';
   if (viewport === 'mobile') viewportClass = 'canvas-viewport-mobile';
 
+  const isMobile = viewport === 'mobile';
+  const fontClass = getFontClass(editorState.font_pairing);
+  const radiusClass = getRadiusClass(editorState.border_radius);
+  const accentClass = getAccentClass(editorState.accent_color);
+  const overlayClass = getOverlayClass(editorState.hero_overlay_opacity ?? 0.45);
+  const announcementBgClass = getAnnouncementBgClass(editorState.announcement_bg);
+
   return (
     <div className="editor-canvas-wrap">
       <div
-        className={`editor-canvas-container ${viewportClass}`}
-        style={{
-          fontFamily: fontBody,
-          color: '#1C1917',
-          backgroundColor: '#FAFAF9'
-        }}
+        className={`editor-canvas-container ${viewportClass} ${fontClass} ${radiusClass} ${accentClass} ${overlayClass}`}
+        data-template={editorState.template || 'modern'}
       >
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-            @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+        {isMobile && <div className="canvas-mobile-notch" />}
 
-            .editor-live-card {
-              display: flex;
-              flex-direction: column;
-              cursor: pointer;
-              position: relative;
-            }
-            .editor-live-image-wrap {
-              position: relative;
-              aspect-ratio: 3/4;
-              width: 100%;
-              background: #F5F5F4;
-              overflow: hidden;
-              margin-bottom: 0.95rem;
-            }
-            .editor-live-img {
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-              transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            }
-            .editor-live-card:hover .editor-live-img {
-              transform: scale(1.04);
-            }
-            .editor-live-tryon-pill {
-              position: absolute;
-              bottom: 12px;
-              left: 50%;
-              transform: translateX(-50%) translateY(8px);
-              opacity: 0;
-              background: rgba(10, 10, 10, 0.92);
-              backdrop-filter: blur(8px);
-              color: #FFFFFF;
-              border: none;
-              padding: 0.5rem 1.1rem;
-              font-size: 0.68rem;
-              font-weight: 700;
-              letter-spacing: 0.12em;
-              text-transform: uppercase;
-              display: flex;
-              align-items: center;
-              gap: 0.45rem;
-              box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-              transition: all 0.22s ease;
-              white-space: nowrap;
-              z-index: 5;
-            }
-            .editor-live-card:hover .editor-live-tryon-pill {
-              opacity: 1;
-              transform: translateX(-50%) translateY(0);
-            }
-          `
-          }}
-        />
-
-        {viewport === 'mobile' && <div className="canvas-mobile-notch" />}
-
-        {/* ── 1. ANNOUNCEMENT BAR ── */}
-        {editorState.announcement_enabled && (
-          <div
-            style={{
-              background: editorState.announcement_bg || '#111827',
-              color: '#F3F4F6',
-              fontSize: '0.68rem',
-              fontWeight: 600,
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              textAlign: 'center',
-              padding: '0.5rem 1rem'
-            }}
-          >
-            <span>{editorState.announcement_text || 'COMPLIMENTARY WORLDWIDE EXPRESS SHIPPING OVER $200'}</span>
-          </div>
-        )}
-
-        {/* ── 2. MAGAZINE EDITORIAL HEADER ── */}
-        <header
-          style={{
-            position: 'sticky',
-            top: 0,
-            zIndex: 35,
-            background: 'rgba(250, 250, 249, 0.98)',
-            borderBottom: '1px solid #E7E5E4',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: viewport === 'mobile' ? '0.85rem 1.25rem' : '1.15rem 2.5rem'
-          }}
-        >
-          {/* Left Nav (Dynamic Navigation Menu) */}
-          {viewport !== 'mobile' && (
-            <div style={{ display: 'flex', gap: '1.75rem', fontSize: '0.78rem', fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#57534E', flexWrap: 'wrap' }}>
-              {(editorState.nav_menu && editorState.nav_menu.length > 0 ? editorState.nav_menu : [
-                { id: '1', label: 'Collection', url: '#collection' },
-                { id: '2', label: 'Editorial', url: '#about' },
-                { id: '3', label: 'About Atelier', url: '#about' }
-              ]).map((item) => (
-                <span
-                  key={item.id || item.label}
-                  style={{ cursor: 'pointer', transition: 'color 0.15s ease' }}
-                  title={item.url}
-                >
-                  {item.label}
-                </span>
-              ))}
+        <div className="canvas-store-wrap">
+          {/* ── 1. ANNOUNCEMENT BAR ── */}
+          {editorState.announcement_enabled && (
+            <div className={`canvas-announcement-bar ${announcementBgClass}`}>
+              <span>{editorState.announcement_text || 'COMPLIMENTARY WORLDWIDE EXPRESS SHIPPING OVER $200'}</span>
             </div>
           )}
 
-          {/* Center Brand Title / Logo */}
-          <div style={{ textAlign: 'center' }}>
-            {editorState.logo_url ? (
-              <img src={editorState.logo_url} alt="" style={{ height: 28, objectFit: 'contain' }} />
-            ) : (
-              <h1 style={{
-                fontFamily: fontHeading,
-                fontSize: viewport === 'mobile' ? '1.25rem' : '1.65rem',
-                fontWeight: 600,
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                margin: 0,
-                color: '#0A0A0A'
-              }}>
-                {editorState.store_name || 'Studio Label Paris'}
-              </h1>
-            )}
-          </div>
-
-          {/* Right Icons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: '#292524' }}>
-            <Search size={18} style={{ cursor: 'pointer' }} />
-            <div style={{ position: 'relative', cursor: 'pointer' }}>
-              <ShoppingBag size={18} />
-              <span style={{
-                position: 'absolute', top: -3, right: -4, background: '#0A0A0A',
-                color: '#fff', fontSize: '0.58rem', fontWeight: 800, width: 14, height: 14,
-                borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                0
-              </span>
-            </div>
-          </div>
-        </header>
-
-        {/* ── 3. EDITORIAL HERO SHOWCASE ── */}
-        <section
-          style={{
-            position: 'relative',
-            height: viewport === 'mobile' ? '360px' : '460px',
-            width: '100%',
-            overflow: 'hidden',
-            background: '#1C1917',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          {/* Hero background image */}
-          <img
-            src={editorState.hero_image || 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=80'}
-            alt=""
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              filter: 'contrast(105%) brightness(95%)'
-            }}
-          />
-
-          {/* Overlay with dynamic darkness */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: `linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,${editorState.hero_overlay_opacity ?? 0.65}) 100%)`
-            }}
-          />
-
-          {/* Hero content */}
-          <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', color: '#FFFFFF', padding: '1.5rem', maxWidth: 700 }}>
-            {editorState.hero_kicker && (
-              <span style={{
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                letterSpacing: '0.24em',
-                textTransform: 'uppercase',
-                color: '#D6D3D1',
-                marginBottom: '0.85rem',
-                display: 'block'
-              }}>
-                {editorState.hero_kicker}
-              </span>
-            )}
-
-            <h2 style={{
-              fontFamily: fontHeading,
-              fontSize: viewport === 'mobile' ? '2.1rem' : '3.3rem',
-              fontWeight: 500,
-              lineHeight: 1.1,
-              letterSpacing: '0.04em',
-              margin: '0 0 0.85rem 0',
-              textShadow: '0 2px 16px rgba(0,0,0,0.4)'
-            }}>
-              {editorState.hero_headline || editorState.store_name}
-            </h2>
-
-            <p style={{
-              fontSize: viewport === 'mobile' ? '0.88rem' : '1.05rem',
-              fontWeight: 300,
-              color: '#F5F5F4',
-              margin: '0 auto 1.5rem auto',
-              maxWidth: 520,
-              lineHeight: 1.55
-            }}>
-              {editorState.hero_tagline || 'Modern Tailoring & AI Virtual Fitting Studio'}
-            </p>
-
-            <button
-              type="button"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.65rem',
-                padding: '0.85rem 2.1rem',
-                background: '#FFFFFF',
-                color: '#0A0A0A',
-                fontSize: '0.74rem',
-                fontWeight: 700,
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase',
-                borderRadius: btnRadius,
-                border: 'none',
-                boxShadow: '0 6px 20px rgba(0,0,0,0.25)',
-                cursor: 'pointer'
-              }}
-            >
-              <span>{editorState.hero_btn_text || 'DISCOVER COLLECTION'}</span>
-              <ArrowRight size={13} />
-            </button>
-          </div>
-        </section>
-
-        {/* ── 4. REFINED DISPATCH STRIP ── */}
-        <div style={{
-          borderTop: '1px solid #E7E5E4',
-          borderBottom: '1px solid #E7E5E4',
-          padding: '1.15rem 2rem',
-          background: '#FFFFFF',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: viewport === 'mobile' ? '1.25rem' : '3rem',
-          fontSize: viewport === 'mobile' ? '0.65rem' : '0.72rem',
-          letterSpacing: '0.16em',
-          textTransform: 'uppercase',
-          color: '#78716C',
-          flexWrap: 'wrap'
-        }}>
-          <span>Architectural Silhouettes</span>
-          <span>·</span>
-          <span>European Textile Heritage</span>
-          <span>·</span>
-          <span>Bespoke Virtual Fitting</span>
-        </div>
-
-        {/* ── 5. MAIN EDITORIAL CATALOG ── */}
-        <section style={{ padding: viewport === 'mobile' ? '2rem 1.25rem 3rem' : '3.5rem 2.75rem 5rem' }}>
-          {/* Header with underline category tabs & sort indicator */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            marginBottom: '2.5rem',
-            borderBottom: '1px solid #E7E5E4',
-            paddingBottom: '0.75rem',
-            flexWrap: 'wrap',
-            gap: '1rem'
-          }}>
-            {/* Elegant Underline Category Tabs (matching public /store/[handle]) */}
-            {editorState.show_category_tabs !== false ? (
-              <div style={{ display: 'flex', gap: '2rem', overflowX: 'auto' }}>
-                {categories.map(cat => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setActiveCat(cat)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      fontSize: '0.8rem',
-                      fontWeight: activeCat === cat ? 700 : 500,
-                      letterSpacing: '0.12em',
-                      textTransform: 'uppercase',
-                      color: activeCat === cat ? '#0A0A0A' : '#78716C',
-                      cursor: 'pointer',
-                      position: 'relative',
-                      paddingBottom: '0.75rem',
-                      marginBottom: -1,
-                      borderBottom: activeCat === cat ? `2px solid ${accentColor}` : '2px solid transparent',
-                      transition: 'color 0.2s, border-color 0.2s'
-                    }}
+          {/* ── 2. MAGAZINE EDITORIAL HEADER ── */}
+          <header className={`canvas-header ${isMobile ? 'canvas-header-mobile' : ''} ${editorState.header_layout === 'left' ? 'canvas-header-left' : ''}`}>
+            {/* Left Nav (Dynamic Navigation Menu) */}
+            {!isMobile && (
+              <div className="canvas-nav-left">
+                {(editorState.nav_menu && editorState.nav_menu.length > 0 ? editorState.nav_menu : [
+                  { id: '1', label: 'Collection', url: '#collection' },
+                  { id: '2', label: 'Editorial', url: '#about' },
+                  { id: '3', label: 'About Atelier', url: '#about' }
+                ]).map((item) => (
+                  <span
+                    key={item.id || item.label}
+                    className="canvas-nav-item"
+                    title={item.url}
                   >
-                    {cat}
-                  </button>
+                    {item.label}
+                  </span>
                 ))}
               </div>
-            ) : <div />}
+            )}
 
-            {/* Sort indicator */}
-            <div style={{
-              fontSize: '0.76rem',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              color: '#57534E',
-              fontWeight: 600,
-              paddingBottom: '0.75rem'
-            }}>
-              Sort · Featured
+            {/* Center Brand Title / Logo */}
+            <div className="canvas-brand-wrap">
+              {editorState.logo_url ? (
+                <img src={editorState.logo_url} alt="" className="canvas-brand-logo" />
+              ) : (
+                <h1 className={`canvas-brand-title ${isMobile ? 'canvas-brand-title-mobile' : ''}`}>
+                  {editorState.store_name}
+                </h1>
+              )}
             </div>
-          </div>
 
-          {/* Product Cards Grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: viewport === 'mobile'
-              ? 'repeat(2, 1fr)'
-              : (viewport === 'tablet' ? 'repeat(3, 1fr)' : `repeat(${editorState.catalog_columns || 4}, 1fr)`),
-            gap: viewport === 'mobile' ? '1.5rem 0.85rem' : '2.5rem 1.75rem'
-          }}>
-            {displayedProducts.map(product => (
-              <div
-                key={product.id}
-                className="editor-live-card"
-                onMouseEnter={() => setHoveredCardId(product.id)}
-                onMouseLeave={() => setHoveredCardId(null)}
-              >
-                {/* 3:4 Aspect Ratio Editorial Image Wrap */}
-                <div
-                  className="editor-live-image-wrap"
-                  style={{ borderRadius: btnRadius }}
-                >
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="editor-live-img"
-                  />
-
-                  {/* Sleek Floating Hover Try-On Pill */}
-                  {editorState.show_quick_tryon_btn !== false && (
-                    <button
-                      type="button"
-                      className="editor-live-tryon-pill"
-                      style={{ borderRadius: btnRadius }}
-                    >
-                      <Sparkles size={12} color="#cbf382" />
-                      <span>Virtual Try-On</span>
-                    </button>
-                  )}
-                </div>
-
-                {/* Card Meta */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  <div style={{
-                    fontSize: '0.66rem',
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    color: '#78716C',
-                    fontWeight: 500
-                  }}>
-                    {product.category}
-                  </div>
-
-                  <h3 style={{
-                    fontFamily: fontHeading,
-                    fontSize: viewport === 'mobile' ? '0.92rem' : '1.05rem',
-                    fontWeight: 600,
-                    color: '#0A0A0A',
-                    margin: '1px 0 3px',
-                    lineHeight: 1.35
-                  }}>
-                    {product.name}
-                  </h3>
-
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.6rem' }}>
-                    <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0A0A0A' }}>
-                      ${product.price}
-                    </span>
-                    {product.originalPrice && (
-                      <span style={{ fontSize: '0.8rem', color: '#A8A29E', textDecoration: 'line-through' }}>
-                        ${product.originalPrice}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Swatches */}
-                  {editorState.show_color_swatches !== false && product.colors && (
-                    <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
-                      {product.colors.slice(0, 4).map((c, i) => (
-                        <div
-                          key={i}
-                          style={{
-                            width: 9,
-                            height: 9,
-                            borderRadius: '50%',
-                            background: c,
-                            border: '1px solid rgba(0,0,0,0.18)'
-                          }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ── 6. BRAND STORY / ATELIER NARRATIVE ── */}
-        {editorState.story_enabled && (
-          <section
-            style={{
-              padding: viewport === 'mobile' ? '2.5rem 1.5rem' : '4.5rem 3.5rem',
-              background: '#FFFFFF',
-              borderTop: '1px solid #E7E5E4',
-              borderBottom: '1px solid #E7E5E4'
-            }}
-          >
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: viewport === 'mobile' ? '1fr' : '1fr 1fr',
-              gap: '3rem',
-              alignItems: 'center'
-            }}>
-              <div>
-                <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', color: accentColor, textTransform: 'uppercase' }}>
-                  {editorState.story_kicker || 'ATELIER HERITAGE'}
-                </span>
-                <h3 style={{
-                  fontFamily: fontHeading,
-                  fontSize: viewport === 'mobile' ? '1.75rem' : '2.3rem',
-                  fontWeight: 600,
-                  margin: '0.5rem 0 1.15rem 0',
-                  color: '#0A0A0A',
-                  lineHeight: 1.2
-                }}>
-                  {editorState.story_title || 'Architectural Silhouettes & Sustainable Craft'}
-                </h3>
-                <p style={{ fontSize: '0.86rem', color: '#57534E', lineHeight: 1.65, margin: '0 0 1.5rem 0' }}>
-                  {editorState.description || 'Founded in Paris, Studio Label harmonizes architectural silhouettes with everyday luxury. Every garment in our collection is precision-crafted from sustainably sourced European textiles and optimized for zero-latency in-browser virtual try-on.'}
-                </p>
-                <div style={{
-                  borderLeft: `2px solid ${accentColor}`,
-                  paddingLeft: '1rem',
-                  fontFamily: fontHeading,
-                  fontStyle: 'italic',
-                  fontSize: '1rem',
-                  color: '#292524',
-                  lineHeight: 1.5
-                }}>
-                  "{editorState.story_quote || 'Where haute couture precision meets browser-native neural fitting.'}"
-                </div>
-              </div>
-
-              <div style={{
-                height: viewport === 'mobile' ? 240 : 360,
-                borderRadius: btnRadius,
-                overflow: 'hidden',
-                background: '#F5F5F4'
-              }}>
-                <img
-                  src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=1000&q=80"
-                  alt="Atelier"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              </div>
+            {/* Right Quick Header Actions */}
+            <div className="canvas-header-actions">
+              <button type="button" className="canvas-icon-btn" title="Search catalog">
+                <Search size={18} />
+              </button>
+              <button type="button" className="canvas-icon-btn" title="Shopping Bag (2 items)">
+                <ShoppingBag size={18} />
+                <span className="canvas-cart-badge">2</span>
+              </button>
             </div>
-          </section>
-        )}
+          </header>
 
-        {/* ── 7. VIP CLUB / NEWSLETTER ── */}
-        {editorState.newsletter_enabled && (
-          <section
-            style={{
-              padding: '3.5rem 2rem',
-              textAlign: 'center',
-              background: '#F5F5F4'
-            }}
-          >
-            <h4 style={{
-              fontFamily: fontHeading,
-              fontSize: '1.5rem',
-              fontWeight: 600,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              margin: '0 0 0.5rem 0',
-              color: '#0A0A0A'
-            }}>
-              {editorState.newsletter_title || 'JOIN THE ATELIER CIRCLE'}
-            </h4>
-            <p style={{ fontSize: '0.82rem', color: '#57534E', maxWidth: 460, margin: '0 auto 1.5rem auto', lineHeight: 1.5 }}>
-              {editorState.newsletter_subtitle || 'Receive seasonal capsule previews, private lookbooks, and priority AI fittings.'}
-            </p>
-            <div style={{ display: 'inline-flex', maxWidth: 380, width: '100%', gap: 6 }}>
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                style={{
-                  flex: 1, padding: '0.65rem 0.95rem', borderRadius: btnRadius,
-                  border: '1px solid #D6D3D1', fontSize: '0.8rem', outline: 'none', background: '#FFFFFF'
-                }}
-                disabled
-              />
-              <button
-                type="button"
-                style={{
-                  padding: '0.65rem 1.35rem', borderRadius: btnRadius, background: '#0A0A0A',
-                  color: '#FFFFFF', fontSize: '0.74rem', fontWeight: 700, letterSpacing: '0.12em',
-                  border: 'none', cursor: 'pointer'
-                }}
-              >
-                JOIN
+          {/* ── 3. HIGH-FASHION HERO BANNER ── */}
+          <section className={`canvas-hero ${isMobile ? 'canvas-hero-mobile' : ''}`}>
+            <img
+              src={editorState.hero_image || 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=80'}
+              alt=""
+              className="canvas-hero-img"
+            />
+            <div className="canvas-hero-overlay" />
+
+            <div className="canvas-hero-content">
+              <span className="canvas-hero-kicker">
+                {editorState.hero_kicker || 'N° 26 · AUTUMN / WINTER EDITORIAL'}
+              </span>
+
+              <h2 className={`canvas-hero-headline ${isMobile ? 'canvas-hero-headline-mobile' : ''}`}>
+                {editorState.hero_headline || editorState.store_name}
+              </h2>
+
+              <p className={`canvas-hero-tagline ${isMobile ? 'canvas-hero-tagline-mobile' : ''}`}>
+                {editorState.hero_tagline || editorState.tagline}
+              </p>
+
+              <button type="button" className="canvas-hero-btn">
+                <span>{editorState.hero_btn_text || 'DISCOVER COLLECTION'}</span>
+                <ArrowRight size={13} />
               </button>
             </div>
           </section>
-        )}
 
-        {/* ── 8. LUXURY FOOTER & CONCIERGE ── */}
-        <footer
-          style={{
-            padding: viewport === 'mobile' ? '3rem 1.5rem 2rem' : '4.5rem 3.5rem 2.5rem',
-            background: '#1C1917',
-            color: '#D6D3D1',
-            fontSize: '0.78rem'
-          }}
-        >
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: viewport === 'mobile' ? '1fr' : '2fr 1fr 1fr 1.5fr',
-            gap: viewport === 'mobile' ? '2rem' : '3.5rem',
-            paddingBottom: '3rem',
-            borderBottom: '1px solid #292524'
-          }}>
-            {/* Brand Philosophy */}
-            <div>
-              <div style={{ fontFamily: fontHeading, fontSize: '1.6rem', color: '#FFFFFF', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-                {editorState.store_name}
-              </div>
-              <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '1.05rem', color: '#A8A29E', lineHeight: 1.6, maxWidth: 340, margin: '0 0 1.25rem' }}>
-                {editorState.description || 'Founded on modern tailoring, clean architectural silhouettes, and zero-latency in-browser AI fitting.'}
-              </p>
-              <div style={{ fontSize: '0.72rem', color: '#78716C', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Lock size={12} color="#10B981" />
-                <span>TLS 1.3 Certified Anycast Network</span>
-              </div>
-            </div>
-
-            {/* Atelier Nav */}
-            <div>
-              <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#FFFFFF', marginBottom: '1.25rem' }}>
-                Atelier
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', color: '#A8A29E' }}>
-                <span>Collection Lookbook</span>
-                <span>Seasonal Archive</span>
-                <span>Bespoke Fitting</span>
-              </div>
-            </div>
-
-            {/* Client Care */}
-            <div>
-              <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#FFFFFF', marginBottom: '1.25rem' }}>
-                Client Care
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', color: '#A8A29E' }}>
-                <span>{editorState.email || 'concierge@studiolabelparis.com'}</span>
-                <span>Complimentary Courier</span>
-                <span>30-Day Global Returns</span>
-              </div>
-            </div>
-
-            {/* Private Dispatch */}
-            <div>
-              <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#FFFFFF', marginBottom: '1.25rem' }}>
-                Private Dispatch
-              </div>
-              <p style={{ fontSize: '0.78rem', color: '#A8A29E', lineHeight: 1.5, margin: 0 }}>
-                Direct studio invitations, capsule previews, and VIP fitting trunk shows.
-              </p>
-            </div>
+          {/* ── 4. REFINED DISPATCH STRIP ── */}
+          <div className={`canvas-dispatch-strip ${isMobile ? 'canvas-dispatch-strip-mobile' : ''}`}>
+            <span>Instant Virtual Try-On Enabled</span>
+            <span>•</span>
+            <span>Bespoke Couture Craftsmanship</span>
+            <span>•</span>
+            <span>Complimentary Global Shipping</span>
           </div>
 
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            color: '#78716C',
-            fontSize: '0.7rem',
-            paddingTop: '2rem',
-            flexWrap: 'wrap',
-            gap: '0.5rem'
-          }}>
-            <span>&copy; {new Date().getFullYear()} {editorState.store_name}. All rights reserved.</span>
-            <span>Powered by <strong>VogueSocial Storefronts</strong></span>
-          </div>
-        </footer>
+          {/* ── 5. MAIN CATALOG LOOKBOOK GRID ── */}
+          <section className={`canvas-catalog-section ${isMobile ? 'canvas-catalog-section-mobile' : ''}`} id="collection">
+            <div className="canvas-catalog-header">
+              {editorState.show_category_tabs !== false && (
+                <div className="canvas-category-tabs">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`canvas-category-btn ${activeCat === cat ? 'canvas-category-btn-active' : ''}`}
+                      onClick={() => setActiveCat(cat)}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div className="canvas-sort-indicator">
+                Showing {displayedProducts.length} Atelier Silhouettes
+              </div>
+            </div>
+
+            {/* Product Cards Grid */}
+            <div className={`canvas-product-grid ${isMobile ? 'canvas-product-grid-mobile' : `canvas-product-grid-cols-${editorState.catalog_columns || 4}`}`}>
+              {displayedProducts.map((p) => (
+                <div
+                  key={p.id}
+                  className="canvas-product-card"
+                  onMouseEnter={() => setHoveredCardId(p.id)}
+                  onMouseLeave={() => setHoveredCardId(null)}
+                >
+                  <div className="canvas-product-img-wrap">
+                    <img src={p.image} alt={p.name} className="canvas-product-img" />
+                    {editorState.show_quick_tryon_btn !== false && (
+                      <button type="button" className="canvas-tryon-pill">
+                        <Sparkles size={11} />
+                        <span>Virtual Try-On</span>
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="canvas-product-info">
+                    <span className="canvas-product-cat">{p.category}</span>
+                    <h3 className="canvas-product-name">{p.name}</h3>
+                    <div className="canvas-product-price-row">
+                      <span className="canvas-price-current">${p.price}</span>
+                      {p.originalPrice && (
+                        <span className="canvas-price-original">${p.originalPrice}</span>
+                      )}
+                    </div>
+
+                    {editorState.show_color_swatches !== false && p.colors && p.colors.length > 0 && (
+                      <div className="canvas-swatches-row">
+                        {p.colors.map((c, i) => (
+                          <span
+                            key={i}
+                            className={`canvas-swatch-dot ${getSwatchDotClass(c)}`}
+                            title={c}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* ── 6. BRAND STORY & HERITAGE ── */}
+          {editorState.story_enabled && (
+            <section className={`canvas-story-section ${isMobile ? 'canvas-story-section-mobile' : ''}`} id="about">
+              <div className={`canvas-story-inner ${isMobile ? 'canvas-story-inner-mobile' : ''}`}>
+                <div>
+                  <span className="canvas-story-kicker">
+                    {editorState.story_kicker || 'ATELIER HERITAGE'}
+                  </span>
+                  <h3 className={`canvas-story-title ${isMobile ? 'canvas-story-title-mobile' : ''}`}>
+                    {editorState.story_title || 'Architectural Silhouettes & Sustainable Craft'}
+                  </h3>
+                  <p className="canvas-story-desc">
+                    {editorState.description || 'Founded in Paris, Studio Label harmonizes architectural silhouettes with everyday luxury. Every garment in our collection is precision-crafted from sustainably sourced European textiles.'}
+                  </p>
+
+                  <div className="canvas-story-quote-box">
+                    <p className="canvas-story-quote">
+                      "{editorState.story_quote || 'Where haute couture precision meets browser-native neural fitting.'}"
+                    </p>
+                    <span className="canvas-story-author">
+                      — Atelier Master Tailor, Paris
+                    </span>
+                  </div>
+                </div>
+
+                <div className="canvas-story-img-wrap">
+                  <img
+                    src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=1000&q=80"
+                    alt="Atelier Craftsman"
+                    className="canvas-story-img"
+                  />
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* ── 7. VIP NEWSLETTER SECTION ── */}
+          {editorState.newsletter_enabled && (
+            <section className={`canvas-newsletter-section ${isMobile ? 'canvas-newsletter-section-mobile' : ''}`} id="newsletter">
+              <div className="canvas-newsletter-box">
+                <h4 className={`canvas-newsletter-title ${isMobile ? 'canvas-newsletter-title-mobile' : ''}`}>
+                  {editorState.newsletter_title || 'JOIN THE ATELIER CIRCLE'}
+                </h4>
+                <p className="canvas-newsletter-subtitle">
+                  {editorState.newsletter_subtitle || 'Receive seasonal capsule previews and private fitting trunk shows.'}
+                </p>
+                <form className="canvas-newsletter-form" onSubmit={(e) => e.preventDefault()}>
+                  <input
+                    type="email"
+                    placeholder="Enter your email address..."
+                    className="canvas-newsletter-input"
+                  />
+                  <button type="submit" className="canvas-newsletter-btn">
+                    Join Circle
+                  </button>
+                </form>
+              </div>
+            </section>
+          )}
+
+          {/* ── 8. MAGAZINE EDITORIAL FOOTER ── */}
+          <footer className={`canvas-footer ${isMobile ? 'canvas-footer-mobile' : ''}`} id="footer">
+            <div className={`canvas-footer-inner ${isMobile ? 'canvas-footer-inner-mobile' : ''}`}>
+              <div>
+                <h4 className="canvas-footer-brand">{editorState.store_name}</h4>
+                <p className="canvas-footer-desc">
+                  {editorState.tagline || 'Modern Tailoring & AI Virtual Fitting Studio'}
+                </p>
+                <div className="canvas-footer-links">
+                  <span>{editorState.email || 'concierge@studiolabelparis.com'}</span>
+                  <span>{editorState.phone || '+33 1 42 68 55 00'}</span>
+                </div>
+              </div>
+
+              <div>
+                <div className="canvas-footer-col-title">Capsules</div>
+                <div className="canvas-footer-links">
+                  <a href="#collection" className="canvas-footer-link">Autumn / Winter</a>
+                  <a href="#collection" className="canvas-footer-link">Sartorial Suiting</a>
+                  <a href="#collection" className="canvas-footer-link">Neural Try-On</a>
+                </div>
+              </div>
+
+              <div>
+                <div className="canvas-footer-col-title">Atelier</div>
+                <div className="canvas-footer-links">
+                  <a href="#about" className="canvas-footer-link">Our Heritage</a>
+                  <a href="#about" className="canvas-footer-link">Sustainability</a>
+                  <a href="#footer" className="canvas-footer-link">Client Services</a>
+                </div>
+              </div>
+
+              <div>
+                <div className="canvas-footer-col-title">Concierge</div>
+                <div className="canvas-footer-links">
+                  <span>Bespoke Fitting Consultations</span>
+                  <span>Worldwide Express Air Delivery</span>
+                  <span>Complimentary Exchanges</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="canvas-footer-bottom">
+              <div>
+                © {new Date().getFullYear()} {editorState.store_name}. Powered by VogueSocial Studio.
+              </div>
+              <div className="canvas-footer-legal">
+                <span>Privacy Policy</span>
+                <span>Terms of Service</span>
+                <span>Security</span>
+              </div>
+            </div>
+          </footer>
+        </div>
       </div>
     </div>
   );
