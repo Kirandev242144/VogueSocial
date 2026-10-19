@@ -1254,3 +1254,165 @@
   color: #ffffff;
 }
 
+/* ── PNG Logo Uploader & Preview (Zero Inline CSS) ── */
+.editor-file-input-hidden {
+  display: none !important;
+}
+
+.editor-logo-uploader-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 1.25rem 1rem;
+  border: 1.5px dashed var(--d-border, #cbd5e1);
+  border-radius: 9px;
+  background: var(--d-hover, #f8fafc);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.merchant-shell-dark .editor-logo-uploader-dropzone {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.editor-logo-uploader-dropzone:hover {
+  border-color: #0f172a;
+  background: var(--d-panel, #ffffff);
+}
+
+.merchant-shell-dark .editor-logo-uploader-dropzone:hover {
+  border-color: #f8fafc;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.editor-logo-uploader-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid var(--d-border, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563eb;
+  margin-bottom: 2px;
+}
+
+.merchant-shell-dark .editor-logo-uploader-icon {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #38bdf8;
+}
+
+.editor-logo-uploader-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--d-t1, #0f172a);
+}
+
+.editor-logo-uploader-hint {
+  font-size: 0.69rem;
+  color: var(--d-t3, #64748b);
+  letter-spacing: 0.02em;
+}
+
+.editor-logo-preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0.85rem;
+  border-radius: 9px;
+  border: 1px solid var(--d-border, #e2e8f0);
+  background: var(--d-panel, #ffffff);
+}
+
+.merchant-shell-dark .editor-logo-preview-card {
+  background: #111827;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.editor-logo-preview-checkerboard {
+  height: 64px;
+  border-radius: 6px;
+  background-color: #f8fafc;
+  background-image: 
+    linear-gradient(45deg, #e2e8f0 25%, transparent 25%), 
+    linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #e2e8f0 75%), 
+    linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+  background-size: 14px 14px;
+  background-position: 0 0, 0 7px, 7px -7px, -7px 0px;
+  border: 1px solid var(--d-border, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  overflow: hidden;
+}
+
+.merchant-shell-dark .editor-logo-preview-checkerboard {
+  background-color: #0f172a;
+  background-image: 
+    linear-gradient(45deg, #1e293b 25%, transparent 25%), 
+    linear-gradient(-45deg, #1e293b 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #1e293b 75%), 
+    linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.editor-logo-preview-img {
+  max-height: 48px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.editor-logo-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.editor-logo-status-tag {
+  font-size: 0.69rem;
+  font-weight: 700;
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 2px 7px;
+  border-radius: 99px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.editor-logo-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.editor-logo-error-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.merchant-shell-dark .editor-logo-error-box {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+

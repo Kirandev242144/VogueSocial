@@ -1,8 +1,9 @@
 "use client";
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Megaphone, Layout, Image, Grid, BookOpen, Mail, Phone,
-  ChevronDown, ChevronUp, Check, Sliders
+  ChevronDown, ChevronUp, Check, Sliders, UploadCloud, AlertCircle,
+  CheckCircle2, Trash2
 } from 'lucide-react';
 
 export const HERO_PRESETS = [
@@ -22,6 +23,80 @@ export default function SectionsInspector({
 }) {
   const toggleSection = (id) => {
     setFocusedSection(prev => prev === id ? null : id);
+  };
+
+  const fileInputRef = useRef(null);
+  const [logoError, setLogoError] = useState('');
+  const [showUrlFallback, setShowUrlFallback] = useState(false);
+
+  const handleLogoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setLogoError('');
+
+    // 1. Strict PNG validation
+    const isPng = file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
+    if (!isPng) {
+      setLogoError('Only PNG images (.png) are supported for storefront logos.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    // 2. Strict Logo file size limit (max 2MB)
+    const MAX_SIZE_BYTES = 2 * 1024 * 1024;
+    if (file.size > MAX_SIZE_BYTES) {
+      setLogoError('Logo file exceeds 2MB limit. Please upload an optimized PNG.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target.result;
+      const img = new window.Image();
+      img.onload = () => {
+        // Enforce logo size constraints: scale down huge images to crisp high-DPI logo dimensions (max 400x160)
+        // while preserving transparent PNG alpha channel
+        const maxLogoWidth = 400;
+        const maxLogoHeight = 160;
+        let targetWidth = img.width;
+        let targetHeight = img.height;
+
+        if (targetWidth > maxLogoWidth || targetHeight > maxLogoHeight) {
+          const ratio = Math.min(maxLogoWidth / targetWidth, maxLogoHeight / targetHeight);
+          targetWidth = Math.round(targetWidth * ratio);
+          targetHeight = Math.round(targetHeight * ratio);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, targetWidth, targetHeight);
+          ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+          const optimizedPngDataUrl = canvas.toDataURL('image/png');
+          updateState('logo_url', optimizedPngDataUrl);
+        } else {
+          updateState('logo_url', dataUrl);
+        }
+      };
+      img.onerror = () => {
+        setLogoError('Failed to read PNG logo image.');
+      };
+      img.src = dataUrl;
+    };
+    reader.onerror = () => {
+      setLogoError('Error reading file. Please try again.');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveLogo = () => {
+    updateState('logo_url', '');
+    setLogoError('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   return (
@@ -149,14 +224,114 @@ export default function SectionsInspector({
             </div>
 
             <div className="editor-field-group">
-              <label className="editor-field-label">Custom Logo Image URL (Optional)</label>
+              <div className="editor-switch-row">
+                <label className="editor-field-label">Custom Logo Image</label>
+                <span className="editor-field-badge">PNG Only</span>
+              </div>
+
+              {/* Hidden file input strictly accepting PNG */}
               <input
-                type="url"
-                className="editor-field-input"
-                value={editorState.logo_url || ''}
-                onChange={(e) => updateState('logo_url', e.target.value)}
-                placeholder="https://... (Leave blank for elegant typography logo)"
+                ref={fileInputRef}
+                type="file"
+                accept=".png,image/png"
+                className="editor-file-input-hidden"
+                onChange={handleLogoUpload}
               />
+
+              {/* Error notification */}
+              {logoError && (
+                <div className="editor-logo-error-box">
+                  <AlertCircle size={14} />
+                  <span>{logoError}</span>
+                </div>
+              )}
+
+              {editorState.logo_url ? (
+                /* Logo Active Preview Card with checkerboard background */
+                <div className="editor-logo-preview-card">
+                  <div className="editor-logo-preview-checkerboard">
+                    <img
+                      src={editorState.logo_url}
+                      alt="Store Logo"
+                      className="editor-logo-preview-img"
+                    />
+                  </div>
+
+                  <div className="editor-logo-actions-row">
+                    <span className="editor-logo-status-tag">
+                      <CheckCircle2 size={12} />
+                      <span>PNG Logo Active</span>
+                    </span>
+
+                    <div className="editor-logo-btn-group">
+                      <button
+                        type="button"
+                        className="editor-btn-secondary"
+                        onClick={() => fileInputRef.current?.click()}
+                        title="Upload a replacement PNG logo"
+                      >
+                        <UploadCloud size={12} />
+                        <span>Replace</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        className="editor-menu-delete-btn"
+                        onClick={handleRemoveLogo}
+                        title="Remove custom logo and restore typography name"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Interactive Upload Dropzone */
+                <div
+                  className="editor-logo-uploader-dropzone"
+                  onClick={() => fileInputRef.current?.click()}
+                  title="Click to browse and upload your PNG logo"
+                >
+                  <div className="editor-logo-uploader-icon">
+                    <UploadCloud size={16} />
+                  </div>
+                  <span className="editor-logo-uploader-title">
+                    Upload Custom PNG Logo
+                  </span>
+                  <span className="editor-logo-uploader-hint">
+                    PNG format only • Max 2MB • Transparent background recommended
+                  </span>
+                </div>
+              )}
+
+              {/* Optional URL toggle */}
+              <div className="editor-switch-row">
+                <button
+                  type="button"
+                  className="editor-btn-secondary"
+                  onClick={() => setShowUrlFallback(prev => !prev)}
+                >
+                  <span>{showUrlFallback ? 'Hide URL input' : 'Or enter PNG image URL'}</span>
+                </button>
+              </div>
+
+              {showUrlFallback && (
+                <input
+                  type="url"
+                  className="editor-field-input"
+                  value={editorState.logo_url || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val && !val.toLowerCase().includes('.png') && !val.startsWith('data:image/png')) {
+                      setLogoError('Logo must be a PNG image (.png).');
+                    } else {
+                      setLogoError('');
+                    }
+                    updateState('logo_url', val);
+                  }}
+                  placeholder="https://.../logo.png"
+                />
+              )}
             </div>
           </div>
         )}
