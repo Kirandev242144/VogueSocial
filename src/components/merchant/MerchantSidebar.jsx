@@ -24,9 +24,9 @@ const NAV = [
       { label: 'Order Tracking', href: '/merchant/orders?filter=tracking' }
     ]
   },
-  { label: 'Sales', icon: BarChart2, href: '/merchant/analytics' },
-  { label: 'Customers', icon: Users, href: '/merchant/analytics' },
-  { label: 'Reports', icon: Layers, href: '/merchant/analytics' },
+  { label: 'Sales', icon: BarChart2, href: '/merchant/analytics?tab=sales' },
+  { label: 'Customers', icon: Users, href: '/merchant/analytics?tab=customers' },
+  { label: 'Reports', icon: Layers, href: '/merchant/analytics?tab=reports' },
   { section: 'SETTINGS' },
   { label: 'Facebook Shop Sync', icon: Facebook, href: '/merchant/products?tab=facebook', badge: 'LIVE' },
   { label: 'Payment Gateways', icon: CreditCard, href: '/merchant/payouts' },
@@ -39,9 +39,23 @@ export default function MerchantSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const pathname = location.pathname;
+  const currentUrl = location.pathname + location.search;
   const { theme, toggle } = useMerchantTheme();
   const isDark = theme === 'dark';
   const [ordersOpen, setOrdersOpen] = useState(true);
+
+  const isItemActive = (targetHref) => {
+    if (targetHref === '/merchant/analytics?tab=sales') {
+      return currentUrl === targetHref || (pathname === '/merchant/analytics' && (!location.search || location.search === '?tab=sales'));
+    }
+    if (targetHref === '/merchant/orders') {
+      return pathname === '/merchant/orders' && (!location.search || location.search === '?filter=all');
+    }
+    if (targetHref.includes('?')) {
+      return currentUrl === targetHref;
+    }
+    return pathname === targetHref;
+  };
 
   return (
     <aside className="merchant-sidebar">
@@ -67,7 +81,7 @@ export default function MerchantSidebar() {
             return <div key={i} className="merchant-nav-section">{item.section}</div>;
           }
           const Icon = item.icon;
-          const active = pathname === item.href;
+          const active = isItemActive(item.href);
           const hasSub = item.sub && item.sub.length > 0;
           return (
             <div key={item.label}>
@@ -94,7 +108,7 @@ export default function MerchantSidebar() {
               {hasSub && ordersOpen && (
                 <div className="merchant-submenu">
                   {item.sub.map((sub) => {
-                    const subActive = pathname === sub.href;
+                    const subActive = isItemActive(sub.href);
                     return (
                       <button
                         key={sub.label}

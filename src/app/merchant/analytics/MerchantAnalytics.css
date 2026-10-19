@@ -1,0 +1,890 @@
+/* ================================================
+   MERCHANT ANALYTICS & REPORTS - Polaris Stylesheet
+   Pure Vanilla CSS · Zero Inline CSS
+   ================================================ */
+
+.analytics-shell {
+  padding: 1.75rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--d-t1, #0f172a);
+}
+
+/* ── Top Header & Controls ── */
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.analytics-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.analytics-page-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.merchant-shell-dark .analytics-page-title {
+  color: #f8fafc;
+}
+
+.analytics-page-subtitle {
+  font-size: 0.8rem;
+  color: var(--d-t3, #64748b);
+  margin: 0;
+}
+
+.merchant-shell-dark .analytics-page-subtitle {
+  color: #94a3b8;
+}
+
+.analytics-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+/* ── Timeframe Pills ── */
+.analytics-timeframe-group {
+  display: flex;
+  background: var(--d-hover, #f8fafc);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.merchant-shell-dark .analytics-timeframe-group {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.analytics-timeframe-btn {
+  border: none;
+  background: transparent;
+  color: var(--d-t3, #64748b);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.merchant-shell-dark .analytics-timeframe-btn {
+  color: #94a3b8;
+}
+
+.analytics-timeframe-btn:hover {
+  color: var(--d-t1, #0f172a);
+}
+
+.merchant-shell-dark .analytics-timeframe-btn:hover {
+  color: #ffffff;
+}
+
+.analytics-timeframe-active {
+  background: #0f172a;
+  color: #ffffff !important;
+}
+
+.merchant-shell-dark .analytics-timeframe-active {
+  background: #3b82f6;
+  color: #ffffff !important;
+}
+
+/* ── Export Button ── */
+.analytics-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  color: var(--d-t2, #334155);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.merchant-shell-dark .analytics-export-btn {
+  background: #1e293b;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+.analytics-export-btn:hover {
+  background: var(--d-hover, #f8fafc);
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.merchant-shell-dark .analytics-export-btn:hover {
+  background: #334155;
+  color: #ffffff;
+}
+
+/* ── View Switcher Tabs ── */
+.analytics-tabs-row {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--d-border, #e2e8f0);
+  margin-bottom: 1.25rem;
+  overflow-x: auto;
+}
+
+.merchant-shell-dark .analytics-tabs-row {
+  border-bottom-color: #334155;
+}
+
+.analytics-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--d-t3, #64748b);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.15s ease;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.merchant-shell-dark .analytics-tab-btn {
+  color: #94a3b8;
+}
+
+.analytics-tab-btn:hover {
+  color: var(--d-t1, #0f172a);
+}
+
+.merchant-shell-dark .analytics-tab-btn:hover {
+  color: #ffffff;
+}
+
+.analytics-tab-active {
+  color: #2563eb !important;
+}
+
+.merchant-shell-dark .analytics-tab-active {
+  color: #60a5fa !important;
+}
+
+.analytics-tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #2563eb;
+  border-radius: 2px;
+}
+
+.merchant-shell-dark .analytics-tab-active::after {
+  background: #60a5fa;
+}
+
+/* ── KPI Metric Cards ── */
+.analytics-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.analytics-kpi-card {
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 10px;
+  padding: 1rem 1.15rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+  position: relative;
+}
+
+.analytics-kpi-card:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.merchant-shell-dark .analytics-kpi-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: none;
+}
+
+.merchant-shell-dark .analytics-kpi-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.analytics-kpi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.65rem;
+}
+
+.analytics-kpi-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  background: var(--d-hover, #f8fafc);
+  border: 1px solid var(--d-border2, #f1f5f9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.merchant-shell-dark .analytics-kpi-icon-wrap {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.analytics-kpi-pill {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+
+.analytics-pill-blue {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.analytics-pill-green {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.analytics-pill-purple {
+  background: #faf5ff;
+  color: #6b21a8;
+  border: 1px solid #e9d5ff;
+}
+
+.analytics-pill-amber {
+  background: #fefce8;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+}
+
+.merchant-shell-dark .analytics-pill-blue {
+  background: rgba(37, 99, 235, 0.15);
+  color: #93c5fd;
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+.merchant-shell-dark .analytics-pill-green {
+  background: rgba(22, 163, 74, 0.15);
+  color: #86efac;
+  border-color: rgba(22, 163, 74, 0.3);
+}
+
+.merchant-shell-dark .analytics-pill-purple {
+  background: rgba(124, 58, 237, 0.15);
+  color: #d8b4fe;
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+.merchant-shell-dark .analytics-pill-amber {
+  background: rgba(202, 138, 4, 0.15);
+  color: #fde047;
+  border-color: rgba(202, 138, 4, 0.3);
+}
+
+.analytics-kpi-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--d-t3, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+
+.merchant-shell-dark .analytics-kpi-label {
+  color: #94a3b8;
+}
+
+.analytics-kpi-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.merchant-shell-dark .analytics-kpi-value {
+  color: #f8fafc;
+}
+
+.analytics-kpi-spark-row {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--d-border2, #f1f5f9);
+  font-size: 0.7rem;
+  color: var(--d-t4, #94a3b8);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.merchant-shell-dark .analytics-kpi-spark-row {
+  border-top-color: #334155;
+}
+
+.analytics-trend-up {
+  color: #16a34a;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.analytics-trend-down {
+  color: #dc2626;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* ── Panel Cards & Grids ── */
+.analytics-panel {
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  margin-bottom: 1.25rem;
+}
+
+.merchant-shell-dark .analytics-panel {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: none;
+}
+
+.analytics-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.15rem;
+  border-bottom: 1px solid var(--d-border2, #f1f5f9);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.merchant-shell-dark .analytics-panel-header {
+  border-bottom-color: #334155;
+}
+
+.analytics-panel-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.merchant-shell-dark .analytics-panel-title {
+  color: #f8fafc;
+}
+
+.analytics-panel-meta {
+  font-size: 0.74rem;
+  color: var(--d-t3, #64748b);
+  font-weight: 500;
+}
+
+.merchant-shell-dark .analytics-panel-meta {
+  color: #94a3b8;
+}
+
+.analytics-panel-body {
+  padding: 1.15rem;
+}
+
+/* ── Grid Layouts ── */
+.analytics-grid-row {
+  display: grid;
+  gap: 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+.analytics-grid-2-1 {
+  grid-template-columns: 2fr 1fr;
+}
+
+.analytics-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.analytics-grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ── Chart Legends & Wrappers ── */
+.analytics-chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-top: 0.85rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--d-border2, #f1f5f9);
+  flex-wrap: wrap;
+}
+
+.merchant-shell-dark .analytics-chart-legend {
+  border-top-color: #334155;
+}
+
+.analytics-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--d-t3, #64748b);
+}
+
+.merchant-shell-dark .analytics-legend-item {
+  color: #94a3b8;
+}
+
+.analytics-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.analytics-legend-dot-revenue {
+  background: #2563eb;
+}
+
+.analytics-legend-dot-orders {
+  background: #10b981;
+}
+
+/* ── Tooltips ── */
+.analytics-custom-tooltip {
+  background: var(--d-panel, #ffffff);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-size: 0.76rem;
+}
+
+.merchant-shell-dark .analytics-custom-tooltip {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.analytics-tooltip-label {
+  font-weight: 700;
+  color: var(--d-t3, #64748b);
+  margin-bottom: 4px;
+}
+
+.merchant-shell-dark .analytics-tooltip-label {
+  color: #94a3b8;
+}
+
+.analytics-tooltip-val {
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+}
+
+.merchant-shell-dark .analytics-tooltip-val {
+  color: #f8fafc;
+}
+
+/* ── Funnel Steps ── */
+.analytics-funnel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.analytics-funnel-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.analytics-funnel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.76rem;
+}
+
+.analytics-funnel-stage {
+  color: var(--d-t2, #334155);
+  font-weight: 600;
+}
+
+.merchant-shell-dark .analytics-funnel-stage {
+  color: #cbd5e1;
+}
+
+.analytics-funnel-count {
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+}
+
+.merchant-shell-dark .analytics-funnel-count {
+  color: #f8fafc;
+}
+
+.analytics-funnel-track {
+  height: 6px;
+  background: var(--d-hover, #f1f5f9);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.merchant-shell-dark .analytics-funnel-track {
+  background: #334155;
+}
+
+.analytics-funnel-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: #2563eb;
+  transition: width 0.3s ease;
+}
+
+.analytics-funnel-sub {
+  font-size: 0.68rem;
+  color: var(--d-t4, #94a3b8);
+}
+
+/* Funnel width classes (0 inline CSS) */
+.analytics-w-100 { width: 100%; }
+.analytics-w-72  { width: 72%; }
+.analytics-w-44  { width: 44%; }
+.analytics-w-28  { width: 28%; }
+.analytics-w-16  { width: 16%; }
+.analytics-w-10  { width: 10%; }
+
+/* Category legend dot classes (0 inline CSS) */
+.analytics-cat-0 { background: #2563eb; }
+.analytics-cat-1 { background: #10b981; }
+.analytics-cat-2 { background: #8b5cf6; }
+.analytics-cat-3 { background: #f59e0b; }
+
+/* Geographic Markets width classes */
+.analytics-geo-india  { width: 42%; background: #2563eb; }
+.analytics-geo-uae    { width: 24%; background: #10b981; }
+.analytics-geo-uk     { width: 18%; background: #8b5cf6; }
+.analytics-geo-usa    { width: 10%; background: #f59e0b; }
+.analytics-geo-others { width: 6%;  background: #94a3b8; }
+
+/* ── Category Breakdown List ── */
+.analytics-category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+.analytics-category-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.76rem;
+}
+
+.analytics-category-left {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.analytics-category-name {
+  color: var(--d-t2, #334155);
+  font-weight: 500;
+}
+
+.merchant-shell-dark .analytics-category-name {
+  color: #cbd5e1;
+}
+
+.analytics-category-pct {
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+}
+
+.merchant-shell-dark .analytics-category-pct {
+  color: #f8fafc;
+}
+
+/* ── Channel Attribution ── */
+.analytics-channel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.analytics-channel-card {
+  background: var(--d-hover, #f8fafc);
+  border: 1px solid var(--d-border2, #f1f5f9);
+  border-radius: 8px;
+  padding: 0.85rem;
+}
+
+.merchant-shell-dark .analytics-channel-card {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.analytics-channel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--d-t2, #334155);
+  margin-bottom: 0.35rem;
+}
+
+.merchant-shell-dark .analytics-channel-header {
+  color: #cbd5e1;
+}
+
+.analytics-channel-val {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+  margin-bottom: 0.2rem;
+}
+
+.merchant-shell-dark .analytics-channel-val {
+  color: #f8fafc;
+}
+
+.analytics-channel-orders {
+  font-size: 0.68rem;
+  color: var(--d-t4, #94a3b8);
+}
+
+/* ── Reports Tables ── */
+.analytics-table-wrap {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.analytics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.76rem;
+  text-align: left;
+}
+
+.analytics-table th {
+  padding: 0.65rem 0.95rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--d-t3, #64748b);
+  background: var(--d-hover, #f8fafc);
+  border-bottom: 1px solid var(--d-border, #e2e8f0);
+}
+
+.merchant-shell-dark .analytics-table th {
+  background: #0f172a;
+  border-bottom-color: #334155;
+  color: #94a3b8;
+}
+
+.analytics-table td {
+  padding: 0.7rem 0.95rem;
+  border-bottom: 1px solid var(--d-border2, #f1f5f9);
+  vertical-align: middle;
+}
+
+.merchant-shell-dark .analytics-table td {
+  border-bottom-color: #334155;
+}
+
+.analytics-table tr:hover td {
+  background: var(--d-hover, #f8fafc);
+}
+
+.merchant-shell-dark .analytics-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.analytics-table-strong {
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+}
+
+.merchant-shell-dark .analytics-table-strong {
+  color: #f8fafc;
+}
+
+.analytics-table-muted {
+  font-size: 0.7rem;
+  color: var(--d-t4, #94a3b8);
+}
+
+.analytics-table-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.analytics-table-thumb {
+  width: 28px;
+  height: 38px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid var(--d-border, #e2e8f0);
+  flex-shrink: 0;
+}
+
+.analytics-table-right {
+  text-align: right;
+}
+
+.analytics-table-sub {
+  font-size: 0.68rem;
+  color: var(--d-t4, #94a3b8);
+}
+
+/* ── Financial Ledger Cards ── */
+.analytics-ledger-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+  padding: 1rem;
+  background: var(--d-hover, #f8fafc);
+  border-radius: 8px;
+  margin-bottom: 1.15rem;
+}
+
+.merchant-shell-dark .analytics-ledger-summary {
+  background: #0f172a;
+}
+
+.analytics-ledger-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.analytics-ledger-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--d-t3, #64748b);
+  text-transform: uppercase;
+}
+
+.merchant-shell-dark .analytics-ledger-label {
+  color: #94a3b8;
+}
+
+.analytics-ledger-val {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--d-t1, #0f172a);
+}
+
+.merchant-shell-dark .analytics-ledger-val {
+  color: #f8fafc;
+}
+
+.analytics-val-success {
+  color: #16a34a !important;
+}
+
+.analytics-val-fee {
+  color: #dc2626 !important;
+}
+
+/* ── Customer Badges ── */
+.analytics-badge-vip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #faf5ff;
+  color: #7c3aed;
+  border: 1px solid #e9d5ff;
+}
+
+.analytics-badge-returning {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+/* ── Responsive Queries ── */
+@media (max-width: 1100px) {
+  .analytics-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .analytics-grid-2-1,
+  .analytics-grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .analytics-channel-grid {
+    grid-template-columns: 1fr;
+  }
+  .analytics-ledger-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .analytics-shell {
+    padding: 1rem;
+  }
+  .analytics-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .analytics-ledger-summary {
+    grid-template-columns: 1fr;
+  }
+}
