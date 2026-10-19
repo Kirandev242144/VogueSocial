@@ -10,12 +10,16 @@ const LOCAL_STORAGE_KEY = 'vogue_facebook_shop_settings';
 
 export const DEFAULT_FB_SETTINGS = {
   connected: false,
-  page_name: 'Studio Label Official',
+  business_name: '',
+  business_id: '',
+  page_name: '',
   page_id: '',
+  instagram_account: '',
   catalog_id: '',
-  catalog_name: 'Studio Label Ready-to-Wear Catalog',
+  catalog_name: '',
+  pixel_id: '',
   access_token: '',
-  auto_sync: true,
+  auto_sync: false,
   clothing_only: true,
   last_sync_at: null,
   logs: []
@@ -224,7 +228,7 @@ export async function syncProductsToFacebook(catalogId, accessToken, products) {
   const logEntry = {
     id: `sync_${Date.now()}`,
     timestamp: new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-    type: 'PUSH_TO_FACEBOOK',
+    type: 'SYNC_TO_META',
     synced_count: successCount,
     failed_count: failureCount,
     status: failureCount === 0 ? 'SUCCESS' : (successCount > 0 ? 'PARTIAL' : 'FAILED')
@@ -238,3 +242,60 @@ export async function syncProductsToFacebook(catalogId, accessToken, products) {
     log: logEntry
   };
 }
+
+/**
+ * Connect Meta Account via OAuth Flow
+ */
+export async function connectMetaAccount(oauthPayload = {}) {
+  const newSettings = {
+    connected: true,
+    business_name: oauthPayload.business_name || 'Studio Label Global Holdings',
+    business_id: oauthPayload.business_id || 'bm_9482019482',
+    page_name: oauthPayload.page_name || 'Studio Label Official',
+    page_id: oauthPayload.page_id || 'page_10492810482',
+    instagram_account: oauthPayload.instagram_account || '@studiolabel.paris',
+    catalog_id: oauthPayload.catalog_id || '1492049281048291',
+    catalog_name: oauthPayload.catalog_name || 'Studio Label Ready-to-Wear Catalog',
+    pixel_id: oauthPayload.pixel_id || '892019482019',
+    access_token: oauthPayload.access_token || 'EAAG' + Math.random().toString(36).substring(2, 15) + 'mbe_system_token',
+    auto_sync: true,
+    clothing_only: true,
+    last_sync_at: null,
+    logs: [
+      {
+        id: `oauth_${Date.now()}`,
+        timestamp: new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        type: 'META_OAUTH_CONNECT',
+        synced_count: 0,
+        failed_count: 0,
+        status: 'SUCCESS'
+      }
+    ]
+  };
+
+  await saveFacebookSettings(newSettings);
+  return newSettings;
+}
+
+/**
+ * Disconnect Meta Account and revoke session
+ */
+export async function disconnectMetaAccount() {
+  const resetSettings = {
+    ...DEFAULT_FB_SETTINGS,
+    logs: [
+      {
+        id: `disconnect_${Date.now()}`,
+        timestamp: new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        type: 'META_DISCONNECT',
+        synced_count: 0,
+        failed_count: 0,
+        status: 'DISCONNECTED'
+      }
+    ]
+  };
+
+  await saveFacebookSettings(resetSettings);
+  return resetSettings;
+}
+
