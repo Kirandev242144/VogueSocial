@@ -57,7 +57,15 @@ export default function StorefrontEditor({
     border_radius: initialSettings.border_radius || 'soft',
     email: initialSettings.email || 'concierge@studiolabelparis.com',
     phone: initialSettings.phone || '+33 1 42 68 55 00',
-    logo_url: initialSettings.logo_url || initialSettings.logoUrl || ''
+    logo_url: initialSettings.logo_url || initialSettings.logoUrl || '',
+    nav_menu: Array.isArray(initialSettings.nav_menu) && initialSettings.nav_menu.length > 0
+      ? initialSettings.nav_menu
+      : (DEFAULT_MERCHANT_STORE.nav_menu || [
+          { id: 'menu_collection', label: 'Collection', url: '#collection', type: 'anchor' },
+          { id: 'menu_editorial', label: 'Editorial', url: '#about', type: 'anchor' },
+          { id: 'menu_about', label: 'About Atelier', url: '#about', type: 'anchor' }
+        ]),
+    show_category_tabs: initialSettings.show_category_tabs !== false
   }));
 
   // Catalog products for authentic feed preview
@@ -320,6 +328,7 @@ export default function StorefrontEditor({
           updateDomainState={updateDomainState}
           onVerifyDNS={handleVerifyDNS}
           dnsChecking={dnsChecking}
+          products={products}
         />
 
         <StorefrontLiveCanvas

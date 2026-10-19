@@ -290,12 +290,22 @@ export default function StorefrontLiveCanvas({
             padding: viewport === 'mobile' ? '0.85rem 1.25rem' : '1.15rem 2.5rem'
           }}
         >
-          {/* Left Nav */}
+          {/* Left Nav (Dynamic Navigation Menu) */}
           {viewport !== 'mobile' && (
-            <div style={{ display: 'flex', gap: '1.75rem', fontSize: '0.78rem', fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#57534E' }}>
-              <span style={{ cursor: 'pointer' }}>Collection</span>
-              <span style={{ cursor: 'pointer' }}>Editorial</span>
-              <span style={{ cursor: 'pointer' }}>About Atelier</span>
+            <div style={{ display: 'flex', gap: '1.75rem', fontSize: '0.78rem', fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#57534E', flexWrap: 'wrap' }}>
+              {(editorState.nav_menu && editorState.nav_menu.length > 0 ? editorState.nav_menu : [
+                { id: '1', label: 'Collection', url: '#collection' },
+                { id: '2', label: 'Editorial', url: '#about' },
+                { id: '3', label: 'About Atelier', url: '#about' }
+              ]).map((item) => (
+                <span
+                  key={item.id || item.label}
+                  style={{ cursor: 'pointer', transition: 'color 0.15s ease' }}
+                  title={item.url}
+                >
+                  {item.label}
+                </span>
+              ))}
             </div>
           )}
 
@@ -471,32 +481,34 @@ export default function StorefrontLiveCanvas({
             gap: '1rem'
           }}>
             {/* Elegant Underline Category Tabs (matching public /store/[handle]) */}
-            <div style={{ display: 'flex', gap: '2rem', overflowX: 'auto' }}>
-              {categories.map(cat => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setActiveCat(cat)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    fontSize: '0.8rem',
-                    fontWeight: activeCat === cat ? 700 : 500,
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    color: activeCat === cat ? '#0A0A0A' : '#78716C',
-                    cursor: 'pointer',
-                    position: 'relative',
-                    paddingBottom: '0.75rem',
-                    marginBottom: -1,
-                    borderBottom: activeCat === cat ? `2px solid ${accentColor}` : '2px solid transparent',
-                    transition: 'color 0.2s, border-color 0.2s'
-                  }}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
+            {editorState.show_category_tabs !== false ? (
+              <div style={{ display: 'flex', gap: '2rem', overflowX: 'auto' }}>
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setActiveCat(cat)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      fontSize: '0.8rem',
+                      fontWeight: activeCat === cat ? 700 : 500,
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      color: activeCat === cat ? '#0A0A0A' : '#78716C',
+                      cursor: 'pointer',
+                      position: 'relative',
+                      paddingBottom: '0.75rem',
+                      marginBottom: -1,
+                      borderBottom: activeCat === cat ? `2px solid ${accentColor}` : '2px solid transparent',
+                      transition: 'color 0.2s, border-color 0.2s'
+                    }}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            ) : <div />}
 
             {/* Sort indicator */}
             <div style={{

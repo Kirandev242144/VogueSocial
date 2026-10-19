@@ -1,10 +1,12 @@
 "use client";
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Megaphone, Layout, Image, Grid, BookOpen, Mail,
-  Phone, Palette, Globe, ChevronDown, ChevronUp, Sliders, Check, Sparkles
+  Phone, Palette, Globe, ChevronDown, ChevronUp, Sliders, Check, Sparkles,
+  Plus, Trash2, RotateCcw, Tags
 } from 'lucide-react';
 import DomainSettingsTab from './DomainSettingsTab';
+import { DEFAULT_NAV_MENU } from '@/lib/storefrontData';
 
 export const HERO_PRESETS = [
   { name: 'Editorial Studio', url: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=80' },
@@ -84,11 +86,50 @@ export default function StorefrontInspector({
   domainState,
   updateDomainState,
   onVerifyDNS,
-  dnsChecking
+  dnsChecking,
+  products = []
 }) {
   const toggleSection = (id) => {
     setFocusedSection(prev => prev === id ? null : id);
   };
+
+  // Dynamic Navigation Menu Management
+  const currentNavMenu = editorState.nav_menu || DEFAULT_NAV_MENU;
+
+  const handleAddMenuItem = () => {
+    updateState('nav_menu', [
+      ...currentNavMenu,
+      { id: `menu_${Date.now()}`, label: 'New Link', url: '#collection', type: 'anchor' }
+    ]);
+  };
+
+  const handleUpdateMenuItem = (index, field, value) => {
+    const updated = [...currentNavMenu];
+    updated[index] = { ...updated[index], [field]: value };
+    updateState('nav_menu', updated);
+  };
+
+  const handleRemoveMenuItem = (index) => {
+    const updated = [...currentNavMenu];
+    updated.splice(index, 1);
+    updateState('nav_menu', updated);
+  };
+
+  const handleResetMenu = () => {
+    updateState('nav_menu', DEFAULT_NAV_MENU);
+  };
+
+  // Detected Product Categories for Category Strip
+  const detectedCategories = useMemo(() => {
+    const cats = new Set();
+    if (products && products.length > 0) {
+      products.forEach(p => { if (p.category) cats.add(p.category); });
+    }
+    if (cats.size === 0) {
+      ['Outerwear', 'Dresses', 'Tops', 'Bottoms', 'Footwear'].forEach(c => cats.add(c));
+    }
+    return Array.from(cats);
+  }, [products]);
 
   return (
     <aside className="editor-inspector">
@@ -241,6 +282,65 @@ export default function StorefrontInspector({
                           {layout}
                         </button>
                       ))}
+                    </div>
+                  </div>
+
+                  {/* Navigation Menu Builder */}
+                  <div className="editor-field-group">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label className="editor-field-label">Navigation Menu Items</label>
+                      <button
+                        type="button"
+                        onClick={handleResetMenu}
+                        className="editor-btn-secondary"
+                        style={{ padding: '2px 7px', fontSize: '0.68rem', gap: 3 }}
+                        title="Reset to default links"
+                      >
+                        <RotateCcw size={10} /> Reset
+                      </button>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.35rem' }}>
+                      {currentNavMenu.map((item, idx) => (
+                        <div key={item.id || idx} className="editor-menu-item-row">
+                          <input
+                            type="text"
+                            className="editor-menu-item-input"
+                            value={item.label || ''}
+                            onChange={(e) => handleUpdateMenuItem(idx, 'label', e.target.value)}
+                            placeholder="Link Title"
+                          />
+
+                          <select
+                            className="editor-menu-item-select"
+                            value={item.url || '#collection'}
+                            onChange={(e) => handleUpdateMenuItem(idx, 'url', e.target.value)}
+                          >
+                            <option value="#collection">#collection (Garments)</option>
+                            <option value="#about">#about (Atelier Story)</option>
+                            <option value="#newsletter">#newsletter (VIP Sign-up)</option>
+                            <option value="#footer">#footer (Customer Care)</option>
+                            <option value="https://instagram.com">External URL</option>
+                          </select>
+
+                          <button
+                            type="button"
+                            className="editor-menu-delete-btn"
+                            onClick={() => handleRemoveMenuItem(idx)}
+                            title="Remove menu link"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      ))}
+
+                      <button
+                        type="button"
+                        className="editor-menu-add-btn"
+                        onClick={handleAddMenuItem}
+                      >
+                        <Plus size={13} /> Add Menu Link
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -431,6 +531,33 @@ export default function StorefrontInspector({
                     >
                       <div className="editor-switch-knob" />
                     </button>
+                  </div>
+
+                  <div className="editor-switch-row">
+                    <span className="editor-switch-label">Show Category Filter Strip</span>
+                    <button
+                      type="button"
+                      className={`editor-switch ${editorState.show_category_tabs !== false ? 'editor-switch-active' : ''}`}
+                      onClick={() => updateState('show_category_tabs', editorState.show_category_tabs === false)}
+                    >
+                      <div className="editor-switch-knob" />
+                    </button>
+                  </div>
+
+                  <div className="editor-field-group">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <Tags size={12} color="var(--d-t3, #64748b)" />
+                      <label className="editor-field-label">Active Catalog Categories ({detectedCategories.length})</label>
+                    </div>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--d-t3, #64748b)', lineHeight: 1.4 }}>
+                      Categories dynamically sync with your garments in <strong>Merchant &gt; Products</strong>.
+                    </span>
+                    <div className="editor-category-chips-wrap">
+                      <span className="editor-cat-chip">ALL</span>
+                      {detectedCategories.map(cat => (
+                        <span key={cat} className="editor-cat-chip">{cat}</span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}

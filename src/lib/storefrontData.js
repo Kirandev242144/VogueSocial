@@ -3,6 +3,12 @@
 
 export const STORE_PRODUCTS = [];
 
+export const DEFAULT_NAV_MENU = [
+  { id: 'menu_collection', label: 'Collection', url: '#collection', type: 'anchor' },
+  { id: 'menu_editorial', label: 'Editorial', url: '#about', type: 'anchor' },
+  { id: 'menu_about', label: 'About Atelier', url: '#about', type: 'anchor' }
+];
+
 export const DEFAULT_MERCHANT_STORE = {
   status: 'live',
   template: 'modern',
@@ -16,6 +22,8 @@ export const DEFAULT_MERCHANT_STORE = {
   hero_image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=80',
   logo_url: '',
   accent_color: '#2563eb',
+  nav_menu: DEFAULT_NAV_MENU,
+  show_category_tabs: true,
   email: 'concierge@studiolabelparis.com',
   phone: '+33 1 42 68 55 00',
   analytics: {

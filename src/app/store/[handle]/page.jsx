@@ -833,11 +833,17 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
 
       {/* ── 2. MAGAZINE EDITORIAL HEADER ── */}
       <header className="mag-header">
-        {/* Left: Refined Minimal Links */}
+        {/* Left: Refined Minimal Links (Dynamic Navigation Menu) */}
         <div className="mag-nav-left">
-          <a href="#collection" className="mag-nav-link">Collection</a>
-          <a href="#about" className="mag-nav-link">Editorial</a>
-          <a href="#about" className="mag-nav-link">About Atelier</a>
+          {(store.nav_menu && store.nav_menu.length > 0 ? store.nav_menu : [
+            { id: '1', label: 'Collection', url: '#collection' },
+            { id: '2', label: 'Editorial', url: '#about' },
+            { id: '3', label: 'About Atelier', url: '#about' }
+          ]).map((item) => (
+            <a key={item.id || item.label} href={item.url} className="mag-nav-link">
+              {item.label}
+            </a>
+          ))}
         </div>
 
         {/* Center: Brand Editorial Wordmark */}
@@ -964,17 +970,19 @@ export default function StorefrontPage({ handle: propHandle } = {}) {
           <>
             {/* Category & Sorting Controls */}
             <div className="mag-catalog-header">
-              <div className="mag-category-tabs">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setActiveCategory(cat)}
-                    className={`mag-category-tab ${activeCategory === cat ? 'mag-category-tab-active' : ''}`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
+              {store.show_category_tabs !== false ? (
+                <div className="mag-category-tabs">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveCategory(cat)}
+                      className={`mag-category-tab ${activeCategory === cat ? 'mag-category-tab-active' : ''}`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              ) : <div />}
 
               <div>
                 <select

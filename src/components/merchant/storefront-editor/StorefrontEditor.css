@@ -929,3 +929,117 @@
     position: static;
   }
 }
+
+/* ── Navigation Menu Manager in Inspector ── */
+.editor-menu-item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.65rem;
+  background: var(--d-hover, #f8fafc);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 8px;
+}
+
+.merchant-shell-dark .editor-menu-item-row {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.editor-menu-item-input {
+  flex: 1;
+  padding: 0.4rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid var(--d-border, #cbd5e1);
+  background: var(--d-panel, #ffffff);
+  color: var(--d-t1, #0f172a);
+  font-size: 0.78rem;
+  font-family: inherit;
+}
+
+.editor-menu-item-select {
+  flex: 1.2;
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--d-border, #cbd5e1);
+  background: var(--d-panel, #ffffff);
+  color: var(--d-t1, #0f172a);
+  font-size: 0.76rem;
+  font-family: inherit;
+}
+
+.editor-menu-delete-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.editor-menu-delete-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.editor-menu-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem;
+  border: 1px dashed var(--d-border, #cbd5e1);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--d-t2, #334155);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.editor-menu-add-btn:hover {
+  border-color: #0f172a;
+  color: #0f172a;
+  background: var(--d-hover, #f8fafc);
+}
+
+.merchant-shell-dark .editor-menu-add-btn:hover {
+  border-color: #f8fafc;
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.editor-category-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.editor-cat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--d-hover, #f1f5f9);
+  border: 1px solid var(--d-border, #e2e8f0);
+  border-radius: 14px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--d-t2, #475569);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.merchant-shell-dark .editor-cat-chip {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+}
+
