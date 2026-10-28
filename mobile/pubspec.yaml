@@ -1,0 +1,55 @@
+name: virtual_tryon_app
+description: "A premium AI Virtual Try-On mobile app matching VogueSocial styling."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  image_picker: ^1.0.7
+  provider: ^6.1.1
+  flutter_svg: ^2.0.10
+  supabase_flutter: ^2.6.0
+  video_player: ^2.12.0
+  shared_preferences: ^2.5.5
+  image: ^3.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/Shop_images/
+    - assets/Shop_images/1/
+    - assets/Shop_images/2/
+    - assets/Shop_images/3/
+    - assets/Shop_images/4/
+    - assets/Shop_images/5/
+    - assets/Shop_images/6/
+    - assets/Shop_images/7/
+    - assets/Shop_images/8/
+    - assets/Shop_images/9/
+    - assets/Shop_images/10/
+    - assets/Shop_images/11/
+    - assets/Shop_images/12/
+    - assets/Shop_images/13/
+    - assets/Shop_images/14/
+    - assets/Shop_images/15/
+    - assets/Shop_images/16/
+    - assets/logo.svg
+    - assets/video_fashion.webp
+    - assets/model_male_1.webp
+    - assets/model_male_2.webp
+    - assets/model_female_1.webp
+    - assets/model_female_2.webp
+    - assets/Boyfriend-Mid-Rise-Cropped-Turn-Up-Jeans.avif
+    - assets/Woman_modeling_outfit_in_studio_202608030912.mp4
