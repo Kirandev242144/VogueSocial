@@ -14,6 +14,7 @@ import {
 } from '@/components/product';
 import { ALL_POSTS } from '@/lib/data';
 import { productService, feedService } from '@/services';
+import { customerOrderService } from '@/services/customerOrderService';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import './ProductPage.css';
@@ -280,35 +281,37 @@ export default function ProductPage() {
         setTimeout(() => setShowHeartAnimation(false), 900);
     };
 
-    const handleCheckout = async () => {
+    const handleCheckout = async (selectedShippingAddress, paymentInfo) => {
         setCheckoutLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 1100));
+        await new Promise(resolve => setTimeout(resolve, 600));
 
         try {
             const activeGarment = selectedBuyGarment || post?.taggedProducts?.[0] || post;
             const title = activeGarment?.name || activeGarment?.productName || activeGarment?.triedItem || 'Fashion Item';
             const price = activeGarment?.price || post?.price || "$75.00";
+            const priceNum = typeof price === 'number' ? price : parseFloat(String(price).replace(/[^0-9.]/g, '')) || 75.00;
             const vendor = activeGarment?.brand || post?.author || "Vogue Partner";
 
-            const newOrder = {
-                id: `ord_${Date.now()}`,
-                product_name: title,
-                amount: typeof price === 'number' ? price : parseFloat(String(price).replace(/[^0-9.]/g, '')) || 75.00,
-                status: 'paid',
-                escrow_status: 'held',
-                created_at: new Date().toISOString(),
-                customer: { full_name: user?.name || 'Sarah Lin', email: user?.email || 'sarah@vogue.demo' },
-                vendor: {
-                    store_name: vendor,
-                    store_handle: vendor.toLowerCase().replace(/[^a-z0-9]/g, '')
-                },
-                shippingAddress: { address, city, country }
-            };
-
-            const existing = localStorage.getItem('vogue_social_orders');
-            const ordersList = existing ? JSON.parse(existing) : [];
-            ordersList.unshift(newOrder);
-            localStorage.setItem('vogue_social_orders', JSON.stringify(ordersList));
+            const newOrder = customerOrderService.createCustomerOrder({
+                amount: priceNum,
+                subtotal: priceNum,
+                shippingFee: 0,
+                total: priceNum,
+                productName: title,
+                brand: vendor,
+                size: selectedBuyGarment?.size || 'M',
+                quantity: selectedBuyGarment?.quantity || 1,
+                image: post?.images?.[0] || post?.image || '/Shop_images/5/knotted1-500x750.jpeg',
+                customerName: user?.name || 'John Miller',
+                customerEmail: user?.email || 'john@voguesocial.com',
+                paymentMethod: paymentInfo?.methodLabel || 'Visa •••• 4242 via Stripe',
+                shippingAddress: selectedShippingAddress || {
+                    fullName: user?.name || 'John Miller',
+                    street: address,
+                    city: city,
+                    country: country
+                }
+            });
 
             setOrderResult(newOrder);
             setIsCheckoutSuccess(true);
@@ -455,15 +458,15 @@ export default function ProductPage() {
                                 setTimeout(() => setToastMessage(null), 2500);
                             }}
                             onBuyNow={(selectedSize, quantity) => {
-                                setSelectedBuyGarment({
+                                addToCart({
                                     id: post.id,
                                     name: post.productName,
                                     brand: post.author,
                                     price: post.price,
-                                    size: selectedSize,
-                                    quantity: quantity
-                                });
-                                setIsCheckoutOpen(true);
+                                    image: post.images?.[0] || post.image,
+                                    category: post.category || 'tops'
+                                }, selectedSize, quantity, false);
+                                navigate('/checkout');
                             }}
                             onOpenTryOn={() => setIsTryOnOpen(true)}
                             onOpenComments={() => setIsCommentsOpen(true)}

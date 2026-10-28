@@ -1,11 +1,12 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingBag, X, Trash2, ShieldCheck, ArrowRight, Sparkles, Check, Lock, ChevronRight } from 'lucide-react';
+import { ShoppingBag, X, Trash2, ShieldCheck, ArrowRight, Sparkles, Check, Lock, ChevronRight, Tag } from 'lucide-react';
 import { useCart, formatPrice } from '@/context/CartContext';
 import Image from '@/components/Image';
 import CheckoutModal from '@/components/product/CheckoutModal';
 import CheckoutSuccessModal from '@/components/product/CheckoutSuccessModal';
+import { customerOrderService } from '@/services/customerOrderService';
 import './CartDrawer.css';
 
 const FREE_SHIPPING_THRESHOLD = 200;
@@ -33,6 +34,35 @@ export default function CartDrawer() {
   const [country, setCountry] = useState('United States');
   const [orderResult, setOrderResult] = useState(null);
 
+  // Promo Code States
+  const [promoInput, setPromoInput] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState(null);
+  const [promoError, setPromoError] = useState(null);
+
+  const handleApplyPromo = () => {
+    setPromoError(null);
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+
+    if (code === 'VOGUE10') {
+      setAppliedPromo({ code: 'VOGUE10', percent: 10, label: '10% Off' });
+      setPromoInput('');
+    } else if (code === 'RUNWAY20') {
+      setAppliedPromo({ code: 'RUNWAY20', percent: 20, label: '20% Off' });
+      setPromoInput('');
+    } else if (code === 'FREESHIP') {
+      setAppliedPromo({ code: 'FREESHIP', freeShipping: true, label: 'Free Shipping' });
+      setPromoInput('');
+    } else {
+      setPromoError('Invalid code. Try VOGUE10 or RUNWAY20');
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoError(null);
+  };
+
   // Close on Escape key
   useEffect(() => {
     if (!isCartOpen) return;
@@ -57,11 +87,12 @@ export default function CartDrawer() {
 
   if (!isCartOpen) return null;
 
-  const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+  const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD || Boolean(appliedPromo?.freeShipping);
   const shippingAmount = subtotal === 0 || isFreeShipping ? 0 : 15;
   const progressPercent = Math.min(100, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100));
   const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
-  const finalTotal = subtotal + shippingAmount;
+  const discountAmount = appliedPromo?.percent ? (subtotal * appliedPromo.percent) / 100 : 0;
+  const finalTotal = Math.max(0, subtotal - discountAmount + shippingAmount);
 
   const checkoutTitle = cartItems.length === 1
     ? cartItems[0].name
@@ -71,18 +102,47 @@ export default function CartDrawer() {
     : 'Vogue Verified Designers';
 
   const handleStartCheckout = () => {
-    setIsCheckoutOpen(true);
+    closeCart();
+    navigate('/checkout');
   };
 
-  const handleExecuteCheckout = async () => {
+  const handleExecuteCheckout = async (selectedShippingAddress, paymentInfo) => {
     setCheckoutLoading(true);
-    await new Promise((r) => setTimeout(r, 1400));
+    await new Promise((r) => setTimeout(r, 600));
     setCheckoutLoading(false);
     setIsCheckoutOpen(false);
 
+    const generatedOrderId = `#VS-ORD-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    const newOrder = customerOrderService.createCustomerOrder({
+      id: generatedOrderId,
+      amount: finalTotal,
+      subtotal: subtotal,
+      shippingFee: shippingAmount,
+      total: finalTotal,
+      paymentMethod: paymentInfo?.methodLabel || 'Visa •••• 4242 via Stripe',
+      shippingAddress: selectedShippingAddress || {
+        fullName: 'John Miller',
+        street: address,
+        city: city,
+        country: country
+      },
+      items: cartItems.map((item) => ({
+        id: item.id,
+        name: item.name,
+        brand: item.brand,
+        price: item.price,
+        priceDisplay: formatPrice(item.price),
+        size: item.size,
+        quantity: item.quantity,
+        image: item.image
+      }))
+    });
+
     setOrderResult({
-      orderId: 'VS-ORD-' + Math.floor(100000 + Math.random() * 900000),
-      escrowId: 'ESCROW-' + Math.random().toString(36).substring(2, 9).toUpperCase(),
+      id: newOrder.id,
+      orderId: newOrder.id,
+      trackingNumber: newOrder.trackingNumber,
       status: 'HELD_IN_ESCROW',
       amount: formatPrice(finalTotal),
       deliveryEstimate: '2-4 business days (Insured Express)'
@@ -229,11 +289,57 @@ export default function CartDrawer() {
           {/* Cart Footer */}
           {cartItems.length > 0 && (
             <div className="cart-drawer-footer">
+              {/* Promo Code Input */}
+              <div className="cart-promo-container">
+                {appliedPromo ? (
+                  <div className="cart-promo-applied-badge">
+                    <div className="cart-promo-applied-left">
+                      <Tag size={13} />
+                      <span>Promo <strong>{appliedPromo.code}</strong> ({appliedPromo.label})</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemovePromo}
+                      className="cart-promo-remove-btn"
+                      title="Remove promo code"
+                    >
+                      <X size={13} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="cart-promo-input-row">
+                    <input
+                      type="text"
+                      placeholder="Promo code (try VOGUE10)"
+                      value={promoInput}
+                      onChange={(e) => setPromoInput(e.target.value)}
+                      className="cart-promo-input"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleApplyPromo}
+                      className="cart-promo-apply-btn"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                )}
+                {promoError && <span className="cart-promo-error">{promoError}</span>}
+              </div>
+
               <div className="cart-summary-breakdown">
                 <div className="cart-summary-line">
                   <span>Subtotal</span>
                   <span className="cart-summary-val">{formatPrice(subtotal)}</span>
                 </div>
+                {discountAmount > 0 && (
+                  <div className="cart-summary-line" style={{ color: '#16a34a' }}>
+                    <span>Promo Discount ({appliedPromo?.code})</span>
+                    <span className="cart-summary-val" style={{ color: '#16a34a', fontWeight: '700' }}>
+                      -{formatPrice(discountAmount)}
+                    </span>
+                  </div>
+                )}
                 <div className="cart-summary-line">
                   <span>Estimated Shipping</span>
                   <span className="cart-summary-val">
@@ -270,7 +376,7 @@ export default function CartDrawer() {
               <div className="cart-trust-footer">
                 <div className="cart-trust-item">
                   <ShieldCheck size={14} className="cart-trust-icon" />
-                  <span>Stripe Escrow Protected</span>
+                  <span>Secure Checkout</span>
                 </div>
                 <span className="cart-trust-divider">•</span>
                 <div className="cart-trust-item">

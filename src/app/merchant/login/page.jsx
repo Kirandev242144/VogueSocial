@@ -69,7 +69,7 @@ export default function MerchantLoginPage({ initialTab = 'signin' }) {
         if (res.ok) {
           const data = await res.json();
           setHandleAvailable(data.available);
-          setHandleError(data.available ? '' : 'This handle is already registered by another atelier.');
+          setHandleError(data.available ? '' : 'This handle is already registered by another store.');
         } else {
           setHandleAvailable(null);
         }
@@ -97,7 +97,7 @@ export default function MerchantLoginPage({ initialTab = 'signin' }) {
           setLoading(false);
           return;
         }
-        setSuccessMsg('Welcome back! Opening your merchant atelier...');
+        setSuccessMsg('Welcome back! Opening your merchant dashboard...');
         setTimeout(() => {
           navigate('/merchant/dashboard');
         }, 500);
@@ -133,9 +133,9 @@ export default function MerchantLoginPage({ initialTab = 'signin' }) {
       });
 
       if (res?.success) {
-        setSuccessMsg(`Atelier ${cleanHandle} launched! Calibrating digital storefront...`);
+        setSuccessMsg(`Store ${cleanHandle} registered! Opening business verification flow...`);
         setTimeout(() => {
-          navigate('/merchant/dashboard');
+          navigate('/merchant/verification?new=true');
         }, 700);
       }
     } catch (err) {

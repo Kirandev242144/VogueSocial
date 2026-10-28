@@ -10,3 +10,4 @@ export { default as MerchantStatusRibbon } from './MerchantStatusRibbon';
 export { default as MerchantActionBanner } from './MerchantActionBanner';
 export { default as MerchantRecentOrders } from './MerchantRecentOrders';
 export { default as FacebookShopSync } from './FacebookShopSync';
+export { default as MerchantVerificationBanner } from './MerchantVerificationBanner';

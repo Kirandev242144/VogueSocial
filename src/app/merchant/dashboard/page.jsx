@@ -12,6 +12,7 @@ import {
   MerchantModelBreakdown,
   MerchantTopGarments,
   MerchantLiveStream,
+  MerchantVerificationBanner,
   TOP_GARMENTS
 } from '@/components/merchant';
 import './MerchantDashboard.css';
@@ -56,7 +57,10 @@ export default function MerchantDashboard() {
         onAddGarment={() => navigate('/merchant/products')}
       />
 
-      {/* ── 2. URGENT ACTIONS REQUIRED (SHOPIFY-STYLE) ── */}
+      {/* ── 2. KYC / KYB VERIFICATION BANNER ── */}
+      <MerchantVerificationBanner />
+
+      {/* ── 3. URGENT ACTIONS REQUIRED (SHOPIFY-STYLE) ── */}
       <MerchantActionBanner />
 
       {/* ── 3. BALANCED KPI METRICS (4 CARDS) ── */}

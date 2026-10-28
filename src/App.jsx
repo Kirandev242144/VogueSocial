@@ -19,6 +19,7 @@ import MerchantAnalytics from './app/merchant/analytics/page';
 import MerchantApiUsage from './app/merchant/api-usage/page';
 import MerchantPayouts from './app/merchant/payouts/page';
 import MerchantSettings from './app/merchant/settings/page';
+import MerchantVerification from './app/merchant/verification/page';
 
 import StorefrontPage from './app/store/[handle]/page';
 import ProductPage from './app/store/[handle]/product/[id]/page';
@@ -39,6 +40,8 @@ import Onboarding from './app/onboarding/page';
 import UserProfilePage from './app/profile/page';
 import ShopPage from './app/shop/page';
 import WardrobePage from './app/wardrobe/page';
+import DocumentationPage from './app/documentation_v1/page';
+import CheckoutPage from './app/checkout/page';
 
 function detectStoreSubdomain() {
   if (typeof window === 'undefined') return null;
@@ -88,14 +91,26 @@ export default function App() {
             <Route path="/" element={<Home />} />
           )}
           <Route path="/shop" element={<ShopPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/wardrobe" element={<WardrobePage />} />
           <Route path="/profile" element={<UserProfilePage />} />
+          <Route path="/orders" element={<Navigate to="/profile?tab=orders" replace />} />
+          <Route path="/account" element={<Navigate to="/profile" replace />} />
+          <Route path="/addresses" element={<Navigate to="/profile?tab=addresses" replace />} />
+          <Route path="/settings" element={<Navigate to="/profile?tab=settings" replace />} />
           <Route path="/product/:id" element={<FeedProductPage />} />
           <Route path="/brand/:handle" element={<BrandProfilePage />} />
+          
+          {/* Platform Documentation & Architecture Portal */}
+          <Route path="/Documentation_v1" element={<DocumentationPage />} />
+          <Route path="/documentation_v1" element={<DocumentationPage />} />
+          <Route path="/documentation" element={<DocumentationPage />} />
+          <Route path="/docs" element={<DocumentationPage />} />
           
           {/* Onboarding */}
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/onboarding/merchant" element={<MerchantOnboarding />} />
+          <Route path="/onboarding/merchant/verification" element={<Navigate to="/merchant/verification?new=true" replace />} />
 
           {/* Dedicated Merchant Auth */}
           <Route path="/merchant/login" element={<MerchantLoginPage initialTab="signin" />} />
@@ -108,6 +123,7 @@ export default function App() {
           <Route element={<MerchantLayout />}>
             <Route path="/merchant" element={<Navigate to="/merchant/dashboard" replace />} />
             <Route path="/merchant/dashboard" element={<MerchantDashboard />} />
+            <Route path="/merchant/verification" element={<MerchantVerification />} />
             <Route path="/merchant/website" element={<MerchantWebsite />} />
             <Route path="/merchant/products" element={<MerchantProducts />} />
             <Route path="/merchant/orders" element={<MerchantOrders />} />

@@ -4,7 +4,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Image from './Image';
 import {
   Search, Bell, ShoppingBag, Heart, Shirt, X,
-  Sparkles, User, Store, ShieldCheck, LogOut
+  Sparkles, User, Store, ShieldCheck, LogOut,
+  Package, MapPin, Settings
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
@@ -161,12 +162,30 @@ const Navbar = ({ onSearch }) => {
 
                     {/* Navigation Items */}
                     <Link
-                      to="/profile"
+                      to="/profile?tab=orders"
                       className="dropdown-item"
                       onClick={() => setIsDropdownOpen(false)}
                     >
-                      <User size={15} />
-                      <span>My Profile</span>
+                      <Package size={15} />
+                      <span>My Orders</span>
+                    </Link>
+
+                    <Link
+                      to="/profile?tab=addresses"
+                      className="dropdown-item"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <MapPin size={15} />
+                      <span>Shipping Addresses</span>
+                    </Link>
+
+                    <Link
+                      to="/profile?tab=settings"
+                      className="dropdown-item"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <Settings size={15} />
+                      <span>Account & Sizing</span>
                     </Link>
 
                     <Link

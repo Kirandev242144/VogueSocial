@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import Navbar from '@/components/Navbar';
 import ShopSidebar from '@/components/shop/ShopSidebar';
 import ShopHeaderPrompt from '@/components/shop/ShopHeaderPrompt';
@@ -7,7 +7,6 @@ import ShopProductGrid from '@/components/shop/ShopProductGrid';
 import AiStylistPanel from '@/components/shop/AiStylistPanel';
 import styles from './page.module.css';
 import { SHOP_PRODUCTS } from '@/lib/shopData';
-import { productService } from '@/services';
 import { useCart } from '@/context/CartContext';
 
 export default function ShopPage() {
@@ -19,66 +18,12 @@ export default function ShopPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('suggested'); // 'suggested' | 'trending' | 'new_arrivals'
   const [sortBy, setSortBy] = useState('featured');
-  const [dbProducts, setDbProducts] = useState([]);
 
   // In-chat Try-On Request State (No popup modal!)
   const [tryOnRequest, setTryOnRequest] = useState(null);
 
-  // Fetch dynamic products on load
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const data = await productService.getPublicProducts();
-        if (data && data.success && Array.isArray(data.products)) {
-          setDbProducts(data.products);
-        }
-      } catch (err) {
-        console.warn('Could not load dynamic shop products:', err);
-      }
-    };
-    loadProducts();
-  }, []);
-
-  // Format dynamic DB products to match Shop Product schema
-  const formattedDbProducts = useMemo(() => {
-    return dbProducts.map(p => {
-      const priceNum = typeof p.price === 'number' ? p.price : Number(p.price) || 59.99;
-      const rawCat = (p.category || 'tops').toLowerCase();
-      let cat = 'tops';
-      if (rawCat.includes('dress')) cat = 'dresses';
-      else if (rawCat.includes('bottom') || rawCat.includes('pant') || rawCat.includes('trouser') || rawCat.includes('skirt')) cat = 'bottoms';
-      else if (rawCat.includes('outer') || rawCat.includes('coat') || rawCat.includes('jacket') || rawCat.includes('trench')) cat = 'outerwear';
-      else if (rawCat.includes('shoe') || rawCat.includes('heel') || rawCat.includes('boot')) cat = 'shoes';
-      else if (rawCat.includes('bag') || rawCat.includes('access')) cat = 'accessories';
-
-      return {
-        id: p.id,
-        name: p.name,
-        brand: p.vendorName || p.storeName || (p.targetAudience === 'Men' ? 'Mens Edit' : 'Studio Label Paris'),
-        category: cat,
-        price: priceNum,
-        priceDisplay: `$${priceNum.toFixed(2)}`,
-        rating: 4.9,
-        reviewsCount: 24,
-        sizes: ['XS', 'S', 'M', 'L', 'XL'],
-        image: p.imageUrl || p.image_url || '/Shop_images/1/basic2-500x750.jpeg',
-        secondaryImage: p.backImageUrl || p.back_image_url || p.imageUrl || '/Shop_images/1/basic3-500x750.jpeg',
-        colors: ['#1e293b', '#e2e8f0'],
-        isTrending: true,
-        isNew: true,
-        fitNote: 'Verified fit · True to size',
-        badge: 'NEW DROP'
-      };
-    });
-  }, [dbProducts]);
-
-  // Synchronized catalog products (fallback to static SHOP_PRODUCTS)
-  const allShopProducts = useMemo(() => {
-    if (formattedDbProducts.length > 0) {
-      return formattedDbProducts;
-    }
-    return SHOP_PRODUCTS;
-  }, [formattedDbProducts]);
+  // Synchronized catalog products directly from curated shop dataset (zero database latency)
+  const allShopProducts = SHOP_PRODUCTS;
 
   const handleToggleCategory = (catId) => {
     setSelectedCategories(prev =>

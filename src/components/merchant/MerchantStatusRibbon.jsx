@@ -15,7 +15,7 @@ export default function MerchantStatusRibbon() {
             <Cpu size={18} />
           </div>
           <div className="merchant-engine-info">
-            <span className="merchant-engine-title">OmniTry AI Engine v2.4</span>
+            <span className="merchant-engine-title">Virtual Try-On AI Engine v2.4</span>
             <span className="merchant-engine-sub">Ultra-HD Warp & Neural Blend · 1.6s avg response</span>
           </div>
         </div>

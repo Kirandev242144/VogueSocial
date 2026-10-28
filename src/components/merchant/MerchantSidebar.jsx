@@ -7,7 +7,7 @@ import {
   LayoutDashboard, ShoppingBag, Package, BarChart2,
   Settings, Store, LogOut, Sun, Moon, ChevronDown,
   ChevronRight, Sparkles, Users, RefreshCw, CreditCard,
-  Layers, Sliders, Globe, Facebook
+  Layers, Sliders, Globe, Facebook, ShieldCheck
 } from 'lucide-react';
 import { useMerchantTheme } from '@/app/merchant/ThemeContext';
 
@@ -28,6 +28,7 @@ const NAV = [
   { label: 'Customers', icon: Users, href: '/merchant/analytics?tab=customers' },
   { label: 'Reports', icon: Layers, href: '/merchant/analytics?tab=reports' },
   { section: 'SETTINGS' },
+  { label: 'Verification & KYC', icon: ShieldCheck, href: '/merchant/verification', badge: 'KYC' },
   { label: 'Facebook Shop Sync', icon: Facebook, href: '/merchant/products?tab=facebook', badge: 'LIVE' },
   { label: 'Payment Gateways', icon: CreditCard, href: '/merchant/payouts' },
   { label: 'Try-On Credits & Usage', icon: Sparkles, href: '/merchant/api-usage', badge: 'NEW' },

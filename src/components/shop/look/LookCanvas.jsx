@@ -73,7 +73,7 @@ export default function LookCanvas({
           <div className="look-drop-zone-box">
             <Sparkles className="look-drop-zone-icon" size={32} />
             <span className="look-drop-zone-title">Drop garment here to try on</span>
-            <span className="look-drop-zone-sub">OmniTry AI will re-simulate this piece on the model</span>
+            <span className="look-drop-zone-sub">AI Virtual Try-On will simulate this piece on the model</span>
           </div>
         </div>
       )}

@@ -20,7 +20,7 @@ export default function AuthEditorialBanner() {
             Your Personal Virtual Fitting Room.
           </h2>
           <p className="auth-editorial-sub">
-            Try on any runway designer piece tailored directly to your proportions with OmniTry AI neural simulation.
+            Try on any runway designer piece tailored directly to your proportions with AI Virtual Try-On neural simulation.
           </p>
 
           <div className="auth-editorial-features">

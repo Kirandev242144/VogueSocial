@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VogueSocial Engineering & Platform Architecture Documentation</title>
+  <meta name="description" content="Technical documentation and architecture blueprint for VogueSocial - The decentralized luxury fashion social marketplace with AI Virtual Try-On and Stripe Connect Escrow.">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="doc-wrapper">
+    <!-- TOP NAVBAR -->
+    <header class="doc-navbar">
+      <div class="doc-nav-left">
+        <a href="#overview" class="doc-brand-title" style="text-decoration: none; color: inherit;">
+          <span>VogueSocial</span>
+          <span class="doc-brand-badge">Docs</span>
+        </a>
+        <span class="doc-version-pill">v1.0 Architecture Blueprint</span>
+      </div>
+
+      <div class="doc-nav-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input
+          type="text"
+          id="doc-search-input"
+          placeholder="Search architecture, payments, APIs..."
+        />
+        <span class="doc-kbd-shortcut">⌘K</span>
+      </div>
+
+      <div class="doc-nav-right">
+        <button type="button" class="doc-nav-btn" onclick="switchSection('glossary')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Glossary</span>
+        </button>
+        <a href="../shop" class="doc-nav-btn" target="_blank" style="text-decoration: none;">
+          <span>Live Shop</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+        </a>
+        <a href="../merchant" class="doc-nav-btn primary" target="_blank" style="text-decoration: none;">
+          <span>Merchant Portal</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </header>
+
+    <!-- MAIN LAYOUT -->
+    <div class="doc-layout">
+      <!-- LEFT SIDEBAR -->
+      <aside class="doc-sidebar" id="doc-sidebar">
+        <div class="doc-sidebar-category">
+  <div class="doc-category-title">Architecture</div>
+  <div class="doc-menu-item active" data-section="overview">
+    <span>What is VogueSocial & Features</span>
+    <span class="doc-item-badge ">Start Here</span>
+  </div>
+  <div class="doc-menu-item " data-section="how-it-works">
+    <span>The Escrow Referee & Money Flow</span>
+    <span class="doc-item-badge ">Must Read</span>
+  </div>
+</div>
+<div class="doc-sidebar-category">
+  <div class="doc-category-title">Finance & Payments</div>
+  <div class="doc-menu-item " data-section="payment-escrow">
+    <span>Stripe Escrow & Payments</span>
+    <span class="doc-item-badge hot">Critical</span>
+  </div>
+</div>
+<div class="doc-sidebar-category">
+  <div class="doc-category-title">Logistics</div>
+  <div class="doc-menu-item " data-section="logistics-delivery">
+    <span>Shipping & Delivery (POD)</span>
+    <span class="doc-item-badge ">Automated</span>
+  </div>
+</div>
+<div class="doc-sidebar-category">
+  <div class="doc-category-title">Computer Vision</div>
+  <div class="doc-menu-item " data-section="ai-tryon">
+    <span>AI Virtual Try-On Pipeline</span>
+    <span class="doc-item-badge ">GPU Cluster</span>
+  </div>
+</div>
+<div class="doc-sidebar-category">
+  <div class="doc-category-title">Data Architecture</div>
+  <div class="doc-menu-item " data-section="database-erd">
+    <span>Database Schema & ERD</span>
+    <span class="doc-item-badge ">Relational Model</span>
+  </div>
+</div>
+<div class="doc-sidebar-category">
+  <div class="doc-category-title">Developer Reference</div>
+  <div class="doc-menu-item " data-section="api-reference">
+    <span>REST API & Webhooks</span>
+    <span class="doc-item-badge ">OpenAPI</span>
+  </div>
+</div>
+<div class="doc-sidebar-category">
+  <div class="doc-category-title">Flutter Client</div>
+  <div class="doc-menu-item " data-section="mobile-app">
+    <span>Mobile App Architecture</span>
+    <span class="doc-item-badge ">iOS / Android</span>
+  </div>
+</div>
+<div class="doc-sidebar-category">
+  <div class="doc-category-title">Reference</div>
+  <div class="doc-menu-item " data-section="glossary">
+    <span>Platform Glossary (A–Z)</span>
+    <span class="doc-item-badge ">Dictionary</span>
+  </div>
+</div>
+
+      </aside>
+
+      <!-- CENTER CONTENT -->
+      <main class="doc-content-area" id="doc-content-area">
+        <article id="sec-overview" class="doc-section active">
+              <div class="doc-article-header">
+                <div class="doc-tag-row">
+                  <span class="doc-tag blue">Platform Foundation</span>
+                  <span class="doc-tag">Executive Overview</span>
+                  <span class="doc-tag">Social Commerce</span>
+                  <span class="doc-tag">Creator Ecosystem</span>
+                  <span class="doc-tag">Production v1.0</span>
+                </div>
+                <h1 class="doc-article-title">What is VogueSocial? Platform Overview & Features</h1>
+                <p class="doc-article-lead">
+                  VogueSocial is a next-generation luxury social commerce marketplace and creator ecosystem. It fuses interactive community engagement—double-click likes, merchant discussion threads, viral look sharing, brand following, and an interactive digital wardrobe canvas—with real-time AI virtual try-on, autonomous branded storefronts, and automated Stripe escrow custody.
+                </p>
+              </div>
+
+              
+              <div class="doc-callout info">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                <div class="doc-callout-body">
+                  <div class="doc-callout-title">The Paradigm Shift: From Middlemen to Direct Independent Brand Commerce</div>
+                  Traditional luxury retail is plagued by two extremes: legacy department stores taking 40–60% margins with 90-day delayed payouts, or fragmented independent merchant websites suffering from 35%+ sizing return rates and lack of buyer trust. <strong>VogueSocial solves both</strong> by providing independent merchants and brands with instant AI virtual fitting, zero-code autonomous luxury storefronts, built-in social discovery tools, and automated escrow payouts that protect both buyer and merchant.
+                </div>
+              </div>
+
+              
+              <div class="doc-social-showcase">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem">
+                  <div style="display: flex; align-items: center; gap: 0.65rem">
+                    <div style="width: 36px; height: 36px; border-radius: 8px; background: #fdf2f8; color: #db2777; display: flex; align-items: center; justify-content: center">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                    </div>
+                    <div>
+                      <h3 style="font-size: 1.05rem; font-weight: 700; margin: 0; color: #0f172a">
+                        The "Social" in VogueSocial: Community, Engagement & Wardrobe
+                      </h3>
+                      <p style="font-size: 0.78rem; color: #64748b; margin: 2px 0 0">
+                        Transforming high fashion from cold transactions into an interactive, creator-driven social ecosystem.
+                      </p>
+                    </div>
+                  </div>
+                  <span class="doc-tag" style="background: #fdf2f8; color: #db2777; border-color: #fbcfe8">
+                    Social Features
+                  </span>
+                </div>
+
+                
+                <div class="doc-social-grid">
+                  <div class="doc-social-pill-card">
+                    <div class="doc-social-pill-header">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                      <span>Double-Click to Like</span>
+                    </div>
+                    <p class="doc-social-pill-desc">
+                      Instagram-style double-tap gesture on garment visuals with heart animation. Powers real-time lookbook trend algorithms and community popularity counters (e.g. 1.2k+ likes).
+                    </p>
+                  </div>
+
+                  <div class="doc-social-pill-card">
+                    <div class="doc-social-pill-header">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+                      <span>Merchant & Product Comments</span>
+                    </div>
+                    <p class="doc-social-pill-desc">
+                      Direct dialogue threads on garment pages. Shoppers discuss fabric drape, texture, styling advice, and sizing fit directly with the merchant brand and other buyers.
+                    </p>
+                  </div>
+
+                  <div class="doc-social-pill-card">
+                    <div class="doc-social-pill-header">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                      <span>Viral Outfit Sharing</span>
+                    </div>
+                    <p class="doc-social-pill-desc">
+                      1-click sharing of runway reels, individual pieces, and personal AI Virtual Try-On renders to Instagram, TikTok, and WhatsApp with deep-linked buy buttons.
+                    </p>
+                  </div>
+
+                  <div class="doc-social-pill-card">
+                    <div class="doc-social-pill-header">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                      <span>Follow Merchants & Brands</span>
+                    </div>
+                    <p class="doc-social-pill-desc">
+                      Subscribe directly to independent merchant profiles (e.g. Studio Label Paris). Shoppers receive drop alerts for seasonal runway previews and limited editions.
+                    </p>
+                  </div>
+
+                  <div class="doc-social-pill-card">
+                    <div class="doc-social-pill-header">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+                      <span>Save & Bookmark</span>
+                    </div>
+                    <p class="doc-social-pill-desc">
+                      Curate personal luxury wishlists, save favorite silhouettes, and organize inspirations into custom capsule collections for upcoming events.
+                    </p>
+                  </div>
+                </div>
+
+                
+                <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid #f1f5f9">
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                    <div>
+                      <strong style="font-size: 0.92rem; color: #0f172a">Interactive Digital Wardrobe Canvas (/wardrobe)</strong>
+                      <span style="font-size: 0.78rem; color: #64748b; margin-left: 0.5rem">
+                        Your personal cloud closet for mixing, matching, and styling multi-brand outfits.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="doc-wardrobe-showcase">
+                    <div class="doc-wardrobe-box">
+                      <div class="doc-wardrobe-box-title">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+                        <span>Multi-Garment Styling Canvas</span>
+                      </div>
+                      <p class="doc-wardrobe-box-text">
+                        Layer tops, trousers, outerwear, footwear, and accessories simultaneously on a digital mannequin to test styling harmony, color palettes, and proportions before purchase.
+                      </p>
+                    </div>
+
+                    <div class="doc-wardrobe-box">
+                      <div class="doc-wardrobe-box-title">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+                        <span>Saved Virtual Try-On Looks</span>
+                      </div>
+                      <p class="doc-wardrobe-box-text">
+                        Every AI try-on generated in the fitting room automatically archives into the user's permanent wardrobe vault, complete with personal silhouette fit scores and sizing data.
+                      </p>
+                    </div>
+
+                    <div class="doc-wardrobe-box">
+                      <div class="doc-wardrobe-box-title">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        <span>Ensemble 1-Click Checkout</span>
+                      </div>
+                      <p class="doc-wardrobe-box-text">
+                        Add an entire curated multi-item look (e.g. Silk Blouse + Pleated Trousers + Signature Coat) directly into the shopping bag with a single tap for seamless checkout.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              
+              <div class="doc-stats-strip">
+                <div class="doc-stat-card">
+                  <div class="doc-stat-value">95%</div>
+                  <div class="doc-stat-label">Net Merchant Payout</div>
+                </div>
+                <div class="doc-stat-card">
+                  <div class="doc-stat-value">&lt; 1.8s</div>
+                  <div class="doc-stat-label">WebGPU In-Browser AI</div>
+                </div>
+                <div class="doc-stat-card">
+                  <div class="doc-stat-value">5 Themes</div>
+                  <div class="doc-stat-label">Instant Storefronts</div>
+                </div>
+                <div class="doc-stat-card">
+                  <div class="doc-stat-value">100%</div>
+                  <div class="doc-stat-label">Escrow-Backed Safety</div>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>The Three-Pillar Stakeholder Ecosystem</span>
+              </h2>
+              <p class="doc-p">
+                VogueSocial functions as a tripartite marketplace connecting shoppers, fashion merchants & brands, and an automated trust protocol:
+              </p>
+
+              <div class="doc-stakeholder-grid">
+                
+                <div class="doc-stakeholder-card">
+                  <div class="doc-stakeholder-top">
+                    <div class="doc-stakeholder-icon" style="background: #f0f9ff; color: #0284c7">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    </div>
+                    <span class="doc-tag blue">For Shoppers</span>
+                  </div>
+                  <h3 class="doc-stakeholder-title">Global Luxury Shoppers</h3>
+                  <p class="doc-stakeholder-desc">
+                    Discover exclusive runway and luxury fashion pieces, try them on virtually using personal photos & calibrated body dimensions, and buy with total escrow safety.
+                  </p>
+                  <ul class="doc-stakeholder-perks">
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Photorealistic AI Try-On on personal silhouette</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 100% Buyer Protection (Escrow locks funds until delivery)</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Social lookbook feed with 1-click try-on & shopping bag</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Itemized luxury tax receipts with DHL / FedEx tracking</li>
+                  </ul>
+                </div>
+
+                
+                <div class="doc-stakeholder-card">
+                  <div class="doc-stakeholder-top">
+                    <div class="doc-stakeholder-icon" style="background: #f0fdf4; color: #16a34a">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7a2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2"/></svg>
+                    </div>
+                    <span class="doc-tag" style="background: #f0fdf4; color: #16a34a; border-color: #bbf7d0">For Merchants</span>
+                  </div>
+                  <h3 class="doc-stakeholder-title">Fashion Merchants & Brands</h3>
+                  <p class="doc-stakeholder-desc">
+                    Build an international direct-to-consumer luxury brand in minutes. Host custom-branded web storefronts with zero coding and keep 95% of revenues.
+                  </p>
+                  <ul class="doc-stakeholder-perks">
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 5 Luxury Themes with custom domains & branding</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Direct-from-workshop fulfillment (Decentralized logistics)</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Guaranteed 95% net payouts direct to connected bank</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Built-in inventory matrix & dual-address RMA returns</li>
+                  </ul>
+                </div>
+
+                
+                <div class="doc-stakeholder-card">
+                  <div class="doc-stakeholder-top">
+                    <div class="doc-stakeholder-icon" style="background: #faf5ff; color: #7c3aed">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    </div>
+                    <span class="doc-tag" style="background: #faf5ff; color: #7c3aed; border-color: #e9d5ff">The Referee</span>
+                  </div>
+                  <h3 class="doc-stakeholder-title">VogueSocial Platform Engine</h3>
+                  <p class="doc-stakeholder-desc">
+                    Orchestrates multi-party trust, verifies authenticity, manages multi-carrier webhooks, and settles escrow transactions via Stripe Connect.
+                  </p>
+                  <ul class="doc-stakeholder-perks">
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Automated 5-Gate escrow verification before disbursement</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Transparent flat 5% marketplace commission</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Regex AWB Courier Auto-Detector (DHL, FedEx, UPS)</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Serverless GPU cluster for ultra-low latency try-on</li>
+                  </ul>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+                <span>Comprehensive Feature Architecture</span>
+              </h2>
+              <p class="doc-p">
+                Explore the 8 core pillar features that power the VogueSocial luxury fashion ecosystem:
+              </p>
+
+              <div class="doc-feature-grid">
+                
+                <div class="doc-feature-card">
+                  <div class="doc-feature-header">
+                    <div class="doc-feature-icon-badge">
+                      <div class="doc-feature-icon-box" style="background: #faf5ff; color: #7c3aed">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+                      </div>
+                      <span class="doc-feature-tag purple">Computer Vision</span>
+                    </div>
+                    <span class="doc-term-cat">AI Studio</span>
+                  </div>
+                  <h3 class="doc-feature-title">1. AI Virtual Try-On Fitting Room</h3>
+                  <p class="doc-feature-desc">
+                    Eliminates fashion sizing guesswork by allowing shoppers to visualize garments draping realistically over their actual body proportions before purchasing.
+                  </p>
+                  <ul class="doc-feature-points">
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Client-side WebGPU background removal (<code>@imgly/background-removal</code>) in &lt;1.8s with zero server roundtrip.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Serverless GPU pipeline: DensePose body estimation + Thin-Plate Spline (TPS) warping + Latent Diffusion UNet.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Anthropometric silhouette calibration (Height, Weight, Bust, Waist, Hips) for accurate fabric physics.</li>
+                  </ul>
+                  <div class="doc-feature-footer">
+                    <span>Stack Integration:</span>
+                    <span class="doc-feature-tech">WebGPU · ONNX · PyTorch · Latent Diffusion</span>
+                  </div>
+                </div>
+
+                
+                <div class="doc-feature-card">
+                  <div class="doc-feature-header">
+                    <div class="doc-feature-icon-badge">
+                      <div class="doc-feature-icon-box" style="background: #fefce8; color: #854d0e">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7a2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2"/></svg>
+                      </div>
+                      <span class="doc-feature-tag gold">E-Commerce Engine</span>
+                    </div>
+                    <span class="doc-term-cat">Storefronts</span>
+                  </div>
+                  <h3 class="doc-feature-title">2. Autonomous Merchant Luxury Storefronts</h3>
+                  <p class="doc-feature-desc">
+                    Instantly generates a dedicated, white-label e-commerce website for every onboarded merchant at <code>/store/:handle</code> or custom domains.
+                  </p>
+                  <ul class="doc-feature-points">
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 5 Curated Luxury Themes: Minimalist, Haute Luxury, Streetwear, Modernist, and Artisan Boutique.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Complete merchant customization: logos, hero imagery, taglines, accent palettes, and domain routing.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Independent shopping bag, quick-view modal, category filters, and live stock synchronization.</li>
+                  </ul>
+                  <div class="doc-feature-footer">
+                    <span>Stack Integration:</span>
+                    <span class="doc-feature-tech">Next.js / React · Custom Domains · Dynamic CSS</span>
+                  </div>
+                </div>
+
+                
+                <div class="doc-feature-card">
+                  <div class="doc-feature-header">
+                    <div class="doc-feature-icon-badge">
+                      <div class="doc-feature-icon-box" style="background: #f0fdf4; color: #16a34a">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                      </div>
+                      <span class="doc-feature-tag green">Financial Security</span>
+                    </div>
+                    <span class="doc-term-cat">Escrow Custody</span>
+                  </div>
+                  <h3 class="doc-feature-title">3. Stripe Connect Escrow Funds Custody</h3>
+                  <p class="doc-feature-desc">
+                    Protects buyers from non-delivery and merchants from chargebacks by holding customer payments in a segregated platform escrow vault until delivery.
+                  </p>
+                  <ul class="doc-feature-points">
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Separate Charges & Transfers pattern: platform charges buyer, holds balance, and transfers net on delivery.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Automated 95/5 split: 95% deposited to merchant's Stripe account; 5% retained as platform helper fee.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 5-Gate automated payout verification + 48-hour post-delivery customer inspection window.</li>
+                  </ul>
+                  <div class="doc-feature-footer">
+                    <span>Stack Integration:</span>
+                    <span class="doc-feature-tech">Stripe Connect · PaymentIntents · Radar 3DS</span>
+                  </div>
+                </div>
+
+                
+                <div class="doc-feature-card">
+                  <div class="doc-feature-header">
+                    <div class="doc-feature-icon-badge">
+                      <div class="doc-feature-icon-box" style="background: #f0f9ff; color: #0284c7">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="13" x="1" y="5" rx="2"/><polygon points="17 8 20 8 23 11 23 18 17 18 17 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                      </div>
+                      <span class="doc-feature-tag blue">Logistics Automation</span>
+                    </div>
+                    <span class="doc-term-cat">Smart Logistics</span>
+                  </div>
+                  <h3 class="doc-feature-title">4. Intelligent Logistics & Carrier Auto-Detection</h3>
+                  <p class="doc-feature-desc">
+                    Eliminates manual courier selection by using real-time regex pattern matching on Airway Bill (AWB) tracking numbers.
+                  </p>
+                  <ul class="doc-feature-points">
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Instant carrier regex detection across DHL Express, FedEx, UPS, USPS, Blue Dart, and Royal Mail.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Automated webhook ingestion for shipping milestones (Dispatched → In Transit → Out for Delivery).</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Cryptographic Proof of Delivery (POD) collection with electronic signature and geolocation scan.</li>
+                  </ul>
+                  <div class="doc-feature-footer">
+                    <span>Stack Integration:</span>
+                    <span class="doc-feature-tech">Regex AWB Engine · EasyPost Gateway · Webhooks</span>
+                  </div>
+                </div>
+
+                
+                <div class="doc-feature-card">
+                  <div class="doc-feature-header">
+                    <div class="doc-feature-icon-badge">
+                      <div class="doc-feature-icon-box" style="background: #fdf2f8; color: #db2777">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                      </div>
+                      <span class="doc-feature-tag purple" style="background: #fdf2f8; color: #db2777; border-color: #fbcfe8">Community Social</span>
+                    </div>
+                    <span class="doc-term-cat">Social Feed</span>
+                  </div>
+                  <h3 class="doc-feature-title">5. Social Community & Engagement Engine</h3>
+                  <p class="doc-feature-desc">
+                    Powers the high-engagement social fabric of the platform—turning garment discovery into an interactive dialogue between luxury shoppers and independent creators.
+                  </p>
+                  <ul class="doc-feature-points">
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> <strong>Double-Click to Like:</strong> Micro-interaction gesture on garment media with real-time popularity ranking counters (e.g. 1.2k+ likes).</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> <strong>Product Discussion Threads:</strong> Community comments directly on product pages for styling advice, fabric feel, and merchant Q&amp;A.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> <strong>Viral Sharing &amp; Brand Follow:</strong> 1-click lookbook sharing to Instagram/TikTok/WhatsApp and following verified merchants &amp; brands (e.g. Studio Label Paris).</li>
+                  </ul>
+                  <div class="doc-feature-footer">
+                    <span>Stack Integration:</span>
+                    <span class="doc-feature-tech">Social Domain Service · Distributed Cache · Real-time Graph Sync</span>
+                  </div>
+                </div>
+
+                
+                <div class="doc-feature-card">
+                  <div class="doc-feature-header">
+                    <div class="doc-feature-icon-badge">
+                      <div class="doc-feature-icon-box" style="background: #faf5ff; color: #7c3aed">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                      </div>
+                      <span class="doc-feature-tag purple">Wardrobe Studio</span>
+                    </div>
+                    <span class="doc-term-cat">Mix & Match</span>
+                  </div>
+                  <h3 class="doc-feature-title">6. Interactive Digital Wardrobe Canvas</h3>
+                  <p class="doc-feature-desc">
+                    Your personal cloud styling studio for mixing, matching, and curating multi-brand fashion capsules with live mannequin drag-and-drop.
+                  </p>
+                  <ul class="doc-feature-points">
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> <strong>Multi-Garment Styling Canvas:</strong> Layer tops, trousers, outerwear, and footwear simultaneously to test styling harmony and proportion.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> <strong>Saved Virtual Try-On Archive:</strong> Every AI try-on generated in the fitting room archives permanently with personal silhouette fit scores.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> <strong>Ensemble 1-Click Checkout:</strong> Move an entire curated multi-piece outfit into your shopping bag in a single click.</li>
+                  </ul>
+                  <div class="doc-feature-footer">
+                    <span>Stack Integration:</span>
+                    <span class="doc-feature-tech">HTML5 Canvas · Wardrobe State Engine · LocalStorage Sync</span>
+                  </div>
+                </div>
+
+                
+                <div class="doc-feature-card">
+                  <div class="doc-feature-header">
+                    <div class="doc-feature-icon-badge">
+                      <div class="doc-feature-icon-box" style="background: #f0f9ff; color: #0284c7">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                      </div>
+                      <span class="doc-feature-tag blue">Reverse Logistics</span>
+                    </div>
+                    <span class="doc-term-cat">Direct Returns</span>
+                  </div>
+                  <h3 class="doc-feature-title">7. Decentralized RMA & Dual-Address Routing</h3>
+                  <p class="doc-feature-desc">
+                    Solves the luxury marketplace returns dilemma by cleanly separating corporate headquarters registration from merchant return hubs.
+                  </p>
+                  <ul class="doc-feature-points">
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Dual-address architecture: corporate office for tax billing; direct merchant <code>return_warehouse_address</code> for physical returns.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Automated RMA return slip generator with tracking barcode and reason tracking (e.g., Fit / Sizing).</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Escrow dispute mediation: escrow funds freeze during open RMA until merchant confirms garment receipt.</li>
+                  </ul>
+                  <div class="doc-feature-footer">
+                    <span>Stack Integration:</span>
+                    <span class="doc-feature-tech">Dual-Address Protocol · RMA State Machine</span>
+                  </div>
+                </div>
+
+                
+                <div class="doc-feature-card">
+                  <div class="doc-feature-header">
+                    <div class="doc-feature-icon-badge">
+                      <div class="doc-feature-icon-box" style="background: #f0fdf4; color: #16a34a">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                      </div>
+                      <span class="doc-feature-tag green">Luxury Orders</span>
+                    </div>
+                    <span class="doc-term-cat">Invoicing</span>
+                  </div>
+                  <h3 class="doc-feature-title">8. Luxury Customer Invoices & Order Management</h3>
+                  <p class="doc-feature-desc">
+                    Prestigious e-commerce order management matching Farfetch, SSENSE, and Net-a-Porter standards with zero confusing internal escrow jargon.
+                  </p>
+                  <ul class="doc-feature-points">
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> A4-ready printable tax invoices with corporate headquarters, VAT ID, and itemized garment rows.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Two-column party grid: Billed & Shipped To details vs Payment (Visa •••• 4242) and Carrier AWB.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Professional `@media print` rules for instant 1-click clean PDF receipt saving.</li>
+                  </ul>
+                  <div class="doc-feature-footer">
+                    <span>Stack Integration:</span>
+                    <span class="doc-feature-tech">React · CSS @media print · Order Service</span>
+                  </div>
+                </div>
+
+                
+                <div class="doc-feature-card">
+                  <div class="doc-feature-header">
+                    <div class="doc-feature-icon-badge">
+                      <div class="doc-feature-icon-box" style="background: #faf5ff; color: #7c3aed">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+                      </div>
+                      <span class="doc-feature-tag purple">Mobile Native</span>
+                    </div>
+                    <span class="doc-term-cat">iOS / Android</span>
+                  </div>
+                  <h3 class="doc-feature-title">9. Cross-Platform Native Mobile Experience</h3>
+                  <p class="doc-feature-desc">
+                    A high-performance Flutter 3.x native mobile client delivering buttery-smooth 60fps animations and offline luxury aesthetics.
+                  </p>
+                  <ul class="doc-feature-points">
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Swipeable full-screen runway reels with sound toggles and instant product purchase overlays.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Native AR camera integration for live selfie fitting room sessions.</li>
+                    <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Bundled offline cache of 72+ high-resolution luxury garment assets for instant offline browsing.</li>
+                  </ul>
+                  <div class="doc-feature-footer">
+                    <span>Stack Integration:</span>
+                    <span class="doc-feature-tech">Flutter 3.x · Dart · Provider · Video Player</span>
+                  </div>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                <span>Master System Architecture Blueprint</span>
+              </h2>
+              <p class="doc-p">
+                End-to-end multi-tier architecture uniting client applications, edge security layers, modular domain microservices (runtime stack-agnostic), relational data persistence, and external third-party engines:
+              </p>
+
+              <div class="doc-arch-img-card">
+                <div class="doc-arch-img-topbar">
+                  <div class="doc-arch-img-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                    <span>VogueSocial – Complete Platform Topology & Core Transaction Flows</span>
+                  </div>
+                  <div class="doc-arch-img-actions">
+                    <a
+                      href="./assets/voguesocial_system_architecture.jpg"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="doc-arch-img-btn"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+                      <span>Open Full Size (4K)</span>
+                    </a>
+                  </div>
+                </div>
+
+                <div class="doc-arch-img-wrap">
+                  <img
+                    src="./assets/voguesocial_system_architecture.jpg"
+                    alt="VogueSocial Master System Architecture Diagram"
+                    class="doc-arch-img"
+                    onclick="window.open('./assets/voguesocial_system_architecture.jpg', '_blank')"
+                    style="cursor: zoom-in"
+                    title="Click to expand architecture diagram in new tab"
+                  />
+                </div>
+
+                <div class="doc-arch-img-caption">
+                  <span>
+                    <strong>Architecture Blueprint:</strong> Multi-Vendor Fashion Marketplace with AI Try-On, Escrow Payments, and Global Fulfilment.
+                  </span>
+                  <span style="font-size: 0.72rem; color: #64748b">
+                    Tip: Click the diagram to open high-resolution 4K view
+                  </span>
+                </div>
+              </div>
+
+              
+              <h3 class="doc-h3">Interactive Multi-Tier Layer Breakdown</h3>
+              <p class="doc-p">
+                Detailed view of the decoupled tiers connected through REST APIs, asynchronous webhooks, and client-side WebAssembly:
+              </p>
+
+              <div class="arch-diagram-canvas">
+                
+                <div class="arch-layer-box" style="border-left: 4px solid #0284c7">
+                  <div class="arch-layer-header">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <span>Tier 1: Client Application Layer</span>
+                  </div>
+                  <div class="arch-layer-grid">
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">Web Application (React 18 + Vite)</div>
+                      <div class="arch-pill-sub">Social Lookbook Feed, Shop Catalog, Digital Wardrobe Canvas</div>
+                    </div>
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">Mobile App (Flutter 3.x Native)</div>
+                      <div class="arch-pill-sub">iOS & Android Reels Swiper, Try-On Studio Mirror, Offline Assets</div>
+                    </div>
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">Public Storefronts (/store/:handle)</div>
+                      <div class="arch-pill-sub">5 Themed Luxury Storefronts (Minimal, Luxury, Streetwear, Modern, Boutique)</div>
+                    </div>
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">Client Wasm AI (@imgly)</div>
+                      <div class="arch-pill-sub">In-browser zero-latency garment background removal via WebGPU</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="arch-connector-line">
+                  <span>↓ REST API Requests & Static Asset CDN ↓</span>
+                </div>
+
+                
+                <div class="arch-layer-box" style="border-left: 4px solid #7c3aed">
+                  <div class="arch-layer-header">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <span>Tier 2: Edge Gateway & Security Layer</span>
+                  </div>
+                  <div class="arch-layer-grid">
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">Edge Routing & Reverse Proxy</div>
+                      <div class="arch-pill-sub">Subdomain routing (e.g. studiolabel.voguesocial.com)</div>
+                    </div>
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">Auth & Role Guard</div>
+                      <div class="arch-pill-sub">JWT sessions (Shopper, Fashion Merchant, Platform Admin)</div>
+                    </div>
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">Webhook Receiver Dispatcher</div>
+                      <div class="arch-pill-sub">HMAC verified ingestion for /webhooks/shipping & /webhooks/stripe</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="arch-connector-line">
+                  <span>↓ Core Business Domain Logic ↓</span>
+                </div>
+
+                
+                <div class="arch-layer-box" style="border-left: 4px solid #16a34a">
+                  <div class="arch-layer-header">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    <span>Tier 3: Core Domain Microservices (Runtime Agnostic)</span>
+                  </div>
+                  <div class="arch-layer-grid">
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">Escrow Settlement Engine</div>
+                      <div class="arch-pill-sub">Stripe Connect 5-Gate Payout Verifier & 95/5 Split Manager</div>
+                    </div>
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">Order & Inventory Service</div>
+                      <div class="arch-pill-sub">Multi-vendor cart grouping, variant inventory decrements</div>
+                    </div>
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">Logistics & POD Engine</div>
+                      <div class="arch-pill-sub">Regex AWB Courier Auto-Detector (DHL, FedEx, UPS, Blue Dart)</div>
+                    </div>
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">Dispute & RMA Service</div>
+                      <div class="arch-pill-sub">Dual-address return routing to merchant return_warehouse_address</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="arch-connector-line">
+                  <span>↓ Infrastructure & External Service Integrations ↓</span>
+                </div>
+
+                
+                <div class="arch-layer-box" style="border-left: 4px solid #d97706">
+                  <div class="arch-layer-header">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
+                    <span>Tier 4: GPU Inference & Financial Infrastructure</span>
+                  </div>
+                  <div class="arch-layer-grid">
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">RunPod Serverless GPU Cluster</div>
+                      <div class="arch-pill-sub">RTX 4090 / A100: DensePose + TPS Warping + Latent Diffusion UNet</div>
+                    </div>
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">Stripe Connect Vault</div>
+                      <div class="arch-pill-sub">Separate Charges & Transfers escrow holding platform account</div>
+                    </div>
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">EasyPost Universal Gateway</div>
+                      <div class="arch-pill-sub">Multi-carrier parcel tracking and Proof of Delivery (POD) webhooks</div>
+                    </div>
+                    <div class="arch-component-pill">
+                      <div class="arch-pill-name">Relational Database Layer (e.g. PostgreSQL / Supabase)</div>
+                      <div class="arch-pill-sub">Relational schema contract with JSON metadata &amp; RLS (Engine under evaluation)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><polyline points="10 13 8 15 10 17"/><polyline points="14 17 16 15 14 13"/></svg>
+                <span>Tech Stack Matrix</span>
+              </h2>
+
+              <div class="doc-callout info">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                <div class="doc-callout-body">
+                  <div class="doc-callout-title">Backend Architecture: Contract-First &amp; Stack-Agnostic</div>
+                  VogueSocial's core backend architecture is engineered contract-first around standardized OpenAPI REST interfaces, asynchronous courier/Stripe webhook ingestors, and strict relational data models. The concrete backend runtime (e.g. Node.js/TypeScript, Go, or Python) and managed database hosting provider remain under active evaluation and can be deployed to any modern cloud infrastructure without altering client or payment contracts.
+                </div>
+              </div>
+
+              <div class="doc-table-wrap">
+                <table class="doc-table">
+                  <thead>
+                    <tr>
+                      <th>Layer</th>
+                      <th>Primary Technology</th>
+                      <th>Core Dependencies</th>
+                      <th>Scope & Function</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Web Application</strong></td>
+                      <td>React 18, Vite</td>
+                      <td>React Router v6, Lucide React, Recharts</td>
+                      <td>Public social feed, shop catalog, merchant portal suite, super-admin console.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Mobile Client</strong></td>
+                      <td>Flutter 3.x (Dart)</td>
+                      <td>Provider, http, video_player, flutter_svg</td>
+                      <td>Native iOS/Android app with reels video swiper and offline lookbooks (72 images).</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Backend Service Layer</strong></td>
+                      <td><span class="doc-tag" style="background: #fef3c7; color: #92400e; border-color: #fde68a">Under Evaluation</span></td>
+                      <td>OpenAPI / REST, Webhook Receivers</td>
+                      <td>Escrow settlement engine, multi-vendor cart grouping, carrier AWB detection. Designed to strict API contracts (e.g. Node.js, Go, or Python).</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Database &amp; Persistence</strong></td>
+                      <td><span class="doc-tag" style="background: #fef3c7; color: #92400e; border-color: #fde68a">Under Evaluation</span></td>
+                      <td>Relational SQL / JSONB schema contracts</td>
+                      <td>Stores profiles, products, orders, and escrow ledger records (PostgreSQL, Supabase, or AWS RDS).</td>
+                    </tr>
+                    <tr>
+                      <td><strong>In-Browser AI</strong></td>
+                      <td>WebAssembly / WebGPU</td>
+                      <td>@imgly/background-removal</td>
+                      <td>Runs client-side background removal in &lt;1.8s without uploading images.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>GPU Try-On</strong></td>
+                      <td>Python, PyTorch</td>
+                      <td>FastAPI, CUDA, DensePose, Latent Diffusion</td>
+                      <td>High-fidelity virtual garment draping, photorealistic wrinkles, and skin blending.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Payments &amp; Escrow</strong></td>
+                      <td>Stripe Connect API</td>
+                      <td>PaymentIntents, Transfers, Radar 3DS</td>
+                      <td>Captures customer funds, holds escrow, and transfers 95% net after delivery.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Logistics Gateway</strong></td>
+                      <td>EasyPost Gateway</td>
+                      <td>Regex AWB Parser, Webhook Receiver</td>
+                      <td>Carrier detection, live tracking milestones, and Proof of Delivery (POD).</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+
+<article id="sec-how-it-works" class="doc-section ">
+              <div class="doc-article-header">
+                <div class="doc-tag-row">
+                  <span class="doc-tag blue">Core Concept</span>
+                  <span class="doc-tag">Money Flow Blueprint</span>
+                  <span class="doc-tag">Referee Model</span>
+                </div>
+                <h1 class="doc-article-title">How VogueSocial Works: The Escrow Referee & Money Flow</h1>
+                <p class="doc-article-lead">
+                  A crystal-clear, step-by-step guide explaining how customer payments work, how money is safeguarded in escrow, how merchant bank accounts connect via Stripe, and how deliveries are verified.
+                </p>
+              </div>
+
+              
+              <div class="doc-callout tip" style="border-left: 4px solid #16a34a; padding: 1.25rem 1.5rem">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                <div class="doc-callout-body">
+                  <div class="doc-callout-title" style="font-size: 1.05rem; margin-bottom: 0.4rem">
+                    The School Referee Analogy
+                  </div>
+                  <p style="margin: 0 0 0.5rem 0; line-height: 1.6; font-size: 0.92rem; color: #166534">
+                    Imagine <strong>VogueSocial</strong> is like a <strong>trusted referee</strong> at a school trading fair. If a student wants to buy a handmade jacket from another student, they don't just hand over the cash directly, because what if the jacket never arrives?
+                  </p>
+                  <p style="margin: 0; line-height: 1.6; font-size: 0.92rem; color: #166534">
+                    Instead, <strong>VogueSocial holds the money in a safe lockbox (Escrow)</strong> until the jacket is physically handed over. Only when the delivery is 100% verified does VogueSocial unlock the box, hand <strong>$95</strong> to the seller, and keep <strong>$5</strong> as a helper fee.
+                  </p>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <span>The Big Picture: How Every Dollar Moves</span>
+              </h2>
+              <p class="doc-p">
+                Follow the 4-step journey of an order—from customer checkout to final bank deposit:
+              </p>
+
+              <div class="arch-diagram-canvas">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem">
+                  
+                  <div class="arch-layer-box" style="border-top: 4px solid #0284c7">
+                    <div class="doc-node-step">Step 1: The Purchase</div>
+                    <div class="arch-pill-name">Customer Pays $100</div>
+                    <div class="doc-p" style="font-size: 0.78rem; margin-top: 6px; line-height: 1.5">
+                      John enters his card on VogueSocial. Stripe acts as the cashier, charges the card, and deposits $100 into VogueSocial's Stripe vault.
+                    </div>
+                    <span class="doc-tag" style="background: #e0f2fe; color: #0369a1">Status: PAID</span>
+                  </div>
+
+                  
+                  <div class="arch-layer-box" style="border-top: 4px solid #7c3aed">
+                    <div class="doc-node-step">Step 2: The Lockbox</div>
+                    <div class="arch-pill-name">Escrow Vault (Locked)</div>
+                    <div class="doc-p" style="font-size: 0.78rem; margin-top: 6px; line-height: 1.5">
+                      Money sits <strong>LOCKED</strong> in VogueSocial's platform vault. The merchant sees the order is confirmed, but <strong>cannot</strong> touch the cash yet.
+                    </div>
+                    <span class="doc-tag" style="background: #f3e8ff; color: #7e22ce">Escrow: HELD</span>
+                  </div>
+
+                  
+                  <div class="arch-layer-box" style="border-top: 4px solid #d97706">
+                    <div class="doc-node-step">Step 3: Delivery Proof</div>
+                    <div class="arch-pill-name">Courier Rings Doorbell</div>
+                    <div class="doc-p" style="font-size: 0.78rem; margin-top: 6px; line-height: 1.5">
+                      Merchant ships with DHL/FedEx. Courier collects John's signature on pad. DHL sends automatic webhook: <em>"Delivered to John at 2:15 PM!"</em>
+                    </div>
+                    <span class="doc-tag" style="background: #fef3c7; color: #b45309">POD: VERIFIED</span>
+                  </div>
+
+                  
+                  <div class="arch-layer-box" style="border-top: 4px solid #16a34a">
+                    <div class="doc-node-step">Step 4: Unlock & Split</div>
+                    <div class="arch-pill-name">95% Transferred to Bank</div>
+                    <div class="doc-p" style="font-size: 0.78rem; margin-top: 6px; line-height: 1.5">
+                      VogueSocial referee verifies proof. <strong>$95 (95%)</strong> transferred to merchant's bank account. <strong>$5 (5%)</strong> kept by VogueSocial.
+                    </div>
+                    <span class="doc-tag" style="background: #dcfce7; color: #15803d">Escrow: RELEASED</span>
+                  </div>
+                </div>
+
+                <div style="margin-top: 1.25rem; padding: 0.85rem 1.15rem; background: #f8fafc; border-radius: 8; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem">
+                  <div style="display: flex; align-items: center; gap: 0.65rem">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                    <div>
+                      <div style="font-size: 0.86rem; font-weight: 700; color: #0f172a">Looking for the Complete Technical Selling &amp; Escrow Architecture Diagram?</div>
+                      <div style="font-size: 0.76rem; color: #64748b">Explore the 4-tier interactive pipeline diagram mapping APIs, Stripe webhooks, and 5-gate settlement.</div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="doc-nav-btn primary"
+                    onClick={() => setActiveSection('payment-escrow')}
+                  >
+                    <span>View Architecture Diagram</span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                <span>Question 1: How does the customer's money come to VogueSocial?</span>
+              </h2>
+              <div class="doc-p">
+                <ol style="padding-left: 1.25rem; line-height: 1.7; margin: 0">
+                  <li><strong>The Customer clicks "Pay $100"</strong>: John enters his credit card or Apple Pay on VogueSocial's website or mobile app.</li>
+                  <li><strong>Stripe acts as the Cashier</strong>: VogueSocial securely asks Stripe: <em>"Please charge John's card $100 for Order #ORD-1841."</em></li>
+                  <li><strong>The Money Lands in VogueSocial's Vault</strong>: Stripe takes $100 from John's bank and deposits it directly into <strong>VogueSocial's main Stripe Platform Account</strong>.</li>
+                  <li><strong>The Money is Marked as "HELD"</strong>: Even though the cash is in VogueSocial's Stripe account, software flags that money with a label: <code>STATUS: ESCROW_HELD (Do NOT spend, this belongs to Order #ORD-1841)</code>.</li>
+                </ol>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>Question 2: What is "Escrow" and how is money held?</span>
+              </h2>
+              <div class="doc-callout info">
+                <div class="doc-callout-body">
+                  <strong>"Escrow" is simply a digital piggy bank with a lock on it.</strong>
+                  <ul style="margin: 0.5rem 0 0 1rem; padding: 0">
+                    <li>The merchant wants to make sure John actually paid before they spend hours stitching a luxury silk blouse.</li>
+                    <li>John wants to make sure the seller doesn't take his money and run away.</li>
+                    <li><strong>The Solution</strong>: VogueSocial holds the $100 in the middle. The merchant sees: <em>"Yes! John paid, the money is safely locked in the vault. You can now ship the garment."</em></li>
+                  </ul>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+                <span>Question 3: How does the Merchant connect their Stripe Account?</span>
+              </h2>
+              <p class="doc-p">
+                Before a merchant is allowed to sell on VogueSocial, they must connect their bank account using <strong>Stripe Connect</strong>:
+              </p>
+
+              <div class="arch-diagram-canvas">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap">
+                  <div class="doc-flow-node" style="min-width: 180px">
+                    <div class="doc-node-step">1. Merchant Portal</div>
+                    <div class="doc-node-title">Click "Connect Stripe"</div>
+                    <div class="doc-node-desc">Merchant clicks connect in their Payout Settings.</div>
+                  </div>
+                  <div class="doc-flow-arrow">➔</div>
+                  <div class="doc-flow-node" style="min-width: 180px">
+                    <div class="doc-node-step">2. Secure Onboarding</div>
+                    <div class="doc-node-title">Stripe Hosted KYC</div>
+                    <div class="doc-node-desc">Merchant enters Business Name, Tax ID & Bank Routing Number.</div>
+                  </div>
+                  <div class="doc-flow-arrow">➔</div>
+                  <div class="doc-flow-node" style="min-width: 180px">
+                    <div class="doc-node-step">3. Unique Mailbox ID</div>
+                    <div class="doc-node-title">acct_1Ox7Y8K92A8291</div>
+                    <div class="doc-node-desc">Stripe returns merchant ID. VogueSocial saves it in the database.</div>
+                  </div>
+                  <div class="doc-flow-arrow">➔</div>
+                  <div class="doc-flow-node" style="min-width: 180px">
+                    <div class="doc-node-step">4. Ready for Payouts</div>
+                    <div class="doc-node-title">Direct Digital Pipe</div>
+                    <div class="doc-node-desc">VogueSocial now knows the exact digital pipe to send money to!</div>
+                  </div>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="13" x="1" y="5" rx="2"/><polygon points="17 8 20 8 23 11 23 18 17 18 17 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <span>Question 4: How does VogueSocial know the order is ACTUALLY delivered?</span>
+              </h2>
+              <p class="doc-p">
+                VogueSocial does <strong>not</strong> rely on the merchant saying <em>"I shipped it, believe me!"</em> and does <strong>not</strong> make the buyer manually confirm. Instead, it talks directly to the <strong>courier companies</strong> (DHL, FedEx, UPS):
+              </p>
+
+              <div class="doc-diagram-card">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem">
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">1. Merchant Ships</div>
+                    <div class="arch-pill-name">Merchant Gets AWB</div>
+                    <div class="doc-p" style="font-size: 0.74rem; margin-top: 4px">
+                      Merchant boxes garment & gets Airway Bill from DHL: <code>#DHL928410291</code>. Enters it in portal.
+                    </div>
+                  </div>
+
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">2. Webhook Tracking</div>
+                    <div class="arch-pill-name">Automatic Courier Scans</div>
+                    <div class="doc-p" style="font-size: 0.74rem; margin-top: 4px">
+                      VogueSocial auto-detects DHL. Scans stream: <em>Paris Hub ➔ Flight ➔ Dubai Hub ➔ Out for Delivery</em>.
+                    </div>
+                  </div>
+
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">3. Proof of Delivery</div>
+                    <div class="arch-pill-name">Doorstep Signature</div>
+                    <div class="doc-p" style="font-size: 0.74rem; margin-top: 4px">
+                      DHL driver rings doorbell. John signs electronic pad. Driver collects signature.
+                    </div>
+                  </div>
+
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">4. Webhook Alert</div>
+                    <div class="arch-pill-name">POD Verified ✔</div>
+                    <div class="doc-p" style="font-size: 0.74rem; margin-top: 4px">
+                      DHL server instantly pushes webhook alert: <code>status: 'delivered', signed_by: 'John Miller'</code>. Order marked <strong>POD Verified</strong>!
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                <span>Question 5: How does the money get released and split?</span>
+              </h2>
+              <p class="doc-p">
+                Once the delivery is verified, a <strong>48-hour safety timer</strong> starts (giving John time to inspect the fabric and ensure there are no defects or ripped seams). Once the 48 hours pass with no complaints:
+              </p>
+
+              <div class="arch-diagram-canvas">
+                <div style="display: flex; align-items: center; justify-content: space-around; gap: 1rem; flex-wrap: wrap">
+                  <div class="doc-flow-node" style="text-align: center; min-width: 180px">
+                    <div class="doc-node-title">$100.00 in Vault</div>
+                    <div class="doc-node-desc">Locked in VogueSocial Escrow</div>
+                  </div>
+                  <div class="doc-flow-arrow" style="font-size: 1.2rem">➔</div>
+                  <div class="doc-flow-node" style="text-align: center; min-width: 180px; border: 1px solid #0f172a">
+                    <div class="doc-node-step">Automatic Split Rule</div>
+                    <div class="doc-node-title">5-Gate Check Passed</div>
+                    <div class="doc-node-desc">Evaluates POD & KYC</div>
+                  </div>
+                  <div class="doc-flow-arrow" style="font-size: 1.2rem">➔</div>
+                  <div style="display: flex; flex-direction: column; gap: 0.5rem; min-width: 220px">
+                    <div class="doc-flow-node" style="background: #f0fdf4; border-color: #bbf7d0">
+                      <div class="doc-node-step" style="color: #166534">Merchant Gets: $95.00 (95%)</div>
+                      <div class="doc-node-desc" style="color: #166534">Transferred to acct_... and deposited to bank (JPMorgan Chase).</div>
+                    </div>
+                    <div class="doc-flow-node" style="background: #f8fafc">
+                      <div class="doc-node-step" style="color: #0f172a">VogueSocial Keeps: $5.00 (5%)</div>
+                      <div class="doc-node-desc">Platform helper commission retained in escrow account.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Summary Table: Quick Recap</span>
+              </h2>
+              <div class="doc-table-wrap">
+                <table class="doc-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 35%">Question</th>
+                      <th>Simple Answer</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Where does customer money go first?</strong></td>
+                      <td>Into <strong>VogueSocial's main Stripe Platform Account</strong>, locked in an escrow holding vault.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Why can't the merchant take money immediately?</strong></td>
+                      <td>It is locked in escrow until the customer physically receives the order and Proof of Delivery (POD) clears.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>How is the merchant's account connected?</strong></td>
+                      <td>Through <strong>Stripe Connect</strong>. The merchant connects their bank once, and VogueSocial saves their unique <code>acct_...</code> ID.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>How does VogueSocial know the order arrived?</strong></td>
+                      <td>Via <strong>Courier Webhooks</strong> (DHL / FedEx / UPS). The moment the customer signs for the parcel, the courier sends digital Proof of Delivery (POD).</td>
+                    </tr>
+                    <tr>
+                      <td><strong>How is the money split?</strong></td>
+                      <td>Automatically: <strong>95%</strong> goes to the merchant's bank account, and <strong>5%</strong> is kept by VogueSocial.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+
+<article id="sec-payment-escrow" class="doc-section ">
+              <div class="doc-article-header">
+                <div class="doc-tag-row">
+                  <span class="doc-tag blue">Stripe Connect</span>
+                  <span class="doc-tag">Escrow Custody Vault</span>
+                  <span class="doc-tag">Separate Charges & Transfers</span>
+                  <span class="doc-tag">5-Gate Verification</span>
+                </div>
+                <h1 class="doc-article-title">Stripe Connect & Escrow Architecture</h1>
+                <p class="doc-article-lead">
+                  A comprehensive, real-world operational guide explaining how customer funds are collected, safely quarantined in platform escrow custody, and programmatically released to merchant bank accounts following verified physical delivery.
+                </p>
+              </div>
+
+              
+              <div class="doc-callout info" style="border-left: 4px solid #7c3aed; padding: 1.25rem 1.5rem; margin-bottom: 1.75rem">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <div class="doc-callout-body">
+                  <div class="doc-callout-title" style="font-size: 1.05rem; color: #581c87; margin-bottom: 0.4rem">
+                    The Core Principle: Why Escrow Exists in Luxury Commerce
+                  </div>
+                  <p style="margin: 0 0 0.5rem 0; line-height: 1.6; font-size: 0.88rem; color: #4c1d95">
+                    In traditional e-commerce (like standard Shopify stores or social media boutiques), when a customer pays $100 for a luxury garment, the money lands straight into the seller's checking account immediately. If the seller vanishes, sends polyester instead of silk, or delays shipment for 3 months, the customer is left with only one painful option: filing a 90-day bank chargeback. On the other hand, small independent merchants live in constant fear of "friendly fraud" buyers who falsely claim their package never arrived.
+                  </p>
+                  <p style="margin: 0; line-height: 1.6; font-size: 0.88rem; color: #4c1d95">
+                    <strong>VogueSocial solves this by acting as an automated digital notary:</strong> Customer money is held in an impartial, audited bank vault. The merchant can see that the customer's funds are 100% captured and guaranteed, so they can fulfill and ship with confidence. But the merchant <em>cannot touch a single penny</em> until a physical courier hands the package to the buyer and verifies Proof of Delivery.
+                  </p>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7a2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2"/></svg>
+                <span>The 3 Financial Entities: Where Does Every Cent Sit?</span>
+              </h2>
+              <p class="doc-p">
+                To understand how money moves, non-technical readers only need to understand 3 bank accounts in the Stripe ecosystem. At no point is money "lost in cyberspace"—it exists in one of these three regulated holding accounts:
+              </p>
+
+              <div class="doc-vault-grid">
+                
+                <div class="doc-vault-card customer">
+                  <div class="doc-vault-header">
+                    <div class="doc-vault-title-wrap">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                      <span class="doc-vault-title">Account 1: Customer's Bank</span>
+                    </div>
+                    <span class="doc-money-status-pill charged">Debited $100</span>
+                  </div>
+                  <div class="doc-vault-account-id">Visa / Mastercard / Apple Pay</div>
+                  <ul class="doc-vault-meta-list">
+                    <li class="doc-vault-meta-item">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span><strong>Immediate Debit:</strong> Customer's card is authorized and debited $100 at the instant of order placement.</span>
+                    </li>
+                    <li class="doc-vault-meta-item">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span><strong>Fraud Protection:</strong> Stripe Radar & 3D Secure (3DS) screen for stolen cards before funds leave the buyer's account.</span>
+                    </li>
+                    <li class="doc-vault-meta-item">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span><strong>Protection Window:</strong> Buyer has a guaranteed 48-hour post-delivery window to report sizing or quality defects.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                
+                <div class="doc-vault-card vault">
+                  <div class="doc-vault-header">
+                    <div class="doc-vault-title-wrap">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                      <span class="doc-vault-title">Account 2: VogueSocial Platform Vault</span>
+                    </div>
+                    <span class="doc-money-status-pill held">Locked in Escrow</span>
+                  </div>
+                  <div class="doc-vault-account-id">acct_platform_vogue (FDIC-Insured Master Custody)</div>
+                  <ul class="doc-vault-meta-list">
+                    <li class="doc-vault-meta-item">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span><strong>Segregated Custody:</strong> Money sits in VogueSocial's audited master Stripe account under a unique order lock: <code>transfer_group: 'order_ORD-1841'</code>.</span>
+                    </li>
+                    <li class="doc-vault-meta-item">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span><strong>Can VogueSocial spend it?</strong> <strong>NO.</strong> It is strictly earmarked for this order and cannot be diverted to platform expenses.</span>
+                    </li>
+                    <li class="doc-vault-meta-item">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span><strong>Can the merchant withdraw it?</strong> <strong>NO.</strong> The merchant has zero access to this vault balance until delivery clears.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                
+                <div class="doc-vault-card merchant">
+                  <div class="doc-vault-header">
+                    <div class="doc-vault-title-wrap">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7a2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2"/></svg>
+                      <span class="doc-vault-title">Account 3: Merchant's Connected Bank</span>
+                    </div>
+                    <span class="doc-money-status-pill released">Receives $95.00</span>
+                  </div>
+                  <div class="doc-vault-account-id">acct_1Ox7Y8K92A8291 (Merchant Connected Account)</div>
+                  <ul class="doc-vault-meta-list">
+                    <li class="doc-vault-meta-item">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span><strong>Balance at Checkout:</strong> <strong>$0.00</strong>. The merchant sees the order is confirmed and funded, but their bank balance remains untouched.</span>
+                    </li>
+                    <li class="doc-vault-meta-item">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span><strong>Automated Transfer:</strong> After delivery is verified and the 48-hour window closes, $95.00 (95%) is transferred into this account.</span>
+                    </li>
+                    <li class="doc-vault-meta-item">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span><strong>Direct Bank Payout:</strong> Stripe automatically executes a direct ACH or SEPA deposit straight into the merchant's local checking account (Chase, Barclays, etc.).</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                <span>Merchant Selling &amp; Payment Flow Architecture Diagram</span>
+              </h2>
+              <p class="doc-p">
+                The comprehensive multi-tier architectural diagram below maps the complete lifecycle—from merchant onboarding and autonomous storefront setup, through customer virtual try-on and checkout, to escrow custody, tracked courier delivery, 5-gate compliance validation, and direct bank settlement:
+              </p>
+
+              
+              <div class="doc-mflow-container">
+                <div class="doc-mflow-topbar">
+                  <div class="doc-mflow-title-group">
+                    <div class="doc-mflow-icon-wrap">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                    </div>
+                    <div>
+                      <h3 class="doc-mflow-title">End-to-End Architecture: Merchant Selling &amp; Escrow Payment Flow</h3>
+                      <p class="doc-mflow-sub">Decoupled transaction pipeline connecting Merchant Operations, Buyer Discovery, Platform Vault, and Stripe Banking</p>
+                    </div>
+                  </div>
+
+                  <div class="doc-mflow-legend">
+                    <div class="doc-mflow-legend-item">
+                      <span class="doc-mflow-dot" style="background: #0284c7" />
+                      <span>1. Merchant Selling Setup</span>
+                    </div>
+                    <div class="doc-mflow-legend-item">
+                      <span class="doc-mflow-dot" style="background: #7c3aed" />
+                      <span>2. Buyer Order &amp; Checkout</span>
+                    </div>
+                    <div class="doc-mflow-legend-item">
+                      <span class="doc-mflow-dot" style="background: #d97706" />
+                      <span>3. Escrow Custody &amp; Fulfillment</span>
+                    </div>
+                    <div class="doc-mflow-legend-item">
+                      <span class="doc-mflow-dot" style="background: #16a34a" />
+                      <span>4. 5-Gate Settlement &amp; Bank Payout</span>
+                    </div>
+                  </div>
+                </div>
+
+                
+                <div class="doc-mflow-grid">
+                  
+                  <div class="doc-mflow-col">
+                    <div class="doc-mflow-col-header" style="border-left: 3px solid #0284c7">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7a2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1-2 2 2 2 0 0 1-2-2"/></svg>
+                      <span>1. Merchant Selling Setup</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 1</span>
+                        <span class="doc-mflow-data-pill" style="background: #e0f2fe; color: #0369a1">Storefront</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Autonomous Website &amp; Themes</h4>
+                      <p class="doc-mflow-step-text">
+                        Merchant configures branded luxury storefront (Minimal, Luxury, Streetwear, Modern, Boutique) and connects custom domain (<code>shop.brand.com</code>).
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">POST /api/merchant/website</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 2</span>
+                        <span class="doc-mflow-data-pill" style="background: #e0f2fe; color: #0369a1">Catalog</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Garments &amp; AI Try-On Ingestion</h4>
+                      <p class="doc-mflow-step-text">
+                        Merchant uploads garment photography, sizes, inventory levels, and transparent cutouts into the virtual try-on fitting room index.
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">POST /api/merchant/products</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 3</span>
+                        <span class="doc-mflow-data-pill" style="background: #e0f2fe; color: #0369a1">KYB Compliance</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Business Verification (KYC/KYB)</h4>
+                      <p class="doc-mflow-step-text">
+                        Merchant submits legal business name, SIREN/EIN, registered address, return warehouse address, and compliance documents (Kbis, Photo ID, Tax Cert).
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">POST /api/merchant/verification</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 4</span>
+                        <span class="doc-mflow-data-pill" style="background: #e0f2fe; color: #0369a1">Bank Connection</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Stripe Connect Account Link</h4>
+                      <p class="doc-mflow-step-text">
+                        Merchant connects commercial checking account via Stripe Connect. System records payout pipe ID (e.g. <code>acct_1Ox7Y8K92A8291</code>).
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">POST /v1/accounts (Connect)</span>
+                    </div>
+                  </div>
+
+                  
+                  <div class="doc-mflow-col">
+                    <div class="doc-mflow-col-header" style="border-left: 3px solid #7c3aed">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                      <span>2. Buyer Discovery &amp; Order</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 5</span>
+                        <span class="doc-mflow-data-pill" style="background: #f3e8ff; color: #7e22ce">Discovery</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Social Feed &amp; Storefront Browse</h4>
+                      <p class="doc-mflow-step-text">
+                        Customer discovers garment through VogueSocial Lookbook Feed or navigates directly to merchant's custom branded storefront.
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">GET /store/:handle</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 6</span>
+                        <span class="doc-mflow-data-pill" style="background: #f3e8ff; color: #7e22ce">Fitting Room</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Real-Time AI Virtual Try-On</h4>
+                      <p class="doc-mflow-step-text">
+                        Shopper triggers instant fitting room simulation. Client-side Wasm and GPU models warp garment onto user silhouette in under 1.8 seconds.
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">POST /api/tryon/generate</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 7</span>
+                        <span class="doc-mflow-data-pill" style="background: #f3e8ff; color: #7e22ce">Checkout</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Payment Intent Authorization</h4>
+                      <p class="doc-mflow-step-text">
+                        Buyer completes checkout ($100.00). Stripe authorizes card, runs 3D Secure fraud screen, and captures customer payment.
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">POST /v1/payment_intents</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 8</span>
+                        <span class="doc-mflow-money-pill" style="background: #e0f2fe; color: #0369a1">-$100.00 Debited</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Buyer Bank Card Charged</h4>
+                      <p class="doc-mflow-step-text">
+                        Customer bank account debited $100.00. Funds transfer immediately to VogueSocial Master Cashier with 48h inspection guarantee.
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">charge.succeeded</span>
+                    </div>
+                  </div>
+
+                  
+                  <div class="doc-mflow-col">
+                    <div class="doc-mflow-col-header" style="border-left: 3px solid #d97706">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                      <span>3. Escrow Vault &amp; Logistics</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 9</span>
+                        <span class="doc-mflow-money-pill" style="background: #f3e8ff; color: #7e22ce">+$100 Vaulted</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Escrow Segregated Lock</h4>
+                      <p class="doc-mflow-step-text">
+                        Money locked in Master Vault (<code>acct_platform_vogue</code>) earmarked as <code>transfer_group: 'order_ORD-1841'</code>. Merchant cannot withdraw yet.
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">status: 'escrow_held'</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 10</span>
+                        <span class="doc-mflow-data-pill" style="background: #fef3c7; color: #b45309">Fulfillment</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Merchant Dispatches Garment</h4>
+                      <p class="doc-mflow-step-text">
+                        Merchant receives funded order notice, stitches &amp; packs the garment, books courier (DHL/FedEx/UPS), and enters Airway Bill tracking number.
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">POST /api/merchant/orders/fulfill</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 11</span>
+                        <span class="doc-mflow-data-pill" style="background: #fef3c7; color: #b45309">Transit Scans</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Regex Carrier Auto-Tracking</h4>
+                      <p class="doc-mflow-step-text">
+                        System auto-detects carrier from AWB format. Webhooks monitor package transit from regional sorting hub to flight departure to destination depot.
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">easyPost / carrier webhooks</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 12</span>
+                        <span class="doc-mflow-data-pill" style="background: #fef3c7; color: #b45309">POD Signature</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Courier Delivery &amp; POD Webhook</h4>
+                      <p class="doc-mflow-step-text">
+                        Courier rings doorbell, collects customer electronic signature on pad. Courier webhook pushes <code>status: 'delivered'</code> and <code>signed_by: 'John'</code>.
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">status: 'delivered_pod_verified'</span>
+                    </div>
+                  </div>
+
+                  
+                  <div class="doc-mflow-col">
+                    <div class="doc-mflow-col-header" style="border-left: 3px solid #16a34a">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span>4. 5-Gate Settlement</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 13</span>
+                        <span class="doc-mflow-data-pill" style="background: #ecfdf5; color: #065f46">48hr Timer</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Buyer Inspection Window</h4>
+                      <p class="doc-mflow-step-text">
+                        48-hour inspection timer activates upon delivery signature. Customer has guaranteed window to inspect fabric quality and sizing fit.
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">timer: 48h (zero disputes)</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 14</span>
+                        <span class="doc-mflow-data-pill" style="background: #ecfdf5; color: #065f46">Compliance Gates</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">5-Gate Automated Rule Check</h4>
+                      <p class="doc-mflow-step-text">
+                        Escrow referee validates: 1) POD signature authenticated; 2) Merchant KYB verified; 3) 48h expired with 0 RMAs; 4) Zero payout holds; 5) 5% fee calculated.
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">eval(eligibility_gates) === PASS</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 15</span>
+                        <span class="doc-mflow-money-pill" style="background: #dcfce7; color: #15803d">+$95.00 Transfer</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Stripe Connect Transfer</h4>
+                      <p class="doc-mflow-step-text">
+                        VogueSocial referee tells Stripe: Transfer $95.00 (95%) from Master Vault into merchant's account (<code>acct_1Ox7Y8K92A8291</code>). Platform retains $5.00 (5%).
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">POST /v1/transfers</span>
+                    </div>
+
+                    <div class="doc-mflow-step-card">
+                      <div class="doc-mflow-step-badge-row">
+                        <span class="doc-mflow-step-num">Step 16</span>
+                        <span class="doc-mflow-money-pill" style="background: #dcfce7; color: #15803d">Bank ACH Paid</span>
+                      </div>
+                      <h4 class="doc-mflow-step-name">Direct Commercial Bank Payout</h4>
+                      <p class="doc-mflow-step-text">
+                        Stripe executes automated daily clearing sweep (ACH / SEPA) directly depositing $95.00 into merchant's local business checking account (JPMorgan Chase).
+                      </p>
+                      <span class="doc-mflow-endpoint-chip">payout.paid (Chase •••• 4192)</span>
+                    </div>
+                  </div>
+                </div>
+
+                
+                <div class="doc-mflow-summary-bar">
+                  <div class="doc-mflow-summary-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                    <div>
+                      <div class="doc-mflow-summary-label">Order Gross (Customer Card)</div>
+                      <div class="doc-mflow-summary-val" style="color: #0369a1">$100.00 USD</div>
+                    </div>
+                  </div>
+
+                  <div class="doc-mflow-summary-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <div>
+                      <div class="doc-mflow-summary-label">Escrow Custody Vault</div>
+                      <div class="doc-mflow-summary-val" style="color: #7e22ce">100% Segregated &amp; Locked</div>
+                    </div>
+                  </div>
+
+                  <div class="doc-mflow-summary-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="13" x="1" y="5" rx="2"/><polygon points="17 8 20 8 23 11 23 18 17 18 17 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                    <div>
+                      <div class="doc-mflow-summary-label">Release Trigger</div>
+                      <div class="doc-mflow-summary-val" style="color: #b45309">Courier POD Signature + 48h Window</div>
+                    </div>
+                  </div>
+
+                  <div class="doc-mflow-summary-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <div>
+                      <div class="doc-mflow-summary-label">Merchant Net Bank Deposit</div>
+                      <div class="doc-mflow-summary-val" style="color: #15803d">$95.00 USD (95%)</div>
+                    </div>
+                  </div>
+
+                  <div class="doc-mflow-summary-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    <div>
+                      <div class="doc-mflow-summary-label">VogueSocial Helper Fee</div>
+                      <div class="doc-mflow-summary-val">$5.00 USD (5%)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <span>The Real-World Walkthrough: The Life of a $100 Garment Order</span>
+              </h2>
+              <p class="doc-p">
+                Let's follow a real-world example from start to finish. Sarah in New York buys a <strong>$100.00 Silk Blouse</strong> from Studio Label Paris on VogueSocial. Here is exactly where the money sits and what happens at every second:
+              </p>
+
+              <div class="doc-timeline-wrap">
+                
+                <div class="doc-phase-card">
+                  <div class="doc-phase-topbar">
+                    <div class="doc-phase-badge">Phase 1: The Purchase & Vault Lock</div>
+                    <div class="doc-phase-time">Timestamp: Day 1, 10:00:00 AM</div>
+                  </div>
+                  <div class="doc-p" style="margin: 0 0 0.75rem 0">
+                    Sarah enters her card and clicks "Pay $100". VogueSocial instructs Stripe: <em>"Charge Sarah's card $100, deposit it into VogueSocial's Master Account, and tag it with Order ID ORD-1841."</em>
+                  </div>
+                  <div class="doc-money-tracker-box">
+                    <div class="doc-money-tracker-item">
+                      <div class="doc-money-tracker-label">Sarah's Card</div>
+                      <div class="doc-money-tracker-value" style="color: #0369a1">-$100.00 (Charged)</div>
+                    </div>
+                    <div class="doc-money-tracker-item">
+                      <div class="doc-money-tracker-label">VogueSocial Escrow Vault</div>
+                      <div class="doc-money-tracker-value" style="color: #7c3aed">+$100.00 (LOCKED)</div>
+                    </div>
+                    <div class="doc-money-tracker-item">
+                      <div class="doc-money-tracker-label">Studio Label Paris Bank</div>
+                      <div class="doc-money-tracker-value" style="color: #64748b">$0.00 (Untouched)</div>
+                    </div>
+                  </div>
+                  <div class="doc-p" style="font-size: 0.8rem; color: #475569; margin: 0">
+                    <strong>What the Merchant sees:</strong> Studio Label Paris logs into their Merchant Dashboard. They see: <em>"New Order #ORD-1841: $100 Silk Blouse — ESCROW FUNDED & GUARANTEED"</em>. The merchant knows the buyer has paid and cannot cancel on a whim, so they can safely begin tailoring the blouse.
+                  </div>
+                </div>
+
+                
+                <div class="doc-phase-card">
+                  <div class="doc-phase-topbar">
+                    <div class="doc-phase-badge">Phase 2: Tailoring & Tracked Dispatch</div>
+                    <div class="doc-phase-time">Timestamp: Day 2, 02:30:00 PM</div>
+                  </div>
+                  <div class="doc-p" style="margin: 0 0 0.75rem 0">
+                    Studio Label Paris finishes tailoring the blouse, wraps it in silk packaging, and hands it to DHL Express. The merchant inputs the Airway Bill into VogueSocial: <code>#DHL-8291048291</code>.
+                  </div>
+                  <div class="doc-money-tracker-box">
+                    <div class="doc-money-tracker-item">
+                      <div class="doc-money-tracker-label">Where is the $100?</div>
+                      <div class="doc-money-tracker-value" style="color: #7c3aed">Still in VogueSocial's Vault</div>
+                    </div>
+                    <div class="doc-money-tracker-item">
+                      <div class="doc-money-tracker-label">Escrow Lock Status</div>
+                      <div class="doc-money-tracker-value" style="color: #b45309">IN_TRANSIT (Frozen)</div>
+                    </div>
+                    <div class="doc-money-tracker-item">
+                      <div class="doc-money-tracker-label">Logistics Tracking</div>
+                      <div class="doc-money-tracker-value" style="color: #0f172a">Paris CDG ➔ JFK Airport</div>
+                    </div>
+                  </div>
+                  <div class="doc-p" style="font-size: 0.8rem; color: #475569; margin: 0">
+                    <strong>Why this matters:</strong> Even though the merchant has spent time and material shipping the garment, they still cannot withdraw the money. This completely prevents exit scams where fraudulent sellers print a fake shipping label and run off with the cash.
+                  </div>
+                </div>
+
+                
+                <div class="doc-phase-card">
+                  <div class="doc-phase-topbar">
+                    <div class="doc-phase-badge">Phase 3: The Courier Handshake (Proof of Delivery)</div>
+                    <div class="doc-phase-time">Timestamp: Day 4, 11:15:22 AM</div>
+                  </div>
+                  <div class="doc-p" style="margin: 0 0 0.75rem 0">
+                    The DHL van arrives at Sarah's apartment in Manhattan. The courier rings the bell, Sarah opens the door, and signs her name on the electronic scanner. The courier taps <em>"DELIVERED"</em>.
+                  </div>
+                  <div class="doc-callout tip" style="padding: 0.85rem 1rem; margin: 0.75rem 0">
+                    <div class="doc-callout-body" style="font-size: 0.82rem; color: #166534">
+                      <strong>The Digital-Physical Handshake:</strong> Exactly 1.8 seconds after Sarah signs the pad, DHL's server fires an encrypted webhook notification to VogueSocial's webhook listener:
+                      <div style="font-family: monospace; background: #ffffff; padding: 0.5rem; border-radius: 4px; margin-top: 0.4rem; border: 1px solid #bbf7d0; color: #0f172a">
+                        POST /api/webhooks/logistics ➔ status: 'delivered', signed_by: 'Sarah Jenkins', carrier: 'DHL Express', time: '2026-10-24T15:15:22Z'
+                      </div>
+                    </div>
+                  </div>
+                  <div class="doc-p" style="font-size: 0.8rem; color: #475569; margin: 0">
+                    VogueSocial's system updates Order #ORD-1841: <code>pod_verified = true</code>. The <strong>48-hour buyer protection timer</strong> starts automatically.
+                  </div>
+                </div>
+
+                
+                <div class="doc-phase-card">
+                  <div class="doc-phase-topbar">
+                    <div class="doc-phase-badge">Phase 4: The 48-Hour Inspection Window</div>
+                    <div class="doc-phase-time">Timestamp: Day 4 to Day 6 (48 Hours)</div>
+                  </div>
+                  <div class="doc-p" style="margin: 0 0 0.75rem 0">
+                    Sarah opens the box, inspects the silk, tries on the blouse in her mirror, and checks the seams. She receives an SMS and push notification from VogueSocial:
+                  </div>
+                  <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.85rem 1.25rem; border-radius: 8px; font-size: 0.82rem; color: #334155; font-style: italic; margin-bottom: 0.75rem">
+                    "Your Studio Label Paris blouse has arrived! You have 48 hours to inspect sizing and craftsmanship. If anything is wrong, click 'Report an Issue' in your order menu."
+                  </div>
+                  <div class="doc-p" style="font-size: 0.8rem; color: #475569; margin: 0">
+                    During these 48 hours, the $100 remains in VogueSocial's escrow vault. If Sarah finds a ripped seam or fake material, she can freeze the order with one tap before the seller receives a single dime.
+                  </div>
+                </div>
+
+                
+                <div class="doc-phase-card" style="border: 2px solid #16a34a">
+                  <div class="doc-phase-topbar">
+                    <div class="doc-phase-badge" style="background: #16a34a">Phase 5: Telling Stripe to Release & Split the Funds</div>
+                    <div class="doc-phase-time">Timestamp: Day 6, 11:15:23 AM (48h Expired)</div>
+                  </div>
+                  <div class="doc-p" style="margin: 0 0 0.75rem 0">
+                    Sarah loved the blouse and did not open any dispute. Exactly 48 hours after delivery, VogueSocial's automated Escrow Engine awakens.
+                  </div>
+                  <div class="doc-p" style="margin: 0 0 0.75rem 0; font-weight: 600; color: #0f172a">
+                    Here is how VogueSocial instructs Stripe:
+                  </div>
+                  <ol style="padding-left: 1.25rem; margin: 0 0 1rem 0; font-size: 0.82rem; line-height: 1.6; color: #334155">
+                    <li><strong>Step A: Automated Gate Audit:</strong> VogueSocial verifies that Payment Succeeded, POD is Confirmed, No Dispute is Active, and Merchant KYC is Valid.</li>
+                    <li><strong>Step B: The Command to Stripe:</strong> VogueSocial's server sends a cryptographic API call to Stripe saying: <em>"Take $95.00 out of our vault and transfer it into Studio Label Paris's connected account (acct_1Ox7Y8K92A8291) under group order_ORD-1841."</em></li>
+                    <li><strong>Step C: Instant Split:</strong> Stripe executes the transfer within 200 milliseconds. <strong>$95.00 (95%)</strong> lands in the merchant's Stripe balance, and <strong>$5.00 (5%)</strong> remains in VogueSocial's account as the marketplace commission.</li>
+                    <li><strong>Step D: Local Bank Deposit:</strong> Stripe immediately triggers an automated ACH/SEPA payout that deposits the $95.00 directly into Studio Label Paris's commercial bank account (e.g. BNP Paribas or JPMorgan Chase).</li>
+                  </ol>
+                  <div class="doc-money-tracker-box" style="background: #f0fdf4; border: 1px solid #bbf7d0">
+                    <div class="doc-money-tracker-item">
+                      <div class="doc-money-tracker-label">Studio Label Paris Payout</div>
+                      <div class="doc-money-tracker-value" style="color: #16a34a">$95.00 (95% Net to Bank)</div>
+                    </div>
+                    <div class="doc-money-tracker-item">
+                      <div class="doc-money-tracker-label">VogueSocial Platform Revenue</div>
+                      <div class="doc-money-tracker-value" style="color: #0f172a">$5.00 (5% Commission)</div>
+                    </div>
+                    <div class="doc-money-tracker-item">
+                      <div class="doc-money-tracker-label">Final Order Status</div>
+                      <div class="doc-money-tracker-value" style="color: #16a34a">ESCROW_RELEASED ✔</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                <span>The Safety Shield: What Happens When Things Go Wrong?</span>
+              </h2>
+              <p class="doc-p">
+                Non-technical executives and buyers always ask: <em>"Why do we need this complex escrow system? Why not just pay the merchant immediately like Shopify?"</em> Here are the 3 real-world fraud and disaster scenarios that VogueSocial's Escrow completely eliminates:
+              </p>
+
+              <div class="doc-scenario-grid">
+                
+                <div class="doc-scenario-box">
+                  <div class="doc-scenario-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <span>Scenario 1: Defective / Fake Garment</span>
+                  </div>
+                  <div class="doc-scenario-body">
+                    <strong>What happened:</strong> The merchant sent a damaged jacket or counterfeit fabric.<br /><br />
+                    <strong>Traditional E-Commerce:</strong> The seller already has your $100 in their pocket. You must email them, wait for replies, argue, or beg your credit card company for a chargeback (takes 60–90 days).<br /><br />
+                    <strong>With VogueSocial Escrow:</strong> Because the $100 is still sitting in VogueSocial's vault, you tap "Report Defect" within 48h. The escrow release freezes instantly. If verified, VogueSocial issues a <strong>1-click 100% refund</strong> directly back to your card. The rogue seller never touches a cent.
+                  </div>
+                </div>
+
+                
+                <div class="doc-scenario-box">
+                  <div class="doc-scenario-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <span>Scenario 2: The "Ghost" Merchant</span>
+                  </div>
+                  <div class="doc-scenario-body">
+                    <strong>What happened:</strong> A seller takes the order but never ships the package.<br /><br />
+                    <strong>Traditional E-Commerce:</strong> The fraudulent seller closes their bank account, deletes their store, and disappears with the buyer's money.<br /><br />
+                    <strong>With VogueSocial Escrow:</strong> If no valid tracked courier scan appears from DHL/FedEx within 5 business days, the order expires automatically. VogueSocial voids the transaction and returns 100% of the funds to the customer. Zero fraud loss.
+                  </div>
+                </div>
+
+                
+                <div class="doc-scenario-box safe">
+                  <div class="doc-scenario-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    <span>Scenario 3: Dishonest Buyer ("I Never Got It")</span>
+                  </div>
+                  <div class="doc-scenario-body">
+                    <strong>What happened:</strong> A dishonest shopper receives the garment and tries to claim: <em>"The package was never delivered, give me my money back!"</em><br /><br />
+                    <strong>Traditional E-Commerce:</strong> Small independent artisans get crushed by card networks who almost always side with the cardholder in disputes.<br /><br />
+                    <strong>With VogueSocial Escrow:</strong> VogueSocial pulls the courier's GPS-stamped Proof of Delivery (POD) record, exact timestamp, and doorstep signature from DHL/FedEx. The false claim is immediately rebuffed, and the artisan receives their full $95 payout without penalty.
+                  </div>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                <span>Side-by-Side Comparison: Traditional Marketplaces vs. VogueSocial Escrow</span>
+              </h2>
+              <div class="doc-table-wrap">
+                <table class="doc-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 22%">Dimension</th>
+                      <th style="width: 38%">Traditional E-Commerce (Shopify / Direct / Etsy)</th>
+                      <th style="width: 40%">VogueSocial Escrow Architecture</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Where Buyer Money Goes</strong></td>
+                      <td>Transferred straight into the seller's merchant bank account immediately at checkout.</td>
+                      <td><strong style="color: #7c3aed">Quarantined in VogueSocial's Stripe Vault</strong> under an encrypted order lockbox.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>When Seller Gets Paid</strong></td>
+                      <td>Day 1 (before the dress is even cut or shipped).</td>
+                      <td><strong style="color: #16a34a">After Delivery (Day 6)</strong>, following courier Proof of Delivery + 48h inspection.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Customer Refund Speed</strong></td>
+                      <td>Weeks of back-and-forth emails, or 60–90 days for a bank chargeback dispute.</td>
+                      <td><strong>Instant (1-Click)</strong> directly from the vault because the merchant never touched the funds.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Protection for Artisans</strong></td>
+                      <td>Artisans lose dispute fees ($15–$30/chargeback) when buyers file bogus claims.</td>
+                      <td><strong>100% Protected:</strong> Courier signature & GPS POD automatically defends against friendly fraud.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Platform Fee Deduction</strong></td>
+                      <td>Clunky monthly invoicing or complex end-of-month reconciliations.</td>
+                      <td><strong>Automated Split:</strong> 95% wired to merchant, 5% kept by platform in the exact same microsecond.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                <span>The 5-Step Payout Verification Gates</span>
+              </h2>
+              <p class="doc-p">
+                To guarantee zero chargeback liability and eliminate fulfillment fraud, the escrow engine evaluates 5 automated safety gates before releasing funds:
+              </p>
+
+              <div class="doc-table-wrap">
+                <table class="doc-table">
+                  <thead>
+                    <tr>
+                      <th>Gate #</th>
+                      <th>Verification Gate</th>
+                      <th>Technical Condition</th>
+                      <th>Operational Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Gate 1</strong></td>
+                      <td>Payment Settled</td>
+                      <td><code>paymentIntent.status === 'succeeded'</code></td>
+                      <td>Guarantees buyer funds were captured without card settlement failure.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Gate 2</strong></td>
+                      <td>Carrier POD Confirmed</td>
+                      <td><code>order.pod_verified === true && status === 'delivered'</code></td>
+                      <td>Carrier webhook confirms recipient signature and geolocation match.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Gate 3</strong></td>
+                      <td>Order Active</td>
+                      <td><code>status !== 'cancelled' && escrow_status !== 'refunded'</code></td>
+                      <td>Verifies the order was not cancelled by the buyer or refunded early.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Gate 4</strong></td>
+                      <td>No Open Dispute</td>
+                      <td><code>dispute_status !== 'open'</code></td>
+                      <td>Ensures no credit card chargeback or sizing RMA claim is active during 48h window.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Gate 5</strong></td>
+                      <td>Merchant KYC Verified</td>
+                      <td><code>merchant.kyc_status === 'verified'</code></td>
+                      <td>Ensures merchant has valid Stripe Connected bank account credentials for direct deposit.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+                <span>The Software Contract: How the Server Tells Stripe to Transfer Funds</span>
+              </h2>
+              <p class="doc-p">
+                For developers, investors, and technical auditors, below is the reference implementation contract and API disbursement payload (illustrated in TypeScript via the Stripe SDK) executed when all 5 safety gates pass. Because the backend is designed contract-first, this domain logic translates 1:1 regardless of whether the final backend runtime is deployed on Node.js, Go, Python, or Java. Notice the <code>idempotencyKey</code>—this guarantees that even if a server restarts or a network cable glitches, <strong>the payout can never be paid twice</strong>:
+              </p>
+
+              <div class="doc-code-block">
+                <div class="doc-code-header">
+                  <span>POST /v1/transfers (Stripe API - Separate Charges & Transfers)</span>
+                  <button type="button" class="doc-copy-btn" onclick="copyCodeBlock(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg><span>Copy</span></button>
+                </div>
+                <pre class="doc-code-body">// ============================================================================
+// VOGUESOCIAL ESCROW DISBURSEMENT ENGINE
+// Runs automatically after 48-hour delivery inspection window clears
+// ============================================================================
+const transfer = await stripe.transfers.create({
+  // 1. Exactly 95% of the $100.00 order ($95.00 represented in cents)
+  amount: 9500, 
+  currency: 'usd',
+
+  // 2. The Merchant's unique Stripe Connected Account ID (linked to their bank)
+  destination: merchant.stripe_account_id, // e.g. 'acct_1Ox7Y8K92A8291'
+
+  // 3. Earmark to this specific customer order (audit trail & accounting)
+  transfer_group: 'order_ORD-1841',
+
+  // 4. Source transaction that funded this transfer from our escrow vault
+  source_transaction: order.stripe_charge_id,
+
+  // 5. Merchant-facing ledger description on their bank statement
+  description: 'Payout for Order #ORD-1841 - Studio Label Paris'
+}, {
+  // CRITICAL: Prevents double-payouts even if network retries occur
+  idempotencyKey: 'release_escrow_ORD-1841'
+});</pre>
+              </div>
+            </article>
+
+<article id="sec-logistics-delivery" class="doc-section ">
+              <div class="doc-article-header">
+                <div class="doc-tag-row">
+                  <span class="doc-tag blue">Logistics Architecture</span>
+                  <span class="doc-tag">Proof of Delivery (POD)</span>
+                  <span class="doc-tag">Carrier Auto-Detection</span>
+                </div>
+                <h1 class="doc-article-title">Shipping & Delivery (POD) Architecture</h1>
+                <p class="doc-article-lead">
+                  Multi-vendor direct merchant fulfillment, automated courier detection from Airway Bills (AWB), real-time delivery webhooks, and reverse logistics return warehouse routing.
+                </p>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="13" x="1" y="5" rx="2"/><polygon points="17 8 20 8 23 11 23 18 17 18 17 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <span>Logistics & POD Verification Architecture Diagram</span>
+              </h2>
+
+              <div class="arch-diagram-canvas">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem">
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">1. Merchant Packs Garment</div>
+                    <div class="arch-pill-name">Fulfillment Modal</div>
+                    <div class="doc-p" style="font-size: 0.75rem; margin-top: 4px">
+                      Merchant packs garment and enters tracking code (e.g. <code>FX28301948IN</code>).
+                    </div>
+                  </div>
+
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">2. Regex Auto-Detection</div>
+                    <div class="arch-pill-name">Courier Identified</div>
+                    <div class="doc-p" style="font-size: 0.75rem; margin-top: 4px">
+                      Regex pattern matches <strong>FedEx</strong> instantly. Tracking registered with EasyPost gateway.
+                    </div>
+                  </div>
+
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">3. In-Transit Milestone</div>
+                    <div class="arch-pill-name">Hub Scans Sync</div>
+                    <div class="doc-p" style="font-size: 0.75rem; margin-top: 4px">
+                      Buyer notified. Scans stream: <code>in_transit</code> ➔ <code>out_for_delivery</code>.
+                    </div>
+                  </div>
+
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">4. Doorstep Signature</div>
+                    <div class="arch-pill-name">Webhook Confirms POD</div>
+                    <div class="doc-p" style="font-size: 0.75rem; margin-top: 4px">
+                      Driver collects signature. Webhook pushes <code>delivered</code> status to VogueSocial.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <span>Live AWB Carrier Auto-Detector</span>
+              </h2>
+              <p class="doc-p">
+                Test the live pattern detector used in the merchant fulfillment modal:
+              </p>
+
+              <div class="doc-diagram-card">
+                <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem">
+                  <input
+                    type="text"
+                    id="test-awb-input" value="FX28301948IN"
+                    placeholder="Enter tracking number (e.g. FX28301948IN, 1Z999999, 8492019482)"
+                    style="flex: 1; background: #ffffff; border: 1px solid #cbd5e1; padding: 0.65rem 0.85rem; border-radius: 6px; color: #0f172a; font-family: monospace; font-size: 0.9rem"
+                  />
+                  <div
+                    style="padding: 0.65rem 1.15rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; color: #166534; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 0.45rem"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Courier: <span id="carrier-result-text">FedEx</span></span>
+                  </div>
+                </div>
+                <span style="font-size: 0.74rem; color: #64748b">
+                  Test strings: <code>1Z9999999999999999</code> (UPS), <code>9400100000000000000000</code> (USPS), <code>FX28301948IN</code> (FedEx), or <code>8492019482</code> (DHL Express).
+                </span>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                <span>Dual Address Routing: Legal vs. Return Warehouse</span>
+              </h2>
+              <div class="doc-callout info">
+                <div class="doc-callout-body">
+                  Each brand profile stores two distinct physical addresses in the database:
+                  <ul style="margin: 0.5rem 0 0 1rem; padding: 0">
+                    <li><strong><code>legal_address</code></strong>: The corporate registered entity address used for Stripe KYC, tax filings, and legal invoicing.</li>
+                    <li><strong><code>return_warehouse_address</code></strong>: The actual physical merchant/studio address where returned garments are routed for tag inspection and restock.</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+
+<article id="sec-ai-tryon" class="doc-section ">
+              <div class="doc-article-header">
+                <div class="doc-tag-row">
+                  <span class="doc-tag blue">Computer Vision</span>
+                  <span class="doc-tag">RunPod Serverless</span>
+                  <span class="doc-tag">WebGPU / Wasm</span>
+                </div>
+                <h1 class="doc-article-title">AI Virtual Try-On Pipeline</h1>
+                <p class="doc-article-lead">
+                  End-to-end computer vision architecture: in-browser garment cutout via WebAssembly, followed by serverless GPU human parsing, TPS warping, and diffusion texture synthesis.
+                </p>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
+                <span>Computer Vision Pipeline Architecture Diagram</span>
+              </h2>
+
+              <div class="arch-diagram-canvas">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem">
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">1. Client Preprocessing</div>
+                    <div class="arch-pill-name">Wasm Background Cutout</div>
+                    <div class="doc-p" style="font-size: 0.75rem; margin-top: 4px">
+                      <code>@imgly/background-removal</code> runs locally via WebGPU, removing garment background in &lt;1.8s.
+                    </div>
+                  </div>
+
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">2. DensePose Parsing</div>
+                    <div class="arch-pill-name">Human Keypoint Mesh</div>
+                    <div class="doc-p" style="font-size: 0.75rem; margin-top: 4px">
+                      Maps user body pixels to 3D surface mesh keypoints and generates agnostic clothing mask.
+                    </div>
+                  </div>
+
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">3. TPS Warping</div>
+                    <div class="arch-pill-name">Geometric Deformation</div>
+                    <div class="doc-p" style="font-size: 0.75rem; margin-top: 4px">
+                      Thin-Plate Spline warps 2D clothing image to conform naturally to human torso curves and pose.
+                    </div>
+                  </div>
+
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">4. Latent Diffusion</div>
+                    <div class="arch-pill-name">Photorealistic Synthesis</div>
+                    <div class="doc-p" style="font-size: 0.75rem; margin-top: 4px">
+                      UNet diffusion denoiser synthesizes natural fabric folds, cast shadows, and clean collar boundaries.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                <span>RunPod Serverless Worker Specifications</span>
+              </h2>
+              <div class="doc-table-wrap">
+                <table class="doc-table">
+                  <thead>
+                    <tr>
+                      <th>Hardware / Parameter</th>
+                      <th>Production Standard</th>
+                      <th>Benchmark / Metric</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>GPU Hardware</strong></td>
+                      <td>NVIDIA RTX 4090 / A100 (24GB VRAM)</td>
+                      <td>11.2s - 14.1s execution time per inference</td>
+                    </tr>
+                    <tr>
+                      <td><strong>API Gateway</strong></td>
+                      <td>FastAPI + Uvicorn Async Workers</td>
+                      <td>38ms queue latency, auto-scaling concurrency</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Inference Cost</strong></td>
+                      <td>RunPod Serverless Billing</td>
+                      <td>~$0.0026 per generated high-res try-on look</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Output Resolution</strong></td>
+                      <td>3:4 Aspect Ratio (1024 × 1365px)</td>
+                      <td>Preserves fine silk weaves and embroidery detail</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+
+<article id="sec-database-erd" class="doc-section ">
+              <div class="doc-article-header">
+                <div class="doc-tag-row">
+                  <span class="doc-tag blue">Relational Schema Contract</span>
+                  <span class="doc-tag">Data Architecture</span>
+                  <span class="doc-tag">Engine Agnostic</span>
+                </div>
+                <h1 class="doc-article-title">Database Schema &amp; Entity Relationships (Data Contract)</h1>
+                <p class="doc-article-lead">
+                  Normalized relational data model governing profiles, products, inventory variants, orders, escrow settlements, shipment events, and return claims. This schema represents the logical data contracts independent of the underlying relational database engine chosen for production (e.g. PostgreSQL, Supabase, MySQL, or cloud-managed relational DB).
+                </p>
+              </div>
+
+              <div class="doc-callout info">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                <div class="doc-callout-body">
+                  <div class="doc-callout-title">Engine-Agnostic Relational Data Specification</div>
+                  The tables, foreign key constraints, column types, and JSON metadata structures specified below define the authoritative domain models. While examples illustrate standard SQL conventions (compatible with PostgreSQL, Supabase, or AWS RDS), the schema is fully decoupled from the final database hosting provider.
+                </div>
+              </div>
+
+              
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                <span>Entity Relationship Architecture Diagram</span>
+              </h2>
+
+              <div class="arch-diagram-canvas">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem">
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">Table: PROFILES</div>
+                    <div class="arch-pill-name">Vendors & Shoppers</div>
+                    <div class="doc-p" style="font-size: 0.74rem; margin-top: 4px">
+                      PK: <code>id (uuid)</code><br/>
+                      • <code>email</code> (text)<br/>
+                      • <code>role</code> (shopper | merchant | admin)<br/>
+                      • <code>store_handle</code> (text)<br/>
+                      • <code>legal_address</code> (jsonb)<br/>
+                      • <code>return_warehouse_address</code> (jsonb)<br/>
+                      • <code>kyc_status</code> (verified | pending)
+                    </div>
+                  </div>
+
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">Table: ORDERS</div>
+                    <div class="arch-pill-name">Purchases & Fulfillment</div>
+                    <div class="doc-p" style="font-size: 0.74rem; margin-top: 4px">
+                      PK: <code>id (uuid)</code><br/>
+                      FK: <code>vendor_id</code>, <code>customer_id</code><br/>
+                      • <code>gross_amount</code> (numeric)<br/>
+                      • <code>payment_status</code> (paid | pending)<br/>
+                      • <code>fulfillment_status</code> (unfulfilled | fulfilled)<br/>
+                      • <code>escrow_status</code> (held | in_transit | released)<br/>
+                      • <code>pod_verified</code> (boolean)
+                    </div>
+                  </div>
+
+                  <div class="arch-layer-box">
+                    <div class="doc-node-step">Table: ESCROW_SETTLEMENTS</div>
+                    <div class="arch-pill-name">Financial Splits</div>
+                    <div class="doc-p" style="font-size: 0.74rem; margin-top: 4px">
+                      PK: <code>id (uuid)</code><br/>
+                      FK: <code>order_id</code><br/>
+                      • <code>payment_intent_id</code> (text)<br/>
+                      • <code>stripe_transfer_id</code> (text)<br/>
+                      • <code>gross_amount</code> (numeric)<br/>
+                      • <code>platform_commission_5</code> (numeric)<br/>
+                      • <code>merchant_net_95</code> (numeric)<br/>
+                      • <code>status</code> (held | released)
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+<article id="sec-api-reference" class="doc-section ">
+              <div class="doc-article-header">
+                <div class="doc-tag-row">
+                  <span class="doc-tag blue">REST API</span>
+                  <span class="doc-tag">OpenAPI Specification</span>
+                </div>
+                <h1 class="doc-article-title">REST API Specifications &amp; Data Contracts</h1>
+                <p class="doc-article-lead">
+                  Production endpoint contracts, request schemas, authentication headers, and sample responses.
+                </p>
+              </div>
+
+              <div class="doc-callout tip">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+                <div class="doc-callout-body">
+                  <div class="doc-callout-title">Stack-Independent OpenAPI Protocol</div>
+                  The endpoints, JSON payloads, and webhook contracts below define the external communication protocols for VogueSocial. They are strictly decoupled from internal backend language and runtime framework choices, allowing the server to be implemented with Node.js, Go, Python (FastAPI), or Java without breaking client or webhook compatibility.
+                </div>
+              </div>
+
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+                <span>1. Checkout: Create Escrow Payment Intent</span>
+              </h2>
+              <div class="doc-code-block">
+                <div class="doc-code-header">
+                  <span>POST /api/checkout/create-intent</span>
+                </div>
+                <pre class="doc-code-body">// REQUEST BODY
+{
+  "cart_items": [
+    {
+      "product_id": "prod_tailored_silk_blouse",
+      "qty": 1,
+      "size": "M",
+      "color": "#1A1A1A"
+    }
+  ],
+  "shipping_address": {
+    "name": "John Miller",
+    "street": "14 Green St, Villa 4",
+    "city": "Dubai",
+    "country": "United Arab Emirates"
+  }
+}
+
+// RESPONSE (200 OK)
+{
+  "success": true,
+  "order_id": "ORD-1841",
+  "client_secret": "pi_3M9xV2K9QxVogueSocial01_secret_XYZ8921",
+  "gross_total": 49.00,
+  "currency": "usd",
+  "escrow_status": "held"
+}</pre>
+              </div>
+
+              <h2 class="doc-h2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="13" x="1" y="5" rx="2"/><polygon points="17 8 20 8 23 11 23 18 17 18 17 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <span>2. Inbound Carrier Tracking Webhook</span>
+              </h2>
+              <div class="doc-code-block">
+                <div class="doc-code-header">
+                  <span>POST /webhooks/shipping</span>
+                </div>
+                <pre class="doc-code-body">// INBOUND WEBHOOK PAYLOAD (From DHL / FedEx / EasyPost)
+{
+  "event": "shipment.delivered",
+  "awb": "DHL928410291",
+  "carrier": "DHL Express",
+  "timestamp": "2026-04-29T11:45:00Z",
+  "proof_of_delivery": {
+    "signature": "John Miller",
+    "location": "Dubai, UAE",
+    "status": "DELIVERED_POD"
+  }
+}
+
+// SERVER RESPONSE
+{
+  "status": "acknowledged",
+  "order_id": "ORD-1841",
+  "pod_confirmed": true,
+  "escrow_timer_started": "48_hours"
+}</pre>
+              </div>
+            </article>
+
+<article id="sec-mobile-app" class="doc-section ">
+              <div class="doc-article-header">
+                <div class="doc-tag-row">
+                  <span class="doc-tag blue">Flutter 3.x</span>
+                  <span class="doc-tag">iOS / Android</span>
+                </div>
+                <h1 class="doc-article-title">Mobile App Architecture (Flutter)</h1>
+                <p class="doc-article-lead">
+                  Modular, atomic widget architecture featuring 72 bundled offline lookbook assets, universal image rendering, reels video swiper, and virtual try-on mirror.
+                </p>
+              </div>
+
+              <div class="doc-table-wrap">
+                <table class="doc-table">
+                  <thead>
+                    <tr>
+                      <th>Module Area</th>
+                      <th>File Location</th>
+                      <th>Capabilities & Design Role</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Shop Atomic Widgets</strong></td>
+                      <td><code>lib/widgets/shop/</code></td>
+                      <td>Category chips, sort menu, grid/list view switcher, 3:4 product card with sparkle pill.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Feed Atomic Widgets</strong></td>
+                      <td><code>lib/widgets/feed/</code></td>
+                      <td>Branding SVG header, 6 category tabs, merchant 60/40 lookbook split cards, UGC cards.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Universal ProductImage</strong></td>
+                      <td><code>lib/widgets/product_image.dart</code></td>
+                      <td>Universal image renderer with instant fallback to 72 bundled offline lookbook assets.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Brand Profile Screen</strong></td>
+                      <td><code>lib/screens/brand_profile_screen.dart</code></td>
+                      <td>Brand profile screen matching web <code>/store/:handle</code> with high-res cover banner.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+
+
+      <article id="sec-glossary" class="doc-section">
+        <div class="doc-article-header">
+          <div class="doc-tag-row">
+            <span class="doc-tag blue">Reference</span>
+            <span class="doc-tag">A–Z Dictionary</span>
+          </div>
+          <h1 class="doc-article-title">VogueSocial Platform Glossary (A–Z)</h1>
+          <p class="doc-article-lead">
+            Definitions of critical commerce, payments, logistics, computer vision, and architecture terminology used throughout the platform.
+          </p>
+        </div>
+
+        <div class="doc-glossary-filter-bar">
+          <button type="button" class="doc-glossary-filter-btn active" data-cat="all">ALL</button>
+          <button type="button" class="doc-glossary-filter-btn" data-cat="payments">PAYMENTS</button>
+          <button type="button" class="doc-glossary-filter-btn" data-cat="logistics">LOGISTICS</button>
+          <button type="button" class="doc-glossary-filter-btn" data-cat="ai / vision">AI / VISION</button>
+          <button type="button" class="doc-glossary-filter-btn" data-cat="finance">FINANCE</button>
+          <button type="button" class="doc-glossary-filter-btn" data-cat="security">SECURITY</button>
+        </div>
+
+        <div class="doc-glossary-grid">
+    
+        <div class="doc-glossary-card" data-category="payments">
+          <div class="doc-term-header">
+            <span class="doc-term-name">Escrow (Holding Vault)</span>
+            <span class="doc-term-cat">Payments</span>
+          </div>
+          <p class="doc-term-def">A secure financial mechanism where VogueSocial holds buyer funds in a segregated Stripe Platform vault upon checkout. Funds remain locked until the courier verifies physical delivery (POD), protecting both the buyer from non-delivery and the seller from unpaid orders.</p>
+        </div>
+      
+        <div class="doc-glossary-card" data-category="payments">
+          <div class="doc-term-header">
+            <span class="doc-term-name">Stripe Connect</span>
+            <span class="doc-term-cat">Payments</span>
+          </div>
+          <p class="doc-term-def">Stripe’s multi-party marketplace routing engine. Allows VogueSocial to onboard independent fashion brands and merchants, verify their legal business identity (KYC), and programmatically transfer 95% net payouts directly into their connected bank accounts.</p>
+        </div>
+      
+        <div class="doc-glossary-card" data-category="logistics">
+          <div class="doc-term-header">
+            <span class="doc-term-name">Proof of Delivery (POD)</span>
+            <span class="doc-term-cat">Logistics</span>
+          </div>
+          <p class="doc-term-def">Cryptographic delivery confirmation transmitted via carrier webhook (DHL, FedEx, UPS) when the final-mile courier collects the recipient’s electronic signature and geolocation coordinates.</p>
+        </div>
+      
+        <div class="doc-glossary-card" data-category="logistics">
+          <div class="doc-term-header">
+            <span class="doc-term-name">Airway Bill (AWB)</span>
+            <span class="doc-term-cat">Logistics</span>
+          </div>
+          <p class="doc-term-def">A unique tracking number issued by air cargo and express courier companies (e.g. FX28301948IN, 1Z999999). VogueSocial runs regex pattern auto-detection on AWBs to identify the courier instantly.</p>
+        </div>
+      
+        <div class="doc-glossary-card" data-category="payments">
+          <div class="doc-term-header">
+            <span class="doc-term-name">Separate Charges & Transfers</span>
+            <span class="doc-term-cat">Payments</span>
+          </div>
+          <p class="doc-term-def">The Stripe custody pattern chosen by VogueSocial. The platform charges the customer first, holds funds in escrow, and only creates a Stripe Transfer (`tr_...`) to the merchant’s connected account after delivery is verified.</p>
+        </div>
+      
+        <div class="doc-glossary-card" data-category="payments">
+          <div class="doc-term-header">
+            <span class="doc-term-name">Transfer Group</span>
+            <span class="doc-term-cat">Payments</span>
+          </div>
+          <p class="doc-term-def">A unique reconciliation string (e.g. `order_ORD-1841`) applied to both the customer PaymentIntent and merchant Transfer to guarantee 1:1 accounting parity and auditability.</p>
+        </div>
+      
+        <div class="doc-glossary-card" data-category="security">
+          <div class="doc-term-header">
+            <span class="doc-term-name">Stripe Radar & 3D Secure 2.0</span>
+            <span class="doc-term-cat">Security</span>
+          </div>
+          <p class="doc-term-def">Machine learning fraud detection that analyzes cardholder risk in real-time, enforcing biometric cardholder authentication for high-risk or cross-border luxury purchases.</p>
+        </div>
+      
+        <div class="doc-glossary-card" data-category="logistics">
+          <div class="doc-term-header">
+            <span class="doc-term-name">RMA (Return Merchandise Authorization)</span>
+            <span class="doc-term-cat">Logistics</span>
+          </div>
+          <p class="doc-term-def">The formal protocol for customer fashion returns. Returns bypass the corporate registered office and route directly to the merchant’s dedicated `return_warehouse_address`.</p>
+        </div>
+      
+        <div class="doc-glossary-card" data-category="logistics">
+          <div class="doc-term-header">
+            <span class="doc-term-name">Direct Merchant Fulfillment</span>
+            <span class="doc-term-cat">Logistics</span>
+          </div>
+          <p class="doc-term-def">Decentralized fulfillment where merchants and fashion brands ship garments directly from their fulfillment facilities (Paris, Milan, Tokyo, London, New York) using their commercial courier contracts, eliminating platform warehousing costs.</p>
+        </div>
+      
+        <div class="doc-glossary-card" data-category="ai / vision">
+          <div class="doc-term-header">
+            <span class="doc-term-name">Thin-Plate Spline (TPS) Warping</span>
+            <span class="doc-term-cat">AI / Vision</span>
+          </div>
+          <p class="doc-term-def">A non-rigid mathematical transformation algorithm that deforms a 2D flat garment photo to fit the 3D curves, pose keypoints, and torso shape of the user’s portrait.</p>
+        </div>
+      
+        <div class="doc-glossary-card" data-category="ai / vision">
+          <div class="doc-term-header">
+            <span class="doc-term-name">DensePose Human Parsing</span>
+            <span class="doc-term-cat">AI / Vision</span>
+          </div>
+          <p class="doc-term-def">Deep learning segmentation that maps pixels of a human body portrait to a 3D surface mesh, separating head, limbs, skin, and existing clothing for virtual garment overlay.</p>
+        </div>
+      
+        <div class="doc-glossary-card" data-category="ai / vision">
+          <div class="doc-term-header">
+            <span class="doc-term-name">WebAssembly (Wasm) Background Removal</span>
+            <span class="doc-term-cat">AI / Vision</span>
+          </div>
+          <p class="doc-term-def">Running deep learning models locally inside the user’s web browser via WebGPU and WebAssembly (`@imgly/background-removal`), generating transparent garment cutouts without uploading photos to an external server.</p>
+        </div>
+      
+        <div class="doc-glossary-card" data-category="finance">
+          <div class="doc-term-header">
+            <span class="doc-term-name">5-Step Payout Verification Gate</span>
+            <span class="doc-term-cat">Finance</span>
+          </div>
+          <p class="doc-term-def">The mandatory automated checklist evaluated before escrow funds are transferred: 1) Stripe Payment Captured, 2) Carrier POD Verified, 3) Order Active, 4) No Active Chargeback, 5) Merchant KYC Verified.</p>
+        </div>
+      
+        <div class="doc-glossary-card" data-category="finance">
+          <div class="doc-term-header">
+            <span class="doc-term-name">48-Hour Settlement Buffer Window</span>
+            <span class="doc-term-cat">Finance</span>
+          </div>
+          <p class="doc-term-def">A 48-hour safety hold after delivery confirmation allowing the shopper to inspect seams, fabric, and sizing before the 95% net payout is irrevocably released to the merchant.</p>
+        </div>
+      
+        </div>
+      </article>
+    
+      </main>
+
+      <!-- RIGHT TOC -->
+      <aside class="doc-toc-bar">
+        
+  <div class="doc-toc-title">On This Page</div>
+  <div class="doc-toc-link active" data-section="overview">What is VogueSocial & Features</div>
+  <div class="doc-toc-link" data-section="how-it-works">The Escrow Referee & Money Flow</div>
+  <div class="doc-toc-link" data-section="payment-escrow">Stripe Escrow & Payouts</div>
+  <div class="doc-toc-link" data-section="logistics-delivery">Logistics & POD Verification</div>
+  <div class="doc-toc-link" data-section="ai-tryon">AI Try-On & GPU Cluster</div>
+  <div class="doc-toc-link" data-section="database-erd">Database Schema & ERD</div>
+  <div class="doc-toc-link" data-section="api-reference">REST API & Webhooks</div>
+  <div class="doc-toc-link" data-section="mobile-app">Mobile App Architecture</div>
+  <div class="doc-toc-link" data-section="glossary">A–Z Glossary Dictionary</div>
+
+      </aside>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

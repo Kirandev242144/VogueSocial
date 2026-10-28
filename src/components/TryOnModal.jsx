@@ -87,8 +87,8 @@ const TryOnModal = ({
     const [imagePreview, setImagePreview] = useState(null);
     const [statusMessage, setStatusMessage] = useState("Processing fit simulation...");
     const [selectedCategory, setSelectedCategory] = useState(category);
-    // AI Engine hidden in state (defaults to 'omnitry')
-    const [selectedModel] = useState('omnitry');
+    // AI Engine hidden in state (defaults to 'vogue_vto')
+    const [selectedModel] = useState('vogue_vto');
     const fileInputRef = useRef(null);
 
     const saveResultLook = (outputImage) => {

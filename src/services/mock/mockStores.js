@@ -43,7 +43,7 @@ export const mockStoreAdapter = {
       success: true,
       store: {
         ...store,
-        store_name: store.store_name || store.storeName || 'Atelier Boutique',
+        store_name: store.store_name || store.storeName || 'Studio Boutique',
         store_handle: store.store_handle || store.storeHandle || cleanHandle,
         subdomain: store.subdomain || cleanHandle,
         template: store.template || 'modern',

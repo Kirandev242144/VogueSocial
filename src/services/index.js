@@ -5,3 +5,4 @@ export * from './wardrobeService';
 export * from './authService';
 export * from './feedService';
 export * from './adminService';
+export * from './merchantService';

@@ -63,7 +63,7 @@ export const mockAuthAdapter = {
       email: cleanEmail,
       password: userData.password,
       role: userData.role || (userData.storeName || userData.storeHandle ? 'merchant' : 'user'),
-      storeName: userData.storeName || (userData.role === 'merchant' ? `${userData.name.trim()} Atelier` : undefined),
+      storeName: userData.storeName || (userData.role === 'merchant' ? `${userData.name.trim()} Studio` : undefined),
       storeHandle: userData.role === 'merchant' || userData.storeName ? cleanHandle : undefined,
       image: userData.role === 'merchant'
         ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&q=80'
@@ -90,11 +90,33 @@ export const mockAuthAdapter = {
       const storeKey = `${STORAGE_KEYS.STORE_PREFIX}${cleanHandle}`;
       if (!storageEngine.getItem(storeKey)) {
         const newStore = {
+          id: newUser.id,
           vendor_id: newUser.id,
           vendorId: newUser.id,
           status: 'live',
+          storefront_status: 'active',
+          vendor_status: 'approved',
+          kyb_status: 'unsubmitted',
+          kyc_status: 'unsubmitted',
+          payout_eligibility: 'administrative_hold',
+          legal_business_name: newUser.storeName || `${newUser.name} Studio`,
+          business_type: 'Corporation (Inc., Ltd., S.A.S.)',
+          tax_id: '',
+          registration_number: '',
+          phone: '',
+          country: 'France',
+          legal_address: { street: '', city: '', postal_code: '', country: 'France' },
+          return_warehouse_address: { street: '', city: '', postal_code: '', country: 'France' },
+          representative: { name: newUser.name, title: 'Founder & Director', email: newUser.email, phone: '' },
+          documents: [
+            { id: 'doc-incorp', type: 'incorporation', title: 'Certificate of Incorporation / Business License', filename: null, size: null, uploaded_at: null, status: 'required', notes: null },
+            { id: 'doc-id', type: 'owner_id', title: 'Government-Issued Photo ID of Legal Representative', filename: null, size: null, uploaded_at: null, status: 'required', notes: null },
+            { id: 'doc-address', type: 'address_proof', title: 'Proof of Operating Business Address', filename: null, size: null, uploaded_at: null, status: 'required', notes: null },
+            { id: 'doc-tax', type: 'tax_cert', title: 'Tax Identification / VAT Registration Certificate', filename: null, size: null, uploaded_at: null, status: 'required', notes: null },
+            { id: 'doc-bank', type: 'bank_statement', title: 'Bank Account Ownership Verification', filename: null, size: null, uploaded_at: null, status: 'required', notes: null }
+          ],
           template: 'modern',
-          store_name: newUser.storeName || `${newUser.name} Atelier`,
+          store_name: newUser.storeName || `${newUser.name} Studio`,
           store_handle: cleanHandle,
           subdomain: cleanHandle,
           custom_domain: `shop.${cleanHandle}.com`,

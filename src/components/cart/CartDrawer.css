@@ -415,6 +415,85 @@
   color: #0f172a;
 }
 
+/* Promo Code */
+.cart-promo-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.cart-promo-input-row {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.cart-promo-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  color: #0f172a;
+  outline: none;
+}
+
+.cart-promo-input:focus {
+  border-color: #0f172a;
+}
+
+.cart-promo-apply-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cart-promo-apply-btn:hover {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.cart-promo-applied-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: #15803d;
+}
+
+.cart-promo-applied-left {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cart-promo-remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #15803d;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+}
+
+.cart-promo-error {
+  font-size: 0.75rem;
+  color: #dc2626;
+}
+
 .cart-footer-buttons {
   display: flex;
   flex-direction: column;

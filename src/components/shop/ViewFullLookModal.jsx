@@ -161,7 +161,7 @@ export default function ViewFullLookModal({ isOpen, onClose, lookData, onAddToCa
 
     setGeneratingItem(item);
     setIsGeneratingTryOn(true);
-    setToastMessage(`Fitting ${item.title} onto model with OmniTry AI...`);
+    setToastMessage(`Fitting ${item.title} onto model with Virtual Try-On...`);
 
     setTimeout(() => {
       setActiveItem(item);

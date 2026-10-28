@@ -604,10 +604,17 @@ export const mockAdminAdapter = {
     let stores = storageEngine.getItem(STORAGE_KEYS.STORES, []);
     const products = storageEngine.getItem(STORAGE_KEYS.PRODUCTS, []);
 
-    // Ensure fallback stores exist or are upgraded with full compliance schema
-    if (!stores || stores.length < 6 || !stores[0]?.marketplace_agreement) {
+    // Ensure initial vendors exist without erasing newly registered merchants
+    if (!stores || stores.length === 0) {
       stores = INITIAL_VENDORS_DATA;
       storageEngine.setItem(STORAGE_KEYS.STORES, stores);
+    } else {
+      const existingIds = new Set(stores.map(s => s.vendor_id || s.vendorId || s.id));
+      const missingInitial = INITIAL_VENDORS_DATA.filter(init => !existingIds.has(init.id));
+      if (missingInitial.length > 0) {
+        stores = [...stores, ...missingInitial];
+        storageEngine.setItem(STORAGE_KEYS.STORES, stores);
+      }
     }
 
     const enriched = stores.map(s => {
@@ -616,7 +623,7 @@ export const mockAdminAdapter = {
       return {
         ...s,
         id: vid,
-        store_name: s.store_name || s.storeName || 'Atelier Storefront',
+        store_name: s.store_name || s.storeName || 'Merchant Storefront',
         store_handle: s.store_handle || s.storeHandle || 'studiolabel',
         email: s.email || 'vendor@voguesocial.com',
         vendor_status: s.vendor_status || 'approved',
